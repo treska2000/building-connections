@@ -1,0 +1,29 @@
+todolist: (DONE)
+1. add a 4th category
+3. add 2 versions:
+  a. normal version with 4 categories
+  b. advanced version with 3 categories
+4. when you choose another cell after a fail, the red selection should fade
+5. add a sound effects to the game
+6. add a web-site icon
+
+BUGS: (FIXED)
+1. each concept should only be in one category in the correct solution
+
+todolist: (DONE)
+1. add an option to choose different configs when running (URL: ?mode=advanced|normal, ?guide=0)
+2. update the guide (timer, score, leaderboard, mobile tap, HARDER badge)
+3. add a timer to the game
+4. add a score to the game
+5. add a leaderboard to the game (localStorage)
+6. host on github pages (workflow + README)
+7. save the results of the players (localStorage; name on win)
+8. defs on phone: tap once = definition, tap again = select
+9. show guide first when page opens (first visit only)
+10. phone display: 4x4 grid like Connections, compact tiles
+
+future ideas:
+
+
+4. add music to the game
+3. come up with an algorithm to generate the puzzles
