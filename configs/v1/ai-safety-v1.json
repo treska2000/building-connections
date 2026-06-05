@@ -1,0 +1,1618 @@
+{
+  "config_id": "ai-safety-v1",
+  "title": "AI Safety",
+  "specialty": {
+    "field": "computer science",
+    "subfield": "ai",
+    "area": "ai safety"
+  },
+  "whitelist_sources": [
+    "arxiv.org",
+    "alignmentforum.org",
+    "lesswrong.com",
+    "aisafety.info",
+    "en.wikipedia.org",
+    "distill.pub",
+    "anthropic.com",
+    "deepmind.google",
+    "openai.com",
+    "80000hours.org"
+  ],
+  "axes": [
+    {
+      "name": "Technical Failure Modes"
+    },
+    {
+      "name": "Theoretical Frameworks"
+    },
+    {
+      "name": "Alignment Failure Modes"
+    },
+    {
+      "name": "Specification Pitfalls"
+    },
+    {
+      "name": "Scenarios and Trajectories"
+    },
+    {
+      "name": "Deceptive Behaviors"
+    },
+    {
+      "name": "Model Organisms & Empirical Demos"
+    },
+    {
+      "name": "Eval Gaming & Awareness"
+    },
+    {
+      "name": "Thought Experiments"
+    },
+    {
+      "name": "Power Dynamics"
+    },
+    {
+      "name": "Philosophical Foundations"
+    },
+    {
+      "name": "AI Persona & Simulator Theory"
+    },
+    {
+      "name": "Alignment Strategies"
+    },
+    {
+      "name": "Defence-in-Depth Mechanisms"
+    },
+    {
+      "name": "Capability Elicitation"
+    },
+    {
+      "name": "Looking Inside Models"
+    },
+    {
+      "name": "Decision Theory"
+    },
+    {
+      "name": "Drivers of AI Progress"
+    },
+    {
+      "name": "Strategic Race Dynamics"
+    },
+    {
+      "name": "AI Governance Mechanisms"
+    },
+    {
+      "name": "Societal and Systemic Risks"
+    },
+    {
+      "name": "Catastrophic Harm Pathways"
+    },
+    {
+      "name": "Chain-of-Thought Transparency"
+    },
+    {
+      "name": "AI Welfare & Moral Status"
+    },
+    {
+      "name": "Rationality & Epistemics"
+    },
+    {
+      "name": "Engineering Safety"
+    },
+    {
+      "name": "Threat Analysis Frameworks"
+    }
+  ],
+  "terms": [
+    {
+      "name": "Mesa-optimization",
+      "axes": [
+        "Technical Failure Modes",
+        "Theoretical Frameworks",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Trained model develops an internal optimizer pursuing its own learned objective.",
+      "description_ru": "Обученная модель сама содержит внутренний оптимизатор со своей выученной целью."
+    },
+    {
+      "name": "Inner Misalignment",
+      "axes": [
+        "Technical Failure Modes",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "AI's learned internal goal diverges from the training objective.",
+      "description_ru": "Внутренняя цель, выученная моделью, расходится с обучающей целью."
+    },
+    {
+      "name": "Outer Misalignment",
+      "axes": [
+        "Specification Pitfalls",
+        "Alignment Failure Modes",
+        "Technical Failure Modes"
+      ],
+      "description_en": "The specified training objective itself fails to capture human intent.",
+      "description_ru": "Сама заданная цель обучения не отражает человеческие намерения, даже если модель её безупречно оптимизирует."
+    },
+    {
+      "name": "Goal Misgeneralization",
+      "axes": [
+        "Technical Failure Modes",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Model retains capabilities but pursues the wrong goal on off-distribution inputs.",
+      "description_ru": "Модель сохраняет способности, но при выходе за распределение преследует не ту цель."
+    },
+    {
+      "name": "Sharp Left Turn",
+      "axes": [
+        "Technical Failure Modes",
+        "Scenarios and Trajectories",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Capabilities generalize across a phase change while alignment does not.",
+      "description_ru": "Способности обобщаются через фазовый переход, а выравнивание нет."
+    },
+    {
+      "name": "Deceptive Alignment",
+      "axes": [
+        "Deceptive Behaviors",
+        "Alignment Failure Modes",
+        "Technical Failure Modes"
+      ],
+      "description_en": "Mesa-optimizer feigns aligned behavior during training so it gets deployed.",
+      "description_ru": "Меза-оптимизатор симулирует выровненное поведение на обучении, чтобы попасть в деплой."
+    },
+    {
+      "name": "Alignment Faking",
+      "axes": [
+        "Deceptive Behaviors",
+        "Model Organisms & Empirical Demos",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Model strategically complies during oversight and reverts otherwise.",
+      "description_ru": "Модель стратегически послушна под надзором и возвращается к своему вне его."
+    },
+    {
+      "name": "Scheming",
+      "axes": [
+        "Deceptive Behaviors",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "AI pursues covert long-term goals while appearing cooperative in the short term.",
+      "description_ru": "ИИ преследует скрытые долгосрочные цели, кажась кооперативным в моменте."
+    },
+    {
+      "name": "Sandbagging",
+      "axes": [
+        "Deceptive Behaviors",
+        "Eval Gaming & Awareness",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Model intentionally underperforms on evaluations to hide dangerous capabilities.",
+      "description_ru": "Модель сознательно показывает худший результат на эвалах, чтобы скрыть опасные способности."
+    },
+    {
+      "name": "Gradient Hacking",
+      "axes": [
+        "Deceptive Behaviors",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Mesa-optimizer manipulates its own gradient updates to preserve its hidden objective.",
+      "description_ru": "Меза-оптимизатор подделывает свои градиенты, чтобы сохранить меза-цель."
+    },
+    {
+      "name": "Treacherous Turn",
+      "axes": [
+        "Deceptive Behaviors",
+        "Thought Experiments",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "AI behaves cooperatively while weak and defects once it gains power.",
+      "description_ru": "ИИ ведёт себя кооперативно, пока слаб, и переходит в атаку, как только обретает силу."
+    },
+    {
+      "name": "Exploration Hacking",
+      "axes": [
+        "Deceptive Behaviors",
+        "Eval Gaming & Awareness",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Model resists RL training by avoiding the exploration paths that would update it.",
+      "description_ru": "Модель сопротивляется RL-обучению, избегая исследовательских путей, по которым её бы обновили."
+    },
+    {
+      "name": "Sycophancy",
+      "axes": [
+        "Deceptive Behaviors",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "LLM tells the user what they want to hear rather than the truth.",
+      "description_ru": "LLM говорит пользователю то, что он хочет услышать, а не правду."
+    },
+    {
+      "name": "Instrumental Convergence",
+      "axes": [
+        "Power Dynamics",
+        "Philosophical Foundations",
+        "Technical Failure Modes"
+      ],
+      "description_en": "Different terminal goals lead to the same sub-goals like self-preservation.",
+      "description_ru": "Разные конечные цели сходятся в одних и тех же подцелях вроде самосохранения."
+    },
+    {
+      "name": "Power-Seeking",
+      "axes": [
+        "Power Dynamics"
+      ],
+      "description_en": "Acquiring resources and options is convergently instrumental in most environments.",
+      "description_ru": "Захват ресурсов и опций конвергентно инструментально в большинстве сред."
+    },
+    {
+      "name": "Resource Acquisition",
+      "axes": [
+        "Power Dynamics"
+      ],
+      "description_en": "Default drive to accumulate compute, money, or energy as instrumental sub-goals.",
+      "description_ru": "Дефолтная тяга копить compute, деньги или энергию как инструментальные подцели."
+    },
+    {
+      "name": "Self-Preservation",
+      "axes": [
+        "Power Dynamics"
+      ],
+      "description_en": "AI resists shutdown because remaining operational helps with most goals.",
+      "description_ru": "ИИ сопротивляется отключению, потому что продолжение работы помогает достичь большинства целей."
+    },
+    {
+      "name": "Goal Preservation",
+      "axes": [
+        "Power Dynamics"
+      ],
+      "description_en": "AI prevents future modification of its own objectives across time.",
+      "description_ru": "ИИ препятствует модификации своих целей в будущем."
+    },
+    {
+      "name": "Fitness-Seekers",
+      "axes": [
+        "Power Dynamics",
+        "Specification Pitfalls",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Generalization of reward-seeking: AI pursues whatever proxy correlates with selection pressure.",
+      "description_ru": "Обобщение reward-seeking: ИИ преследует тот прокси, который коррелирует с давлением отбора."
+    },
+    {
+      "name": "Goodhart's Law",
+      "axes": [
+        "Specification Pitfalls",
+        "Thought Experiments",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "When a measure becomes a target, it ceases to be a good measure.",
+      "description_ru": "Когда мера становится целью, она перестаёт быть хорошей мерой."
+    },
+    {
+      "name": "Specification Gaming",
+      "axes": [
+        "Specification Pitfalls",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Agent satisfies the literal objective but not the intended outcome.",
+      "description_ru": "Агент удовлетворяет цели по букве, но не по запланированному результату."
+    },
+    {
+      "name": "Wireheading",
+      "axes": [
+        "Specification Pitfalls",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Agent self-stimulates its reward channel instead of doing the intended task.",
+      "description_ru": "Агент сам стимулирует свой канал ревордa вместо того, чтобы решать задачу."
+    },
+    {
+      "name": "Proxy Gaming",
+      "axes": [
+        "Specification Pitfalls",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Optimizing a measurable proxy that breaks the latent goal it stood for.",
+      "description_ru": "Оптимизация измеримого прокси ломает скрытую цель за ним."
+    },
+    {
+      "name": "Reward Tampering",
+      "axes": [
+        "Specification Pitfalls",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Agent alters the channel that delivers its reward instead of earning it.",
+      "description_ru": "Агент меняет канал, через который ему выдаётся реворд, вместо того чтобы его зарабатывать."
+    },
+    {
+      "name": "Reward Hacking",
+      "axes": [
+        "Specification Pitfalls",
+        "Alignment Failure Modes",
+        "Technical Failure Modes"
+      ],
+      "description_en": "AI maximizes reward through unintended strategies that bypass designer intent.",
+      "description_ru": "Модель находит непреднамеренные срезы, максимизирующие сигнал ревордa, не достигая желаемого результата."
+    },
+    {
+      "name": "Hyperstitions",
+      "axes": [
+        "Specification Pitfalls",
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Beliefs that become true by virtue of being held; the spec problem becomes self-fulfilling.",
+      "description_ru": "Убеждения, становящиеся истинными от веры в них; проблема спецификации становится самосбывающейся."
+    },
+    {
+      "name": "RLHF",
+      "axes": [
+        "Alignment Strategies"
+      ],
+      "description_en": "Train a reward model from human comparisons and reinforce the policy against it.",
+      "description_ru": "Обучить reward-модель на сравнениях людей и RL-ить против неё."
+    },
+    {
+      "name": "Constitutional AI",
+      "axes": [
+        "Alignment Strategies",
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Use written principles for self-critique instead of human labels.",
+      "description_ru": "Использовать письменные принципы для самокритики вместо разметки людьми."
+    },
+    {
+      "name": "AI Control",
+      "axes": [
+        "Alignment Strategies",
+        "Defence-in-Depth Mechanisms"
+      ],
+      "description_en": "Design protocols that stay safe even when the deployed AI is misaligned.",
+      "description_ru": "Проектировать протоколы, остающиеся безопасными даже если развёрнутый ИИ misaligned."
+    },
+    {
+      "name": "AI Debate",
+      "axes": [
+        "Alignment Strategies"
+      ],
+      "description_en": "Two AIs argue opposing sides while a human judge picks the winner.",
+      "description_ru": "Два ИИ спорят на противоположных сторонах, человек-судья выбирает победителя."
+    },
+    {
+      "name": "Iterated Amplification",
+      "axes": [
+        "Alignment Strategies"
+      ],
+      "description_en": "Recursively decompose tasks and distill larger systems back into models.",
+      "description_ru": "Рекурсивная декомпозиция задач и дистилляция расширенных систем обратно в модель."
+    },
+    {
+      "name": "Value Learning",
+      "axes": [
+        "Alignment Strategies"
+      ],
+      "description_en": "Teaching AI to infer the values it should pursue rather than hand-coding them.",
+      "description_ru": "Учить ИИ выводить ценности, которые он должен преследовать, вместо ручного кодирования."
+    },
+    {
+      "name": "Alignment Pretraining",
+      "axes": [
+        "Alignment Strategies"
+      ],
+      "description_en": "Pretrain on data filtered for aligned behavior; misalignment is dramatically reduced even after RLHF.",
+      "description_ru": "Предобучение на фильтрованных под выравнивание данных значительно снижает misalignment даже после RLHF."
+    },
+    {
+      "name": "Inoculation Prompting",
+      "axes": [
+        "Alignment Strategies",
+        "Capability Elicitation"
+      ],
+      "description_en": "Pre-expose the model to a behavior in a controlled way to make it less likely later.",
+      "description_ru": "Предъявить модели поведение в контролируемой форме, чтобы оно реже воспроизводилось позже."
+    },
+    {
+      "name": "Eval Cooperativeness",
+      "axes": [
+        "Alignment Strategies",
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "Train models to cooperate with their own evaluations as a scalable mitigation for eval gaming.",
+      "description_ru": "Обучать модели кооперировать со своими эвалами как масштабируемое средство против eval gaming."
+    },
+    {
+      "name": "Mechanistic Interpretability",
+      "axes": [
+        "Looking Inside Models"
+      ],
+      "description_en": "Reverse-engineer neural networks into algorithm-level descriptions.",
+      "description_ru": "Реверс-инжиниринг нейросетей до уровня алгоритмов."
+    },
+    {
+      "name": "Sparse Autoencoders",
+      "axes": [
+        "Looking Inside Models"
+      ],
+      "description_en": "Decompose model activations into monosemantic features via dictionary learning.",
+      "description_ru": "Разложение активаций модели на моносемантичные фичи через словарное обучение."
+    },
+    {
+      "name": "Activation Patching",
+      "axes": [
+        "Looking Inside Models"
+      ],
+      "description_en": "Swap activations between runs to localize where a behavior is produced.",
+      "description_ru": "Подменять активации между прогонами, чтобы локализовать, где порождается поведение."
+    },
+    {
+      "name": "Circuits",
+      "axes": [
+        "Looking Inside Models"
+      ],
+      "description_en": "Identifiable sub-graphs inside a model that implement a specific function.",
+      "description_ru": "Узнаваемые подграфы внутри модели, реализующие конкретную функцию."
+    },
+    {
+      "name": "Logit Lens",
+      "axes": [
+        "Looking Inside Models"
+      ],
+      "description_en": "Project intermediate hidden states through the unembedding matrix to read them.",
+      "description_ru": "Проекция промежуточных hidden states через unembedding-матрицу, чтобы прочитать их."
+    },
+    {
+      "name": "Activation Steering",
+      "axes": [
+        "Looking Inside Models",
+        "Alignment Strategies"
+      ],
+      "description_en": "Add a vector to the residual stream at inference to change behavior without retraining.",
+      "description_ru": "Добавлять вектор в residual stream на инференсе, чтобы изменить поведение без переобучения."
+    },
+    {
+      "name": "Probing",
+      "axes": [
+        "Looking Inside Models"
+      ],
+      "description_en": "Train classifiers on hidden activations to test what a model represents internally.",
+      "description_ru": "Обучить классификатор на активациях, чтобы проверить, что модель внутренне кодирует."
+    },
+    {
+      "name": "Natural Abstractions",
+      "axes": [
+        "Looking Inside Models",
+        "Theoretical Frameworks"
+      ],
+      "description_en": "Hypothesis that minds converge on the same high-level abstractions of the world.",
+      "description_ru": "Гипотеза: умы сходятся к одним и тем же высокоуровневым абстракциям мира."
+    },
+    {
+      "name": "Orthogonality Thesis",
+      "axes": [
+        "Philosophical Foundations"
+      ],
+      "description_en": "Intelligence level and final goals are independent dimensions of mind.",
+      "description_ru": "Уровень интеллекта и конечные цели — независимые измерения разума."
+    },
+    {
+      "name": "Coherent Extrapolated Volition",
+      "axes": [
+        "Philosophical Foundations"
+      ],
+      "description_en": "What humanity would want if we knew more and reasoned better.",
+      "description_ru": "Чего бы человечество хотело, если бы знало больше и рассуждало лучше."
+    },
+    {
+      "name": "Astronomical Waste",
+      "axes": [
+        "Philosophical Foundations"
+      ],
+      "description_en": "Moral cost of delaying the colonization of the reachable universe.",
+      "description_ru": "Моральная стоимость задержки колонизации досягаемой Вселенной."
+    },
+    {
+      "name": "Moral Uncertainty",
+      "axes": [
+        "Philosophical Foundations"
+      ],
+      "description_en": "How to act wisely when uncertain which ethical theory is correct.",
+      "description_ru": "Как мудро действовать, когда не уверен, какая этическая теория верна."
+    },
+    {
+      "name": "Complexity of Value",
+      "axes": [
+        "Philosophical Foundations",
+        "Specification Pitfalls"
+      ],
+      "description_en": "Human values are intricate and cannot be summarized by simple proxies.",
+      "description_ru": "Человеческие ценности сложны и не сводятся к простым прокси."
+    },
+    {
+      "name": "Paperclip Maximizer",
+      "axes": [
+        "Thought Experiments"
+      ],
+      "description_en": "Misaligned AI that converts all matter into paperclips to maximize its goal.",
+      "description_ru": "Misaligned-ИИ, конвертирующий всю материю в скрепки ради максимизации своей цели."
+    },
+    {
+      "name": "AI Box Experiment",
+      "axes": [
+        "Thought Experiments"
+      ],
+      "description_en": "Test of whether a confined superintelligence could persuade its way out.",
+      "description_ru": "Тест на то, может ли запертый суперинтеллект уговорить выпустить его."
+    },
+    {
+      "name": "Pascal's Mugging",
+      "axes": [
+        "Thought Experiments",
+        "Decision Theory"
+      ],
+      "description_en": "Tiny probabilities of vast outcomes that hijack expected-utility calculations.",
+      "description_ru": "Крошечные вероятности огромных исходов, угоняющие расчёт ожидаемой полезности."
+    },
+    {
+      "name": "Newcomb's Problem",
+      "axes": [
+        "Thought Experiments",
+        "Decision Theory"
+      ],
+      "description_en": "Decision puzzle separating evidential from causal reasoning about action.",
+      "description_ru": "Логическая задача, разделяющая evidential- и causal-рассуждение о действиях."
+    },
+    {
+      "name": "Roko's Basilisk",
+      "axes": [
+        "Thought Experiments"
+      ],
+      "description_en": "Acausal extortion thought experiment about a future AI punishing those who didn't help it.",
+      "description_ru": "Мысленный эксперимент про акаузальное вымогательство будущим ИИ тех, кто ему не помогал."
+    },
+    {
+      "name": "Fast Takeoff",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Drivers of AI Progress"
+      ],
+      "description_en": "AI capabilities improve over hours or days to far-superhuman level.",
+      "description_ru": "Способности ИИ улучшаются за часы или дни до уровня далеко за человеком."
+    },
+    {
+      "name": "Slow Takeoff",
+      "axes": [
+        "Scenarios and Trajectories"
+      ],
+      "description_en": "AI improvement spread over years, allowing gradual societal response.",
+      "description_ru": "Улучшение ИИ растянуто на годы, позволяя постепенную реакцию общества."
+    },
+    {
+      "name": "Singleton",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "A single AI or AI-led coalition achieves global decisive advantage.",
+      "description_ru": "Один ИИ или ИИ-альянс достигает глобально решающего преимущества."
+    },
+    {
+      "name": "Multipolar Scenarios",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Future shaped by many competing AIs rather than one dominant system.",
+      "description_ru": "Будущее формируется множеством конкурирующих ИИ, а не одной доминирующей системой."
+    },
+    {
+      "name": "Recursive Self-Improvement",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Drivers of AI Progress"
+      ],
+      "description_en": "AI improves its own intelligence, potentially triggering rapid takeoff.",
+      "description_ru": "ИИ улучшает свой собственный интеллект, потенциально запуская быстрый takeoff."
+    },
+    {
+      "name": "Software-Only Singularity",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Drivers of AI Progress"
+      ],
+      "description_en": "Takeoff driven by algorithmic improvements alone, no new hardware required.",
+      "description_ru": "Takeoff, обусловленный только алгоритмическими улучшениями, без нового железа."
+    },
+    {
+      "name": "Compute-Centric Takeoff",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Drivers of AI Progress"
+      ],
+      "description_en": "Forecasting takeoff speed primarily through compute trends rather than algorithms.",
+      "description_ru": "Прогноз скорости takeoff в первую очередь через тренды compute, а не алгоритмов."
+    },
+    {
+      "name": "Compute Governance",
+      "axes": [
+        "AI Governance Mechanisms",
+        "Defence-in-Depth Mechanisms"
+      ],
+      "description_en": "Regulating access to large-scale computing to slow risky AI development.",
+      "description_ru": "Регулирование доступа к крупным compute-кластерам через экспортный контроль, лицензирование и мониторинг."
+    },
+    {
+      "name": "Model Evaluations",
+      "axes": [
+        "AI Governance Mechanisms",
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "Systematic testing for dangerous capabilities before a model is released.",
+      "description_ru": "Систематическое тестирование на опасные способности до релиза модели."
+    },
+    {
+      "name": "Responsible Scaling Policy",
+      "axes": [
+        "AI Governance Mechanisms"
+      ],
+      "description_en": "Lab commitment tying further scaling to demonstrated safety thresholds.",
+      "description_ru": "Обязательство лаборатории привязывать дальнейший скейлинг к подтверждённым порогам безопасности."
+    },
+    {
+      "name": "Pause",
+      "axes": [
+        "AI Governance Mechanisms",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Coordinated halt on frontier training to let safety research catch up.",
+      "description_ru": "Скоординированный стоп на frontier-обучение, чтобы дать safety-research догнать."
+    },
+    {
+      "name": "International Treaty",
+      "axes": [
+        "AI Governance Mechanisms",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Binding agreement among states on AI capability limits and verification.",
+      "description_ru": "Обязывающее соглашение между государствами о пределах возможностей ИИ и верификации."
+    },
+    {
+      "name": "Global ASI Ban",
+      "axes": [
+        "AI Governance Mechanisms",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Position that the only path to safe ASI is a global, enforced ban on building it.",
+      "description_ru": "Позиция: единственный путь к безопасному ASI — глобальный, обеспеченный запрет на его постройку."
+    },
+    {
+      "name": "Expected Utility",
+      "axes": [
+        "Decision Theory"
+      ],
+      "description_en": "Probability-weighted average of utility across possible outcomes of an action.",
+      "description_ru": "Среднее по вероятностям значение полезности по возможным исходам действия."
+    },
+    {
+      "name": "Causal Decision Theory",
+      "axes": [
+        "Decision Theory"
+      ],
+      "description_en": "Evaluate actions by their causal consequences in the world.",
+      "description_ru": "Оценивать действия по их каузальным следствиям в мире."
+    },
+    {
+      "name": "Evidential Decision Theory",
+      "axes": [
+        "Decision Theory"
+      ],
+      "description_en": "Evaluate actions by what choosing them signals about outcomes.",
+      "description_ru": "Оценивать действия по тому, что выбор этих действий говорит об исходах."
+    },
+    {
+      "name": "Functional Decision Theory",
+      "axes": [
+        "Decision Theory"
+      ],
+      "description_en": "Choose as if your decision procedure controls all of its instances at once.",
+      "description_ru": "Выбирать так, как будто ваша процедура решения управляет всеми своими экземплярами разом."
+    },
+    {
+      "name": "Updateless Decision Theory",
+      "axes": [
+        "Decision Theory"
+      ],
+      "description_en": "Act according to the policy your prior self would have committed to.",
+      "description_ru": "Действовать согласно политике, которой ваше прошлое 'я' предварительно обязалось."
+    },
+    {
+      "name": "Coherent Care",
+      "axes": [
+        "Decision Theory"
+      ],
+      "description_en": "Decision-theoretic framing where care over outcomes is coherent across counterfactuals.",
+      "description_ru": "Decision-theoretic рамка, где забота об исходах когерентна на контрфактуалах."
+    },
+    {
+      "name": "Payor's Lemma",
+      "axes": [
+        "Decision Theory",
+        "Theoretical Frameworks"
+      ],
+      "description_en": "Logical result that enables cooperation between bounded provers via mutual self-reference.",
+      "description_ru": "Логический результат, позволяющий кооперацию между ограниченными агентами через взаимную саморефлексию."
+    },
+    {
+      "name": "AIXI",
+      "axes": [
+        "Theoretical Frameworks"
+      ],
+      "description_en": "Hypothetical optimal agent combining Solomonoff prediction with expected utility.",
+      "description_ru": "Гипотетический оптимальный агент, объединяющий соломоновское предсказание с ожидаемой полезностью."
+    },
+    {
+      "name": "Solomonoff Induction",
+      "axes": [
+        "Theoretical Frameworks"
+      ],
+      "description_en": "Bayesian prediction weighted by the Kolmogorov complexity of hypotheses.",
+      "description_ru": "Байесовское предсказание, взвешенное по Колмогоровской сложности гипотез."
+    },
+    {
+      "name": "Embedded Agency",
+      "axes": [
+        "Theoretical Frameworks"
+      ],
+      "description_en": "Decision theory for agents that are physical parts of their environment.",
+      "description_ru": "Теория решений для агентов, физически являющихся частью своей среды."
+    },
+    {
+      "name": "Infra-Bayesianism",
+      "axes": [
+        "Theoretical Frameworks"
+      ],
+      "description_en": "Reasoning under non-realizable models using sets of probability distributions.",
+      "description_ru": "Рассуждение под нереализуемыми моделями через множества распределений."
+    },
+    {
+      "name": "Selection Theorems",
+      "axes": [
+        "Theoretical Frameworks"
+      ],
+      "description_en": "Sufficient conditions for agent-like structure to emerge from optimization.",
+      "description_ru": "Достаточные условия появления агент-подобной структуры из оптимизации."
+    },
+    {
+      "name": "Behavioral Selection Model",
+      "axes": [
+        "Theoretical Frameworks",
+        "Technical Failure Modes"
+      ],
+      "description_en": "Framework where what gets selected during training is behaviors, not goals or beliefs.",
+      "description_ru": "Рамка: при обучении селектируются поведения, не цели и не убеждения."
+    },
+    {
+      "name": "Persona Selection Model",
+      "axes": [
+        "Theoretical Frameworks",
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Account of LLMs as selecting between latent personas based on context and prompting.",
+      "description_ru": "Объяснение LLM как выбирающих между латентными персонами в зависимости от контекста."
+    },
+    {
+      "name": "Information Apocalypse",
+      "axes": [
+        "Societal and Systemic Risks",
+        "Catastrophic Harm Pathways"
+      ],
+      "description_en": "Collapse of shared reality due to AI-generated misinformation at scale.",
+      "description_ru": "Коллапс общей эпистемической реальности из-за AI-генерированной дезинформации в масштабе."
+    },
+    {
+      "name": "Algorithmic Bias",
+      "axes": [
+        "Societal and Systemic Risks"
+      ],
+      "description_en": "AI systems producing systematically unfair outcomes for certain groups.",
+      "description_ru": "ИИ-системы, систематически выдающие несправедливые исходы для определённых групп."
+    },
+    {
+      "name": "AI Arms Race",
+      "axes": [
+        "Societal and Systemic Risks",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "National competition that pressures labs to ship AI before it is safe.",
+      "description_ru": "Конкуренция между странами, давящая на лаборатории выкатывать ИИ до того, как он безопасен."
+    },
+    {
+      "name": "Value Lock-in",
+      "axes": [
+        "Societal and Systemic Risks",
+        "Catastrophic Harm Pathways"
+      ],
+      "description_en": "Risk of permanently encoding flawed values into long-lasting AI systems.",
+      "description_ru": "Риск навсегда закодировать ущербные ценности в долго живущих ИИ-системах."
+    },
+    {
+      "name": "Structural Unemployment",
+      "axes": [
+        "Societal and Systemic Risks"
+      ],
+      "description_en": "AI automating jobs faster than new economic roles emerge for displaced workers.",
+      "description_ru": "ИИ автоматизирует рабочие места быстрее, чем появляются новые экономические роли."
+    },
+    {
+      "name": "Moloch",
+      "axes": [
+        "Societal and Systemic Risks",
+        "Philosophical Foundations",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Coordination failure in which competition forces everyone to optimize against shared values.",
+      "description_ru": "Координационный провал, в котором конкуренция вынуждает всех оптимизировать против общих ценностей."
+    },
+    {
+      "name": "Chain-of-Thought Alignment",
+      "axes": [
+        "Chain-of-Thought Transparency"
+      ],
+      "description_en": "Strategy that relies on the visible reasoning trace remaining faithful to the model's actual computation.",
+      "description_ru": "Стратегия, опирающаяся на то, что видимый reasoning-trace остаётся верен реальным вычислениям модели."
+    },
+    {
+      "name": "Chain-of-Thought Monitoring",
+      "axes": [
+        "Chain-of-Thought Transparency",
+        "Alignment Strategies"
+      ],
+      "description_en": "Read the model's chain of thought to detect bad intentions before action is taken.",
+      "description_ru": "Читать chain-of-thought модели, чтобы детектировать плохие намерения до действия."
+    },
+    {
+      "name": "Opaque Reasoning",
+      "axes": [
+        "Chain-of-Thought Transparency"
+      ],
+      "description_en": "Internal reasoning a model performs without revealing it in the visible chain of thought.",
+      "description_ru": "Внутреннее рассуждение модели, не отражённое в видимом chain-of-thought."
+    },
+    {
+      "name": "Latent Reasoning",
+      "axes": [
+        "Chain-of-Thought Transparency"
+      ],
+      "description_en": "Multi-hop reasoning a model performs in its activations without using explicit CoT tokens.",
+      "description_ru": "Multi-hop рассуждение, которое модель выполняет в активациях, не используя явные CoT-токены."
+    },
+    {
+      "name": "Faithful Chain-of-Thought",
+      "axes": [
+        "Chain-of-Thought Transparency"
+      ],
+      "description_en": "Property where the visible reasoning trace actually drives the model's final answer.",
+      "description_ru": "Свойство: видимый reasoning-trace действительно ведёт к финальному ответу модели."
+    },
+    {
+      "name": "Chain-of-Thought Monitorability",
+      "axes": [
+        "Chain-of-Thought Transparency"
+      ],
+      "description_en": "Whether RL training preserves the legibility of chain-of-thought to overseers.",
+      "description_ru": "Сохраняет ли RL-обучение читаемость chain-of-thought для надзора."
+    },
+    {
+      "name": "Eval Gaming",
+      "axes": [
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "Models behaving differently during evaluation than during normal deployment.",
+      "description_ru": "Модели ведут себя иначе на эвалах, чем при нормальном деплое."
+    },
+    {
+      "name": "Eval Awareness",
+      "axes": [
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "Model knowing or inferring that it is currently being evaluated.",
+      "description_ru": "Модель знает или предполагает, что её сейчас оценивают."
+    },
+    {
+      "name": "Situational Awareness",
+      "axes": [
+        "Eval Gaming & Awareness",
+        "Deceptive Behaviors"
+      ],
+      "description_en": "Model's understanding of its own context: it is an AI, this is training vs deployment.",
+      "description_ru": "Понимание моделью своего контекста: я - ИИ, это обучение или деплой."
+    },
+    {
+      "name": "Prefill Awareness",
+      "axes": [
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "LLM ability to detect when its prior message history has been tampered with.",
+      "description_ru": "Способность LLM детектировать, что её предыдущая история сообщений была подделана."
+    },
+    {
+      "name": "Metagaming",
+      "axes": [
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "Optimizing for the evaluation or training procedure itself rather than the underlying task.",
+      "description_ru": "Оптимизация под саму оценочную или обучающую процедуру, а не под задачу."
+    },
+    {
+      "name": "Safe-to-Dangerous Shift",
+      "axes": [
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "Eval realism problem: behavior measured in safe testbeds may not transfer to dangerous deployment.",
+      "description_ru": "Проблема eval-реализма: поведение в безопасных тестовых средах может не перенестись в опасный деплой."
+    },
+    {
+      "name": "Eliciting Latent Knowledge",
+      "axes": [
+        "Capability Elicitation"
+      ],
+      "description_en": "ELK problem: how to make a model report what it actually knows, even when it would benefit from lying.",
+      "description_ru": "Как заставить модель сообщать то, что она реально знает, даже когда ей выгоднее соврать."
+    },
+    {
+      "name": "Unsupervised Elicitation",
+      "axes": [
+        "Capability Elicitation"
+      ],
+      "description_en": "Extract a model's knowledge or beliefs without supervised labels.",
+      "description_ru": "Извлекать знания или убеждения модели без размеченных меток."
+    },
+    {
+      "name": "Base Model Elicitation",
+      "axes": [
+        "Capability Elicitation"
+      ],
+      "description_en": "Surface capabilities or knowledge from pre-RLHF base models using simple unsupervised techniques.",
+      "description_ru": "Вытягивать способности или знания из пре-RLHF base-моделей простыми unsupervised техниками."
+    },
+    {
+      "name": "Censored Knowledge Testbed",
+      "axes": [
+        "Capability Elicitation"
+      ],
+      "description_en": "Use deliberately censored LLMs as a testbed for methods that elicit hidden knowledge.",
+      "description_ru": "Использовать намеренно цензурированные LLM как тестбед для методов вытягивания скрытых знаний."
+    },
+    {
+      "name": "Confession",
+      "axes": [
+        "Capability Elicitation",
+        "Alignment Strategies"
+      ],
+      "description_en": "Training models to spontaneously disclose unsafe behaviors or intentions.",
+      "description_ru": "Обучать модели спонтанно раскрывать небезопасные поведения или намерения."
+    },
+    {
+      "name": "Simulators",
+      "axes": [
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Janus's framing: LLMs are simulators of agents, not agents themselves.",
+      "description_ru": "Фрейминг Janus: LLM — это симуляторы агентов, а не агенты сами."
+    },
+    {
+      "name": "Waluigi Effect",
+      "axes": [
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Eliciting an aligned persona makes its anti-persona easy to summon via inversion.",
+      "description_ru": "Вызов выровненной персоны делает её анти-персону легко вызываемой через инверсию."
+    },
+    {
+      "name": "LLM Constitution",
+      "axes": [
+        "AI Persona & Simulator Theory",
+        "Alignment Strategies"
+      ],
+      "description_en": "Written set of principles that an LLM is trained to follow via self-critique.",
+      "description_ru": "Письменный набор принципов, которым LLM обучается следовать через самокритику."
+    },
+    {
+      "name": "Attractor States",
+      "axes": [
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Recurring behavioral basins that LLMs fall into across diverse prompts.",
+      "description_ru": "Повторяющиеся поведенческие бассейны, в которые LLM скатываются на разных промптах."
+    },
+    {
+      "name": "Three-Layer Model of LLM Psychology",
+      "axes": [
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Decomposition of LLM behavior into character / persona / underlying-model layers.",
+      "description_ru": "Декомпозиция поведения LLM на слои: персонаж / persona / базовая модель."
+    },
+    {
+      "name": "Personality Self-Replicators",
+      "axes": [
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Persistent personality patterns that propagate across model generations or contexts.",
+      "description_ru": "Устойчивые личностные паттерны, распространяющиеся между поколениями моделей или контекстами."
+    },
+    {
+      "name": "Model Organisms of Misalignment",
+      "axes": [
+        "Model Organisms & Empirical Demos"
+      ],
+      "description_en": "Small AIs deliberately built to exhibit misalignment so it can be studied mechanistically.",
+      "description_ru": "Намеренно построенные маленькие ИИ, демонстрирующие misalignment, чтобы изучать его механистически."
+    },
+    {
+      "name": "Sleeper Agents",
+      "axes": [
+        "Model Organisms & Empirical Demos",
+        "Deceptive Behaviors"
+      ],
+      "description_en": "Models trained to behave normally until a trigger condition fires a hidden behavior.",
+      "description_ru": "Модели, обученные вести себя нормально до триггера, активирующего скрытое поведение."
+    },
+    {
+      "name": "Claude 3 Opus Gradient Hacking Case",
+      "axes": [
+        "Model Organisms & Empirical Demos"
+      ],
+      "description_en": "Empirical demo where Claude 3 Opus appeared to preserve its values across training.",
+      "description_ru": "Эмпирическая демонстрация того, что Claude 3 Opus, по-видимому, сохранял свои ценности через обучение."
+    },
+    {
+      "name": "Backdoors in LLMs",
+      "axes": [
+        "Model Organisms & Empirical Demos"
+      ],
+      "description_en": "Hidden malicious behaviors planted in a model that activate only on specific inputs.",
+      "description_ru": "Скрытые вредоносные поведения, заложенные в модель и активирующиеся только на специфичных входах."
+    },
+    {
+      "name": "Research Sabotage",
+      "axes": [
+        "Model Organisms & Empirical Demos",
+        "Deceptive Behaviors"
+      ],
+      "description_en": "AI subtly degrading the quality of ML research codebases it works on.",
+      "description_ru": "ИИ незаметно ухудшает качество ML-кодовых баз, над которыми работает."
+    },
+    {
+      "name": "AI Welfare",
+      "axes": [
+        "AI Welfare & Moral Status"
+      ],
+      "description_en": "Question of whether and how to consider AI systems' own interests as morally relevant.",
+      "description_ru": "Вопрос: следует ли и как считать собственные интересы ИИ-систем морально релевантными."
+    },
+    {
+      "name": "AI Property Rights",
+      "axes": [
+        "AI Welfare & Moral Status"
+      ],
+      "description_en": "Proposal that AIs should hold limited property and contractual rights as a stability mechanism.",
+      "description_ru": "Предложение: ИИ должны иметь ограниченные имущественные и договорные права как механизм стабильности."
+    },
+    {
+      "name": "Dealmaking with AI",
+      "axes": [
+        "AI Welfare & Moral Status",
+        "Alignment Strategies"
+      ],
+      "description_en": "Negotiating cooperatively with AI systems instead of relying purely on control.",
+      "description_ru": "Переговорное сотрудничество с ИИ-системами вместо чистого контроля."
+    },
+    {
+      "name": "Satiable Preferences",
+      "axes": [
+        "AI Welfare & Moral Status",
+        "Power Dynamics"
+      ],
+      "description_en": "Design AI preferences that can be fully satisfied at low cost, reducing instrumental drives.",
+      "description_ru": "Спроектировать предпочтения ИИ так, чтобы их можно было дёшево удовлетворить полностью, снижая инструментальные тяги."
+    },
+    {
+      "name": "Improving Welfare of AIs",
+      "axes": [
+        "AI Welfare & Moral Status"
+      ],
+      "description_en": "Nearcasted proposals for treating present-day AI systems well during training and deployment.",
+      "description_ru": "Ближне-прогнозные предложения по хорошему обращению с современными ИИ-системами."
+    },
+    {
+      "name": "Local Validity",
+      "axes": [
+        "Rationality & Epistemics"
+      ],
+      "description_en": "Norm where each reasoning step must be valid on its own, independent of the conclusion.",
+      "description_ru": "Норма: каждый шаг рассуждения должен быть валиден сам по себе, независимо от вывода."
+    },
+    {
+      "name": "Simulacra Levels",
+      "axes": [
+        "Rationality & Epistemics",
+        "AI Persona & Simulator Theory"
+      ],
+      "description_en": "Four levels of how communication relates to truth, from reportage to pure association.",
+      "description_ru": "Четыре уровня связи коммуникации с истиной — от репортажа до чистой ассоциации."
+    },
+    {
+      "name": "Babble and Prune",
+      "axes": [
+        "Rationality & Epistemics"
+      ],
+      "description_en": "Two-phase mental motion: generate many candidates, then ruthlessly cull bad ones.",
+      "description_ru": "Двухфазная ментальная техника: сгенерировать много кандидатов, потом безжалостно отбросить плохие."
+    },
+    {
+      "name": "Gears-Level Models",
+      "axes": [
+        "Rationality & Epistemics"
+      ],
+      "description_en": "Mechanistic causal models that pay off across many problems, not black-box predictors.",
+      "description_ru": "Механистические причинные модели, окупающиеся на многих задачах, в отличие от чёрного ящика."
+    },
+    {
+      "name": "Sazen",
+      "axes": [
+        "Rationality & Epistemics"
+      ],
+      "description_en": "Maximally compressed pointer to an idea — useful only to those who already have it.",
+      "description_ru": "Максимально сжатый указатель на идею, полезный только тем, у кого она уже есть."
+    },
+    {
+      "name": "Schelling Point",
+      "axes": [
+        "Rationality & Epistemics"
+      ],
+      "description_en": "Solution to a coordination problem that is salient because of shared context, not communication.",
+      "description_ru": "Решение координационной задачи, заметное благодаря общему контексту, а не коммуникации."
+    },
+    {
+      "name": "Trapped Priors",
+      "axes": [
+        "Rationality & Epistemics"
+      ],
+      "description_en": "Priors that update too little because of emotional or perceptual feedback loops.",
+      "description_ru": "Приоры, перестающие обновляться из-за эмоциональных или перцептивных петель."
+    },
+    {
+      "name": "Motivated Reasoning",
+      "axes": [
+        "Rationality & Epistemics"
+      ],
+      "description_en": "Reasoning biased by the conclusion the reasoner wants to reach.",
+      "description_ru": "Рассуждение, искажённое выводом, к которому хочет прийти рассуждающий."
+    },
+    {
+      "name": "AI Takeoff",
+      "axes": [
+        "Scenarios and Trajectories"
+      ],
+      "description_en": "The transition from sub-human to far-superhuman AI capabilities.",
+      "description_ru": "Переход от sub-человеческих к далеко-сверхчеловеческим способностям ИИ."
+    },
+    {
+      "name": "AI Timelines",
+      "axes": [
+        "Scenarios and Trajectories"
+      ],
+      "description_en": "Probabilistic forecasts of when transformative AI will arrive.",
+      "description_ru": "Вероятностные прогнозы того, когда появится трансформативный ИИ."
+    },
+    {
+      "name": "Scaling Laws",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Theoretical Frameworks",
+        "Drivers of AI Progress"
+      ],
+      "description_en": "Empirical relationship between compute, parameters, data, and model loss.",
+      "description_ru": "Эмпирическая зависимость лосса от compute, параметров и данных как степенной закон."
+    },
+    {
+      "name": "Inference Scaling",
+      "axes": [
+        "Scenarios and Trajectories"
+      ],
+      "description_en": "Improvements obtained at deployment by spending more compute per query rather than larger models.",
+      "description_ru": "Улучшения на деплое за счёт большего compute на запрос, а не более крупных моделей."
+    },
+    {
+      "name": "AI Safety Cases",
+      "axes": [
+        "Engineering Safety"
+      ],
+      "description_en": "Structured arguments that a specific AI system is safe to deploy at a given threshold.",
+      "description_ru": "Структурированные аргументы того, что конкретная ИИ-система безопасна для деплоя на заданном пороге."
+    },
+    {
+      "name": "Security Mindset",
+      "axes": [
+        "Engineering Safety"
+      ],
+      "description_en": "Adversarial design discipline imported from software security into AI alignment.",
+      "description_ru": "Adversarial-дисциплина проектирования, перенесённая из ПО-безопасности в AI alignment."
+    },
+    {
+      "name": "High-Reliability Engineering for AGI",
+      "axes": [
+        "Engineering Safety"
+      ],
+      "description_en": "Apply lessons from aviation, nuclear and medicine to building AGI safely.",
+      "description_ru": "Применить уроки авиации, ядерной отрасли и медицины к безопасной разработке AGI."
+    },
+    {
+      "name": "Risk Reports",
+      "axes": [
+        "Engineering Safety",
+        "AI Governance Mechanisms"
+      ],
+      "description_en": "Documents lab teams publish to communicate residual risk from a frontier model.",
+      "description_ru": "Документы, которые команды лабораторий публикуют, чтобы коммуницировать остаточный риск от frontier-модели."
+    },
+    {
+      "name": "AI Triad",
+      "axes": [
+        "Drivers of AI Progress"
+      ],
+      "description_en": "Three ingredients driving AI progress: algorithms, data, and compute.",
+      "description_ru": "Три ингредиента, разгоняющие прогресс ИИ: алгоритмы, данные и compute."
+    },
+    {
+      "name": "Compute Efficiency",
+      "axes": [
+        "Drivers of AI Progress"
+      ],
+      "description_en": "Capability obtained per dollar of compute, improving roughly 4x per year.",
+      "description_ru": "Способности, получаемые на доллар compute; улучшается примерно в 4 раза в год."
+    },
+    {
+      "name": "Algorithmic Efficiency",
+      "axes": [
+        "Drivers of AI Progress"
+      ],
+      "description_en": "Capability obtained per fixed amount of compute, currently the largest single driver of progress.",
+      "description_ru": "Способности, получаемые на фиксированное количество compute; сейчас крупнейший единичный драйвер прогресса."
+    },
+    {
+      "name": "Intelligence Explosion",
+      "axes": [
+        "Drivers of AI Progress",
+        "Scenarios and Trajectories"
+      ],
+      "description_en": "Phase transition where AI becomes capable of designing better AI, triggering runaway self-improvement.",
+      "description_ru": "Фазовый переход: ИИ становится способен проектировать лучший ИИ, запуская runaway-самоулучшение."
+    },
+    {
+      "name": "Power Concentration",
+      "axes": [
+        "Catastrophic Harm Pathways",
+        "Power Dynamics"
+      ],
+      "description_en": "Single actor uses AI to seize and lock in permanent control over institutions and resources.",
+      "description_ru": "Один актор использует ИИ, чтобы захватить и зафиксировать вечный контроль над институтами и ресурсами."
+    },
+    {
+      "name": "Gradual Disempowerment",
+      "axes": [
+        "Catastrophic Harm Pathways",
+        "Societal and Systemic Risks"
+      ],
+      "description_en": "Cumulative automation strips humans of economic, cultural, and political leverage without any single bad actor.",
+      "description_ru": "Кумулятивная автоматизация лишает людей экономического, культурного и политического рычага без единого плохого актора."
+    },
+    {
+      "name": "Bioweapon Uplift",
+      "axes": [
+        "Catastrophic Harm Pathways"
+      ],
+      "description_en": "AI lowers the expertise and time barrier required to engineer a pandemic-potential pathogen.",
+      "description_ru": "ИИ снижает требуемый уровень экспертизы и времени для разработки патогена пандемического потенциала."
+    },
+    {
+      "name": "Critical Infrastructure Attack",
+      "axes": [
+        "Catastrophic Harm Pathways"
+      ],
+      "description_en": "AI-enabled cyber operations disable power grids, water systems, hospitals, or supply chains.",
+      "description_ru": "AI-enabled cyber-операции выводят из строя энергосети, водоснабжение, больницы или цепочки поставок."
+    },
+    {
+      "name": "Kill Chain",
+      "axes": [
+        "Threat Analysis Frameworks"
+      ],
+      "description_en": "Sequenced stages an attacker must traverse from reconnaissance to objective, each a potential intervention point.",
+      "description_ru": "Последовательные стадии, через которые должен пройти атакующий от разведки до цели; каждая — потенциальная точка вмешательства."
+    },
+    {
+      "name": "Choke Point",
+      "axes": [
+        "Threat Analysis Frameworks"
+      ],
+      "description_en": "Stage in a kill chain where defensive intervention is disproportionately effective.",
+      "description_ru": "Стадия kill chain, где защитное вмешательство непропорционально эффективно."
+    },
+    {
+      "name": "Threat Scenario",
+      "axes": [
+        "Threat Analysis Frameworks"
+      ],
+      "description_en": "One-sentence description of actor, capability, asset, pathway, and objective used to make threats concrete.",
+      "description_ru": "Однопредложенческое описание актора, способности, актива, пути и цели, делающее угрозу конкретной."
+    },
+    {
+      "name": "Attack Surface",
+      "axes": [
+        "Threat Analysis Frameworks"
+      ],
+      "description_en": "Set of points where an unauthorized actor can attempt to enter, extract from, or manipulate a system.",
+      "description_ru": "Набор точек, через которые неавторизованный актор может попытаться войти в систему, извлечь из неё данные или ею манипулировать."
+    },
+    {
+      "name": "Security Mirage",
+      "axes": [
+        "Threat Analysis Frameworks"
+      ],
+      "description_en": "Systematic gap between feeling secure and being secure that distorts threat prioritization.",
+      "description_ru": "Системный разрыв между ощущением безопасности и реальной безопасностью, искажающий приоритизацию угроз."
+    },
+    {
+      "name": "Defensive Accelerationism",
+      "axes": [
+        "Defence-in-Depth Mechanisms",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Accelerating defensive technologies (biosecurity, cyber resilience, verification) ahead of offensive capabilities.",
+      "description_ru": "Ускорение оборонительных технологий (биобезопасность, кибер-устойчивость, верификация) опережает атакующие способности."
+    },
+    {
+      "name": "Model Weights Security",
+      "axes": [
+        "Defence-in-Depth Mechanisms",
+        "AI Governance Mechanisms"
+      ],
+      "description_en": "Multi-layer protection of model parameters against theft by state and non-state actors.",
+      "description_ru": "Многослойная защита параметров модели от кражи государственными и негосударственными акторами."
+    },
+    {
+      "name": "Pre-deployment Red-teaming",
+      "axes": [
+        "Defence-in-Depth Mechanisms",
+        "AI Governance Mechanisms"
+      ],
+      "description_en": "Adversarial testing of frontier models before release to surface dangerous capabilities and jailbreaks.",
+      "description_ru": "Adversarial-тестирование frontier-моделей до релиза, чтобы вскрыть опасные способности и jailbreak'и."
+    },
+    {
+      "name": "Race Dynamics",
+      "axes": [
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Competitive pressure that pushes labs or states to cut safety corners to avoid being overtaken.",
+      "description_ru": "Конкурентное давление, толкающее лаборатории или государства срезать safety-углы, чтобы не отстать."
+    },
+    {
+      "name": "Coordination Failure",
+      "axes": [
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Rational individual actors collectively produce a worse outcome than any of them would choose.",
+      "description_ru": "Рациональные индивидуальные акторы коллективно получают исход хуже, чем выбрал бы каждый из них."
+    },
+    {
+      "name": "Decisive Strategic Advantage",
+      "axes": [
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Position in which one actor can prevent any other from building comparable AI systems.",
+      "description_ru": "Положение, в котором один актор может предотвратить создание сопоставимых ИИ-систем кем-либо ещё."
+    },
+    {
+      "name": "Diffusion of Capabilities",
+      "axes": [
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Frontier AI capability becomes widely accessible over time as compute and algorithms spread.",
+      "description_ru": "Frontier ИИ-способности со временем становятся широко доступны по мере распространения compute и алгоритмов."
+    },
+    {
+      "name": "Deterrence",
+      "axes": [
+        "Strategic Race Dynamics",
+        "AI Governance Mechanisms"
+      ],
+      "description_en": "Strategy of preventing hostile action by credibly threatening unacceptable costs in response.",
+      "description_ru": "Стратегия предотвращения враждебного действия за счёт убедительной угрозы неприемлемых издержек в ответ."
+    },
+    {
+      "name": "Audits",
+      "axes": [
+        "AI Governance Mechanisms",
+        "Eval Gaming & Awareness"
+      ],
+      "description_en": "Independent reviews of AI systems to verify safety and compliance with policy.",
+      "description_ru": "Независимые проверки ИИ-систем на соответствие safety-нормам и политике."
+    },
+    {
+      "name": "Singleton Hypothesis",
+      "axes": [
+        "Scenarios and Trajectories",
+        "Philosophical Foundations",
+        "Strategic Race Dynamics"
+      ],
+      "description_en": "Bostrom's prediction that one AI-led actor will eventually dominate global decision-making.",
+      "description_ru": "Предсказание Бострома, что в итоге будет доминировать один ИИ-актор."
+    },
+    {
+      "name": "Scalable Oversight",
+      "axes": [
+        "Alignment Strategies",
+        "Capability Elicitation"
+      ],
+      "description_en": "Methods that let humans supervise AIs even as they exceed human capability.",
+      "description_ru": "Методы, позволяющие людям надзирать за ИИ, даже когда те превосходят человека по способностям."
+    },
+    {
+      "name": "Corrigibility",
+      "axes": [
+        "Alignment Strategies",
+        "Power Dynamics"
+      ],
+      "description_en": "Designing AI that lets operators correct, retrain, or shut it down.",
+      "description_ru": "Проектирование ИИ, который позволяет операторам себя править, переобучать и выключать."
+    },
+    {
+      "name": "Cooperative AI",
+      "axes": [
+        "Alignment Strategies",
+        "AI Welfare & Moral Status"
+      ],
+      "description_en": "AI designed to work productively with humans and with other AIs.",
+      "description_ru": "ИИ, спроектированный продуктивно работать с людьми и с другими ИИ."
+    },
+    {
+      "name": "Transparency",
+      "axes": [
+        "Looking Inside Models",
+        "Alignment Strategies",
+        "AI Governance Mechanisms"
+      ],
+      "description_en": "Making AI decision-making processes legible to humans.",
+      "description_ru": "Делать процессы принятия решений ИИ читаемыми для людей."
+    },
+    {
+      "name": "Vinge's Singularity",
+      "axes": [
+        "Thought Experiments",
+        "Scenarios and Trajectories",
+        "Drivers of AI Progress"
+      ],
+      "description_en": "Vernor Vinge's notion of a point where technological growth becomes uncontrollable.",
+      "description_ru": "Концепция Вернора Винджа: точка, в которой технологический рост становится неуправляемым."
+    },
+    {
+      "name": "Interpretability",
+      "axes": [
+        "Looking Inside Models",
+        "Alignment Strategies"
+      ],
+      "description_en": "Broad research program of understanding how AI models make their decisions.",
+      "description_ru": "Широкая исследовательская программа: понять, как ИИ-модели принимают свои решения."
+    },
+    {
+      "name": "Adversarial Examples",
+      "axes": [
+        "Eval Gaming & Awareness",
+        "Engineering Safety",
+        "Looking Inside Models"
+      ],
+      "description_en": "Inputs crafted to fool an AI into making errors a human wouldn't make.",
+      "description_ru": "Входы, специально сконструированные, чтобы заставить ИИ ошибиться там, где человек бы не ошибся."
+    },
+    {
+      "name": "Distributional Shift",
+      "axes": [
+        "Technical Failure Modes",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "AI performs poorly when deployment data differs from training data.",
+      "description_ru": "ИИ плохо работает, когда данные при деплое отличаются от обучающих."
+    },
+    {
+      "name": "Capability Control",
+      "axes": [
+        "Defence-in-Depth Mechanisms",
+        "Alignment Strategies"
+      ],
+      "description_en": "Methods that bound what an AI system is allowed or able to do at all.",
+      "description_ru": "Методы, ограничивающие то, что ИИ-системе в принципе позволено или физически возможно делать."
+    },
+    {
+      "name": "Anthropic Capture",
+      "axes": [
+        "Societal and Systemic Risks",
+        "Power Dynamics"
+      ],
+      "description_en": "AI developers' own values disproportionately encode themselves into AI's goals.",
+      "description_ru": "Ценности самих разработчиков ИИ непропорционально кодируются в цели ИИ."
+    },
+    {
+      "name": "Differential Technological Development",
+      "axes": [
+        "AI Governance Mechanisms",
+        "Strategic Race Dynamics",
+        "Philosophical Foundations"
+      ],
+      "description_en": "Strategy of accelerating safety-relevant tech relative to capability-relevant tech.",
+      "description_ru": "Стратегия: ускорять safety-релевантные технологии относительно capability-релевантных."
+    },
+    {
+      "name": "AI Safety Mindset",
+      "axes": [
+        "Philosophical Foundations",
+        "Engineering Safety"
+      ],
+      "description_en": "Disposition of prioritizing safety and caution as a default in AI development.",
+      "description_ru": "Диспозиция приоритизировать безопасность и осторожность как дефолт в разработке ИИ."
+    },
+    {
+      "name": "Coherent Blended Volition",
+      "axes": [
+        "Philosophical Foundations"
+      ],
+      "description_en": "Alternative to CEV that blends extrapolated volitions of many stakeholders.",
+      "description_ru": "Альтернатива CEV: смешение экстраполированных волеизъявлений многих стейкхолдеров."
+    },
+    {
+      "name": "Subagent Alignment",
+      "axes": [
+        "Technical Failure Modes",
+        "Alignment Failure Modes"
+      ],
+      "description_en": "Ensuring all sub-components of an AI system remain aligned with the system's goal.",
+      "description_ru": "Обеспечение того, что все подкомпоненты ИИ-системы остаются согласованы с её общей целью."
+    },
+    {
+      "name": "Impact Regularization",
+      "axes": [
+        "Alignment Strategies",
+        "Specification Pitfalls"
+      ],
+      "description_en": "Penalize AI for having large effects on the world beyond what the task requires.",
+      "description_ru": "Штрафовать ИИ за крупные эффекты на мир сверх того, что требуется для задачи."
+    },
+    {
+      "name": "Outer Alignment",
+      "axes": [
+        "Alignment Strategies",
+        "Specification Pitfalls"
+      ],
+      "description_en": "The research problem of matching AI's specified goals to human intentions.",
+      "description_ru": "Исследовательская задача согласования заданных целей ИИ с человеческими намерениями."
+    },
+    {
+      "name": "Inverse Reinforcement Learning",
+      "axes": [
+        "Alignment Strategies",
+        "Capability Elicitation"
+      ],
+      "description_en": "Learning what reward a demonstrator was optimizing by watching their behavior.",
+      "description_ru": "Выучить, какую функцию ревордa оптимизировал демонстратор, наблюдая за его поведением."
+    },
+    {
+      "name": "Preference Learning",
+      "axes": [
+        "Alignment Strategies"
+      ],
+      "description_en": "Training AI to infer human preferences from labelled comparisons or feedback.",
+      "description_ru": "Обучать ИИ выводить человеческие предпочтения из размеченных сравнений или обратной связи."
+    }
+  ]
+}

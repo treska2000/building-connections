@@ -3,3 +3,19 @@ data/
 *.db
 .env
 .env.local
+
+# OS / editor
+.DS_Store
+*.pyc
+__pycache__/
+
+# Python venv
+.venv/
+
+# Acceptance pipeline artefacts (regeneratable)
+reports/
+configs/v1/from-generator/
+tests/.pytest_cache/
+
+# Temporary symlinks to sibling projects
+/connections-gen
