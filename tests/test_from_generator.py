@@ -122,7 +122,7 @@ def test_from_generator_end_to_end(tmp_path):
     assert v["metric_gates"]["R5_specialty"]
     # R4-анкор: 3 arXiv-источника на термин → source_count проходит
     # (старая доменная дедупликация переехала в independent_source_groups
-    # под обогащением — один домен больше не валит гейт детерминированно).
+    # под обогащением — один домен больше не блокирует гейт детерминированно).
     assert v["metric_gates"]["R4_sources"] is True
     # Single-tag synthetic with 4 axes of 4 -> assembly passes.
     assert v["assembly_gates"]["normal"]
