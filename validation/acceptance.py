@@ -43,10 +43,11 @@ METRIC_GATES = (
     "R5_specialty",
 )
 ASSEMBLY_GATES = ("normal", "advanced")
-# R4_sources needs enrichment/source collection, R2_mode2/3 are deepenings:
-# by default require the structural core plus both assemblies.
-DEFAULT_REQUIRED = ("R1_volume", "R2_mode1", "R3_morph_leak", "R5_specialty") + tuple(
-    f"assembly_{m}" for m in ASSEMBLY_GATES)
+# R4_sources is blocking (2026-06-12 decision): without enrichment it is None ->
+# the config is not accepted; run the single entry point with --enrich live.
+# R2_mode2/3 remain deepenings (thresholds uncalibrated).
+DEFAULT_REQUIRED = ("R1_volume", "R2_mode1", "R3_morph_leak", "R4_sources",
+                    "R5_specialty") + tuple(f"assembly_{m}" for m in ASSEMBLY_GATES)
 
 
 def _b(x):

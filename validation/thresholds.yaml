@@ -4,8 +4,10 @@ seed: 42
 embedder: { model: gemini-embedding-2, dim: 768, task: "sentence similarity" }
 openalex_snapshot: null            # пин версии локального снапшота (Level 2) → метрики обогащения станут детерминированными
 
-# какие требования обязательны для accept (R4/R6 — после обогащения/калибровки, не обязательны сейчас)
-required_gates: [R1, R2, R3, R5, R7]
+# какие требования обязательны для accept. R4 блокирующий (решение 2026-06-12):
+# без обогащения он PENDING -> вердикт pending, accept достижим только с --enrich.
+# R6 — после редизайна.
+required_gates: [R1, R2, R3, R4, R5, R7]
 
 thresholds:
   # min_share_3sources перенесён из R4 (2026-06-12): формальный счётчик источников = объём

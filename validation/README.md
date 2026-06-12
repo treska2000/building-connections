@@ -69,9 +69,14 @@ python validation/acceptance.py path/to/config.json --enrich live
 
 ```bash
 python validation/run.py config.json --out reports/        # только метрики R1-R7 (без Node-сборки), подробный отчёт
-python validation/acceptance.py config.json                # без сети: R4/R5 частично pending
+python validation/run.py config.json --only R2,R3          # отладка: изолировать только проверяемые требования
 python validation/from_generator.py ../connections-gen/seeds --batch   # тот же acceptance для rich-файлов старого формата
 ```
+
+Для отладки отдельного требования используется изоляция `--only` — выполняются только
+выбранные блоки, остальные не запускаются вовсе. Прогон без `--enrich` не является
+режимом отладки R4: он лишь оставляет R4 в статусе PENDING, и конфиг не может быть
+принят (R4 — блокирующий гейт).
 
 ```python
 from validation import validate_full, load_acceptance
@@ -95,7 +100,7 @@ env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и откры
 
 Контракт каждой метрики единый: `{value, pass, deterministic, requires, gameable, counter}`.
 Метрика с невыполненным `requires` даёт `pass = None` (PENDING) и не блокирует вердикт, если её
-требование не входит в `required_gates` (дефолт: R1, R2, R3, R5, R7). Пороги — в `thresholds.yaml`.
+требование не входит в `required_gates` (дефолт: R1, R2, R3, R4, R5, R7; R4 блокирующий — accept достижим только с обогащением). Пороги — в `thresholds.yaml`.
 
 ### R1 · Объём (`r1_volume.py`, детерминированно)
 
@@ -311,9 +316,14 @@ The other entry points are special cases of the same pipeline:
 
 ```bash
 python validation/run.py config.json --out reports/        # metrics R1-R7 only (no Node assembly), detailed report
-python validation/acceptance.py config.json                # offline: R4/R5 partially pending
+python validation/run.py config.json --only R2,R3          # debugging: isolate just the requirements under test
 python validation/from_generator.py ../connections-gen/seeds --batch   # same acceptance for legacy rich files
 ```
+
+To debug an individual requirement use the `--only` isolation — only the selected
+blocks execute, the rest do not run at all. Running without `--enrich` is not an R4
+debugging mode: it merely leaves R4 PENDING, and the config cannot be accepted
+(R4 is a blocking gate).
 
 ```python
 from validation import validate_full, load_acceptance
@@ -337,7 +347,7 @@ open decision points — `spec_rework_plan_2026-06-11.md` in the research folder
 
 Every metric follows one contract: `{value, pass, deterministic, requires, gameable, counter}`.
 A metric whose `requires` is unmet yields `pass = None` (PENDING) and does not block the verdict
-unless its requirement is in `required_gates` (default: R1, R2, R3, R5, R7). Thresholds live in `thresholds.yaml`.
+unless its requirement is in `required_gates` (default: R1, R2, R3, R4, R5, R7; R4 is blocking — accept is reachable only with enrichment). Thresholds live in `thresholds.yaml`.
 
 ### R1 · Volume (`r1_volume.py`, deterministic)
 

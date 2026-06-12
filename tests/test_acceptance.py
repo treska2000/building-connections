@@ -147,6 +147,15 @@ def test_acceptance_minimal_passes_structural_core(tmp_path, minimal_valid_cfg):
 
 
 @needs_ortools
+def test_acceptance_r4_blocks_without_enrichment(tmp_path, minimal_valid_cfg):
+    """R4 блокирующий (2026-06-12): без обогащения вердикт не accept, R4 в blocked."""
+    v = ac.acceptance(_write(tmp_path, minimal_valid_cfg), n_seeds_for_variety=10, n_samples=40)
+    assert v["metric_gates"]["R4_sources"] is None
+    assert "R4_sources" in v["blocked_gates"]
+    assert not v["accepted"]
+
+
+@needs_ortools
 def test_acceptance_few_terms_blocks_r1(tmp_path, minimal_valid_cfg):
     cfg = json.loads(json.dumps(minimal_valid_cfg))
     cfg["terms"] = cfg["terms"][:10]                       # T2

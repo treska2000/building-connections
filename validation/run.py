@@ -34,7 +34,7 @@ DEFAULT_ACCEPTANCE = {
     "version": "2.1.0", "seed": 42,
     "embedder": {"model": "gemini-embedding-2", "dim": 768},
     "openalex_snapshot": None,
-    "required_gates": ["R1", "R2", "R3", "R5", "R7"],
+    "required_gates": ["R1", "R2", "R3", "R4", "R5", "R7"],
     "thresholds": {
         "R1": {"min_terms": 16, "min_base_tags": 4, "min_tag_size": 4,
                "min_share_3sources": 0.90},
@@ -75,35 +75,45 @@ def _thr(acc, rid):
     return t
 
 
-def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None) -> dict:
-    """Один прогон R1–R7 по конфигу. Вход: config_path, acceptance (пороги),
-    en (Enrichment), repro (результат repro-чека | None). Выход: dict отчёта.
-    A single R1–R7 run over a config. In: config_path, acceptance (thresholds),
-    en (Enrichment), repro (repro-check result | None). Out: report dict."""
+def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None,
+             only=None) -> dict:
+    """Один прогон R1–R7 по конфигу. only — режим отладки: запускаются только
+    перечисленные требования (например {"R2"}), остальные блоки кода не выполняются,
+    вердикт в этом режиме информативен только по выбранным. Вход: config_path,
+    acceptance (пороги), en (Enrichment), repro (repro-чек | None), only (set | None).
+    Выход: dict отчёта.
+    A single R1–R7 run over a config. only is a debugging mode: only the listed
+    requirements run (e.g. {"R2"}), the remaining code blocks are not executed, and
+    the verdict is meaningful only for the selected ones. In: config_path, acceptance
+    (thresholds), en (Enrichment), repro (repro check | None), only (set | None).
+    Out: report dict."""
     cfg = loader.load_config(config_path)
     members, term_tags = loader.build_membership(cfg)
 
-    requirements = {
-        "R1": r1_volume.run(cfg, members, term_tags, _thr(acceptance, "R1")),
-        "R2": r2_solvability.run(cfg, members, term_tags, _thr(acceptance, "R2")),
-        "R3": r3_semanticity.run(cfg, members, term_tags, _thr(acceptance, "R3")),
-        "R4": r4_source_quality.run(cfg, members, term_tags, _thr(acceptance, "R4"), en),
-        "R5": r5_specialization.run(cfg, members, term_tags, _thr(acceptance, "R5"), en),
-        "R6": r6_link_strength.run(cfg, members, term_tags, _thr(acceptance, "R6"), en),
+    runners = {
+        "R1": lambda: r1_volume.run(cfg, members, term_tags, _thr(acceptance, "R1")),
+        "R2": lambda: r2_solvability.run(cfg, members, term_tags, _thr(acceptance, "R2")),
+        "R3": lambda: r3_semanticity.run(cfg, members, term_tags, _thr(acceptance, "R3")),
+        "R4": lambda: r4_source_quality.run(cfg, members, term_tags, _thr(acceptance, "R4"), en),
+        "R5": lambda: r5_specialization.run(cfg, members, term_tags, _thr(acceptance, "R5"), en),
+        "R6": lambda: r6_link_strength.run(cfg, members, term_tags, _thr(acceptance, "R6"), en),
     }
+    selected = set(only) if only else set(runners)
+    requirements = {rid: fn() for rid, fn in runners.items() if rid in selected}
     prov = r7_reproducibility.provenance(acceptance, cfg)
     det = r7_reproducibility.determinism_flags(requirements)
     return rep.build_report(cfg, requirements, acceptance, prov, det, repro=repro)
 
 
-def validate_full(config_path: str, acceptance: dict, en=enrich.DISABLED) -> dict:
+def validate_full(config_path: str, acceptance: dict, en=enrich.DISABLED,
+                  only=None) -> dict:
     """Полный прогон + R7 reproducibility_check (два внутренних прогона).
-    Вход: config_path, acceptance, en. Выход: dict отчёта с repro-блоком.
+    Вход: config_path, acceptance, en, only (режим отладки). Выход: dict отчёта с repro-блоком.
     Full run + the R7 reproducibility check (two inner runs).
-    In: config_path, acceptance, en. Out: report dict with the repro block."""
+    In: config_path, acceptance, en, only (debug mode). Out: report dict with the repro block."""
     rc = r7_reproducibility.reproducibility_check(
-        lambda p, a: validate(p, a, en), config_path, acceptance)
-    return validate(config_path, acceptance, en, repro=rc)
+        lambda p, a: validate(p, a, en, only=only), config_path, acceptance)
+    return validate(config_path, acceptance, en, repro=rc, only=only)
 
 
 def main() -> int:
@@ -115,13 +125,16 @@ def main() -> int:
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--enrich", choices=["off", "live", "cache"], default="off",
                     help="off=детерм. ядро · live=arXiv+OpenAlex (кэш пишется) · cache=только кэш (офлайн)")
+    ap.add_argument("--only", default=None,
+                    help="debug isolation: run only the listed requirements, e.g. --only R2,R3")
     args = ap.parse_args()
     acc = load_acceptance(str(args.acceptance) if args.acceptance and args.acceptance.exists() else None)
     en = enrich.DISABLED
     if args.enrich in ("live", "cache"):
         en = enrich.Enrichment.live(cache_dir=str(HERE / "enrich_cache"),
                                     offline=(args.enrich == "cache"))
-    report = validate_full(str(args.config), acc, en=en)
+    only = {x.strip().upper() for x in args.only.split(",")} if args.only else None
+    report = validate_full(str(args.config), acc, en=en, only=only)
     print(rep.to_markdown(report))
     if args.out:
         d = args.out / (report.get("config_id") or args.config.stem)

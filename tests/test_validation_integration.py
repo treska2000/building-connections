@@ -79,6 +79,8 @@ def test_enrichment_metrics_pending_without_clients(acc):
     r4 = rep["requirements"]["R4"]["metrics"]
     assert "source_count" not in r4          # счётчик переехал в R1 (2026-06-12)
     assert rep["requirements"]["R4"]["pass"] is None   # без обогащения R4 целиком PENDING
+    # R4 в required (2026-06-12): без обогащения accept недостижим
+    assert rep["verdict"] != "accept"
     assert r4["source_attestation"]["pass"] is None
     assert r4["source_attestation"]["requires"]
     r6 = rep["requirements"]["R6"]["metrics"]
@@ -95,6 +97,16 @@ def test_from_generator_configs_validate(acc, cfg_path):
     assert rep["requirements"]["R2"]["metrics"]["is_eligible_mode1"]["value"] >= 0
     # R3 считается всегда (детерминированное ядро)
     assert rep["requirements"]["R3"]["metrics"]["morph_leak_rate"]["value"] is not None
+
+
+@needs_ortools
+def test_only_isolation_runs_selected_requirements(acc):
+    """Режим отладки --only: выполняются только выбранные блоки."""
+    from validation import validate as v_validate
+    rep = v_validate(str(V1 / "ai-safety-v1.json"), acc, only={"R1", "R3"})
+    assert set(rep["requirements"]) == {"R1", "R3"}
+    # невыбранные требования не считались и в required дают pending, не false
+    assert "R2" in rep["pending_gates"] or rep["verdict"] in ("reject", "pending")
 
 
 def test_acceptance_yaml_overrides(tmp_path):
