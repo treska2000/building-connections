@@ -139,10 +139,12 @@ CP-SAT-модель точного покрытия (каждое слово р�
   однозначная) и `good_puzzle_yield_mode1` = VPY — доля однозначных среди проверенных,
   оценка чистоты всего пула (0.9 = почти любая случайная доска валидна; порог 0.70,
   калибруемо).
-  Шаг 3, extra (справочно, не гейт): `ceiling` — комбинаторный потолок числа досок
-  (для каждой четвёрки категорий перемножаем C(size, 4) и суммируем: Σ∏C(size, 4));
-  `effective = ceiling × VPY` — экстраполяция выборки на весь пул, то есть оценка числа
-  ХОРОШИХ досок. Это ёмкость конфига как банка тестов — ответ на вопрос «не одна игра,
+  Шаг 3, extra (справочно, не гейт): `ceiling` — сколько всего досок теоретически можно
+  собрать из конфига. Считается так: для каждой четвёрки категорий перемножаем число
+  способов выбрать 4 термина из каждой (из категории в 5 терминов четвёрка выбирается
+  5 способами) и складываем результат по всем четвёркам категорий. `effective =
+  ceiling × VPY` — экстраполяция выборки на весь пул, то есть оценка числа ХОРОШИХ
+  досок. Это ёмкость конфига как банка тестов — ответ на вопрос «не одна игра,
   а множество».
 - **mode-2 (пересечения-ловушки):** предусловие — ≥ 1 пара категорий с |пересечения| ≥ 4;
   кандидат W обязан содержать термин с ≥ 2 тегами из выбранной четвёрки S, слова не
@@ -350,11 +352,13 @@ plus an honest solver check:
   at least one unambiguous board found) and `good_puzzle_yield_mode1` = VPY — the share
   of unambiguous boards among those checked, an estimate of the whole pool's cleanliness
   (0.9 = almost any random board is valid; threshold 0.70, calibratable).
-  Step 3, extras (informational, not a gate): `ceiling` — the combinatorial upper bound
-  on the number of boards (for every quadruple of categories multiply C(size, 4) and
-  sum: Σ∏C(size, 4)); `effective = ceiling × VPY` — the sample extrapolated to the whole
-  pool, i.e. an estimate of the number of GOOD boards. This is the config's capacity as
-  a bank of tests — the answer to "not one game but many".
+  Step 3, extras (informational, not a gate): `ceiling` — how many boards can
+  theoretically be built from the config. Computed as follows: for every quadruple of
+  categories, multiply the number of ways to pick 4 terms from each (a 5-term category
+  yields 5 such picks), then sum the results over all category quadruples. `effective =
+  ceiling × VPY` — the sample extrapolated to the whole pool, i.e. an estimate of the
+  number of GOOD boards. This is the config's capacity as a bank of tests — the answer
+  to "not one game but many".
 - **mode-2 (overlaps as traps):** precondition — ≥ 1 category pair with |intersection| ≥ 4;
   a candidate board W must contain a term holding ≥ 2 tags within the chosen four categories S,
   with no word reused; valid = `is_unique`. τ₂ is not set → the gate runs on exists (calibration TBD).

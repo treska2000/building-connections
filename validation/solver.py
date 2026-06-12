@@ -77,10 +77,12 @@ def is_unique_puzzle(words, members) -> bool:
 
 
 def _ceiling_mode1(members) -> int:
-    """Комбинаторный потолок числа досок mode-1: Σ по четвёркам категорий ∏ C(size, 4).
-    Вход: members. Выход: int.
-    Combinatorial ceiling of mode-1 boards: Σ over category quadruples of ∏ C(size, 4).
-    In: members. Out: int."""
+    """Комбинаторный потолок числа досок mode-1: для каждой четвёрки категорий
+    перемножается число способов выбрать 4 термина из каждой (C(size, 4)), результаты
+    суммируются по всем четвёркам. Вход: members. Выход: int.
+    Combinatorial ceiling of mode-1 boards: for every quadruple of categories, multiply
+    the number of ways to pick 4 terms from each (C(size, 4)), then sum over all
+    quadruples. In: members. Out: int."""
     sizes = [len(v) for v in members.values() if len(v) >= 4]
     total = 0
     for combo in combinations(sizes, 4):
