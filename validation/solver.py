@@ -32,10 +32,16 @@ def _quads(words, members):
 
 
 def count_partitions(words, members, cap=2) -> int:
-    """Число разбивок W на монохромные четвёрки (CP-SAT точное покрытие, отсечка cap).
-    Вход: words (|W| кратно 4), members, cap. Выход: int 0..cap.
-    Number of partitions of W into monochromatic quads (CP-SAT exact cover, capped).
-    In: words (|W| divisible by 4), members, cap. Out: int 0..cap."""
+    """Число разбивок W на монохромные четвёрки (CP-SAT точное покрытие). cap — отсечка
+    перечисления: возвращается min(истинное число, cap). Дефолт cap=2: вердикту хватает
+    трёх исходов — 0 (не решается), 1 (однозначен, сертифицируем), >=2 (неоднозначен,
+    невалиден — точное число уже не влияет). Вход: words (|W| кратно 4), members, cap.
+    Выход: int 0..cap.
+    Number of partitions of W into monochromatic quads (CP-SAT exact cover). cap is an
+    enumeration cutoff: the function returns min(true count, cap). Default cap=2: the
+    verdict only needs three outcomes — 0 (unsolvable), 1 (unambiguous, certified),
+    >=2 (ambiguous, invalid — the exact count no longer matters). In: words (|W|
+    divisible by 4), members, cap. Out: int 0..cap."""
     assert len(words) % 4 == 0 and len(words) > 0
     quads = _quads(words, members)
     if not quads:

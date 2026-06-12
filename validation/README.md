@@ -108,8 +108,16 @@ env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и откры
 ### R2 · Решаемость (`r2_solvability.py` + `solver.py`, CP-SAT, детерминированно)
 
 Примитив `count_partitions(W)`: квадры = все 4-подмножества слов внутри одной категории;
-CP-SAT-модель точного покрытия (каждое слово ровно в одной выбранной квадре, всего |W|/4 квадр);
-перечисление решений с отсечкой cap = 2 — достаточно различить 0 / 1 / ≥ 2. `is_unique` = ровно одна разбивка.
+CP-SAT-модель точного покрытия (каждое слово ровно в одной выбранной квадре, всего |W|/4 квадр).
+Параметр `cap` — отсечка перечисления: solver останавливается, как только нашёл `cap`
+разбивок, то есть функция возвращает min(истинное число, cap), а не точный счётчик.
+По умолчанию `cap = 2`, потому что вердикту нужны только три исхода: 0 разбивок — доска
+не решается; ровно 1 — пазл однозначен, это и сертифицируем (`is_unique = count == 1`);
+2 и больше — у игрока есть второй «правильный» ответ, пазл невалиден, и уже неважно,
+разбивок две или двести. Досчитывать после второй — трата ресурса: число разбивок растёт
+комбинаторно, а `count_partitions` вызывается сэмплером сотни раз на конфиг. Если
+понадобится точная степень неоднозначности (репортить «у кандидата 7 разбивок»), `cap`
+вынесен параметром — поднимаешь его и получаешь точный счёт до новой отсечки.
 Каждая мода = играбельное предусловие (счёт по множествам) + честная проверка solver'ом:
 
 - **mode-1 (чистый пазл):** предусловие — ≥ 4 категорий с ≥ 4 solo-терминами (|tags| = 1);
@@ -290,9 +298,18 @@ unless its requirement is in `required_gates` (default: R1, R2, R3, R5, R7). Thr
 ### R2 · Solvability (`r2_solvability.py` + `solver.py`, CP-SAT, deterministic)
 
 Primitive `count_partitions(W)`: quads = all 4-subsets of words within one category;
-a CP-SAT exact-cover model (each word in exactly one chosen quad, |W|/4 quads total);
-solution enumeration capped at 2 — distinguishing 0 / 1 / ≥ 2 is all that matters.
-`is_unique` = exactly one partition. Each mode = a gameable precondition (set counting)
+a CP-SAT exact-cover model (each word in exactly one chosen quad, |W|/4 quads total).
+The `cap` parameter is an enumeration cutoff: the solver stops as soon as it has found
+`cap` partitions, so the function returns min(true count, cap) rather than an exact
+counter. The default is `cap = 2` because the verdict only needs three outcomes:
+0 partitions — the board is unsolvable; exactly 1 — the puzzle is unambiguous, which is
+what we certify (`is_unique = count == 1`); 2 or more — the player has a second "correct"
+answer, the puzzle is invalid, and it no longer matters whether there are two partitions
+or two hundred. Counting past the second one wastes resources: the number of partitions
+grows combinatorially, and the sampler calls `count_partitions` hundreds of times per
+config. If you ever need the exact degree of ambiguity (reporting "this candidate has
+7 partitions"), `cap` is exposed as a parameter — raise it to get an exact count up to
+the new cutoff. Each mode = a gameable precondition (set counting)
 plus an honest solver check:
 
 - **mode-1 (clean puzzle):** precondition — ≥ 4 categories with ≥ 4 solo terms (|tags| = 1);
