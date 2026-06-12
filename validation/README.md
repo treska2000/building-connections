@@ -161,8 +161,7 @@ CP-SAT-модель точного покрытия (каждое слово р�
   «этот термин выглядит как член таких-то категорий». Пример: термин из родной категории
   «Оптимизация» помечен как обманка для категории «Поиск» — на доске он тянется к чужой
   группе, но правильный ответ кладёт его в родную. «Явные» — потому что разметку даёт
-  сама генерация конфигов; автоматический вывод обманок (по близости эмбеддингов) — в
-  планах, пока pending.
+  сама генерация конфигов.
   Предусловие: в конфиге есть не меньше 4 терминов с такой разметкой — иначе материала
   для режима недостаточно.
   Сэмплер: тянем доску как в mode-1, но требуем, чтобы на ней была хотя бы одна живая
@@ -393,8 +392,7 @@ plus an honest solver check:
   field: "this term looks like a member of these categories". Example: a term whose home
   category is "Optimization" is marked as a decoy for "Search" — on the board it pulls
   toward the foreign group, yet the correct answer places it in its home category.
-  "Explicit" because the annotation comes from config generation itself; automatic decoy
-  inference (via embedding similarity) is planned but pending.
+  "Explicit" because the annotation comes from config generation itself.
   Precondition: the config carries at least 4 terms with such annotations — otherwise
   there is not enough material for the mode.
   Sampler: draw a board as in mode-1, but require at least one live decoy — a term whose
