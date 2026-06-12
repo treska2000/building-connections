@@ -6,7 +6,7 @@ run.py — validation pipeline orchestrator (R1–R7) + CLI. Accepts a v1 config
 
 Usage:
     python validation/run.py <config.json|pool.json> [--acceptance thresholds.yaml]
-                             [--out reports/] [--enrich off|live|cache]
+                             [--out reports/] [--enrich off|live|cache] [--only R2,R3]
 """
 from __future__ import annotations
 import argparse

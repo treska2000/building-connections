@@ -1,4 +1,4 @@
-# acceptance.yaml — пороги, версии, флаги (R7: всё вынесено из кода)
+# thresholds.yaml — пороги, версии, флаги (R7: всё вынесено из кода)
 version: 2.1.0
 seed: 42
 embedder: { model: gemini-embedding-2, dim: 768, task: "sentence similarity" }

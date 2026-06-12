@@ -10,8 +10,8 @@ when every required gate passes; the caller chooses the required set. Lineage: t
 predecessor is config_metrics.py (2026-06-03); old gate-name mapping:
 R2_lexical_leak→R3_morph_leak, R3_evidence→R4_sources, R4_modeN→R2_modeN.
 
-CLI:
-    python validation/acceptance.py configs/v1/your-config.json
+CLI (the single validation entry point, see README):
+    python validation/acceptance.py configs/v1/your-config.json --enrich live
 """
 import argparse
 import json

@@ -217,7 +217,10 @@ FAIL. Единственная проверка источников, не тр�
   по общим авторам/институтам, pass при ≥ 3 независимых группах (3 статьи одной лаборатории =
   1 группа → yellow) · S7 `corpus_frequency` (OpenAlex search count, контекст).
 - `source_sanity_check` (faithfulness): стем-токены имени термина целиком найдены в
-  title + abstract хотя бы одного его источника; доля ≥ 0.9.
+  title + abstract его источников. Сколько источников обязаны содержать термин, задаёт
+  порог `min_sane_sources_per_term` (по умолчанию 1; для отобранных топ-3 источников
+  можно поднять до 2–3); доля проходящих терминов ≥ 0.9 (порог не калиброван — см.
+  бэклог ресёрчей в ресёрч-папке).
 - `source_attestation` (агрегация-DEFAULT, калибруемо): per-term red = фейк-ссылка ∨ ретракция ∨
   все источники чужого поля ∨ нет arXiv-источников; pass per-term = нет red ∧ sane ∧ groups ≥ 3;
   конфиг = нет red'ов ∧ доля проходящих терминов ≥ 0.9.
@@ -253,7 +256,8 @@ label_fidelity + NPMI термин↔термин в пространстве а
 Маппит отчёт R1–R7 в плоские гейты (`R2_modeN` = предусловие ∧ exists) и добавляет
 поведенческую проверку реальным JS-генератором: `assembly_normal/advanced` = собирается ∧
 воспроизводимо ∧ доска полная ∧ «один концепт — одна категория». Дефолтный required:
-R1_volume, R2_mode1, R3_morph_leak, R5_specialty + обе сборки.
+R1_volume, R2_mode1, R3_morph_leak, R4_sources, R5_specialty + обе сборки
+(R4_sources блокирующий, решение 2026-06-12: без обогащения конфиг не принимается).
 
 ---
 
@@ -305,6 +309,7 @@ the config-generation repository — both go through the same pipeline.
 - **adapters**: `rich_to_v1.py`, `legacy_to_v1.py`, `from_generator.py` (E2E: config generation → verdict);
 - **legacy**: `puzzle_eval.py` + `golden.json` — quality evaluation of the LIVE game's term bank
   (old configs/game/*.json formats; M1 assembly/baseline, M2–M4 structure, M5 LLM judge);
+  used by sampling_test.ipynb.
 
 ## Usage
 
@@ -469,7 +474,10 @@ FAIL. The only source check that needs no external data — counting them — mo
   union-find over sources sharing authors/institutions, pass at ≥ 3 independent groups
   (3 papers from one lab = 1 group → yellow) · S7 `corpus_frequency` (OpenAlex search count, context).
 - `source_sanity_check` (faithfulness): the term name's stem tokens are all found in the
-  title + abstract of at least one of its sources; share ≥ 0.9.
+  title + abstract of its sources. How many sources must contain the term is set by the
+  `min_sane_sources_per_term` threshold (default 1; for hand-picked top-3 sources it can
+  be raised to 2–3); the share of passing terms must be ≥ 0.9 (the threshold is
+  uncalibrated — see the research backlog in the research folder).
 - `source_attestation` (DEFAULT aggregation, calibratable): per-term red = fake link ∨
   retraction ∨ all sources off-field ∨ no arXiv sources; per-term pass = no red ∧ sane ∧
   groups ≥ 3; config level = no reds ∧ share of passing terms ≥ 0.9.
@@ -505,4 +513,5 @@ description is generator self-consistency, not a gate).
 Maps the R1–R7 report onto flat gates (`R2_modeN` = precondition ∧ exists) and adds a
 behavioral check with the real JS generator: `assembly_normal/advanced` = assembles ∧
 reproducible ∧ board complete ∧ "one concept — one category". Default required:
-R1_volume, R2_mode1, R3_morph_leak, R5_specialty + both assemblies.
+R1_volume, R2_mode1, R3_morph_leak, R4_sources, R5_specialty + both assemblies
+(R4_sources is blocking, 2026-06-12 decision: without enrichment the config is not accepted).
