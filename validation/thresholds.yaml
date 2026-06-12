@@ -19,8 +19,8 @@ thresholds:
   R3: { morph_leak_link_tau: 0.74, max_morph_leak: 0.05, token_min_len: 3 }
   # агрегация светофора (DEFAULT, калибруемо): red = не резолвится / retracted / все источники чужого поля
   # min_sane_sources_per_term: в скольких из своих источников термин обязан встретиться
-# (для отобранных топ-3 источников можно поднять до 2-3); min_share_sane калибровать
-# по live-прогону на честных конфигах прежде чем ужесточать
+  # (для отобранных топ-3 источников можно поднять до 2-3); min_share_sane не калиброван —
+  # ресёрч в бэклоге (research_backlog_thresholds_2026-06-12.md, п.1): live-прогон на корзине честных конфигов
   R4: { min_sane_sources_per_term: 1, min_share_sane: 0.90, min_share_attested: 0.90,
         min_independent_groups: 3, citations_hi: 100 }
   R5: { area_consistency_tau: 0.70 }
