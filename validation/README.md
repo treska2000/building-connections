@@ -120,10 +120,23 @@ CP-SAT-модель точного покрытия (каждое слово р�
 вынесен параметром — поднимаешь его и получаешь точный счёт до новой отсечки.
 Каждая мода = играбельное предусловие (счёт по множествам) + честная проверка solver'ом:
 
-- **mode-1 (чистый пазл):** предусловие — ≥ 4 категорий с ≥ 4 solo-терминами (|tags| = 1);
-  сэмплер (N = 400, seed = 42) тянет 4 категории × 4 термина → `exists_valid_puzzle_mode1`
-  и `good_puzzle_yield_mode1` = VPY ≥ 0.70; в extra — `ceiling` (комбинаторный потолок
-  Σ∏C(size, 4)) и `effective = ceiling × VPY`.
+- **mode-1 (чистый пазл)** — доска 4×4, где каждый термин принадлежит ровно одной
+  категории; проверка идёт в три шага от дешёвого к дорогому.
+  Шаг 1, предусловие: для чистой доски нужны термины, не состоящие больше нигде, —
+  solo-термины (|tags| = 1); если категорий с ≥ 4 solo-терминами меньше четырёх, доску
+  физически не из чего собрать, solver не запускается. Это счёт по множествам, играбелен
+  (категорию можно набить мусором) — поэтому только пред-фильтр.
+  Шаг 2, сэмплер: все доски проверить нельзя (комбинаторно много), поэтому случайно
+  тянем N = 400 досок (4 категории × 4 solo-термина; seed = 42 — воспроизводимость, R7)
+  и каждую сертифицируем CP-SAT'ом → `exists_valid_puzzle_mode1` (нашлась ли хоть одна
+  однозначная) и `good_puzzle_yield_mode1` = VPY — доля однозначных среди проверенных,
+  оценка чистоты всего пула (0.9 = почти любая случайная доска валидна; порог 0.70,
+  калибруемо).
+  Шаг 3, extra (справочно, не гейт): `ceiling` — комбинаторный потолок числа досок
+  (для каждой четвёрки категорий перемножаем C(size, 4) и суммируем: Σ∏C(size, 4));
+  `effective = ceiling × VPY` — экстраполяция выборки на весь пул, то есть оценка числа
+  ХОРОШИХ досок. Это ёмкость конфига как банка тестов — ответ на вопрос «не одна игра,
+  а множество».
 - **mode-2 (пересечения-ловушки):** предусловие — ≥ 1 пара категорий с |пересечения| ≥ 4;
   кандидат W обязан содержать термин с ≥ 2 тегами из выбранной четвёрки S, слова не
   переиспользуются; valid = `is_unique`. τ₂ не задан → гейт по exists (калибровка TBD).
@@ -312,10 +325,23 @@ config. If you ever need the exact degree of ambiguity (reporting "this candidat
 the new cutoff. Each mode = a gameable precondition (set counting)
 plus an honest solver check:
 
-- **mode-1 (clean puzzle):** precondition — ≥ 4 categories with ≥ 4 solo terms (|tags| = 1);
-  the sampler (N = 400, seed = 42) draws 4 categories × 4 terms → `exists_valid_puzzle_mode1`
-  and `good_puzzle_yield_mode1` = VPY ≥ 0.70; extras carry `ceiling` (combinatorial upper
-  bound Σ∏C(size, 4)) and `effective = ceiling × VPY`.
+- **mode-1 (clean puzzle)** — a 4×4 board where every term belongs to exactly one
+  category; the check runs in three steps, from cheap to expensive.
+  Step 1, precondition: a clean board needs terms that belong nowhere else — solo terms
+  (|tags| = 1); with fewer than four categories holding ≥ 4 solo terms there is nothing
+  to build a board from, and the solver is not invoked. This is plain set counting and
+  it is gameable (a category can be stuffed with junk) — hence a pre-filter only.
+  Step 2, the sampler: checking every board is infeasible (combinatorially many), so we
+  randomly draw N = 400 boards (4 categories × 4 solo terms; seed = 42 for
+  reproducibility, R7) and certify each with CP-SAT → `exists_valid_puzzle_mode1` (was
+  at least one unambiguous board found) and `good_puzzle_yield_mode1` = VPY — the share
+  of unambiguous boards among those checked, an estimate of the whole pool's cleanliness
+  (0.9 = almost any random board is valid; threshold 0.70, calibratable).
+  Step 3, extras (informational, not a gate): `ceiling` — the combinatorial upper bound
+  on the number of boards (for every quadruple of categories multiply C(size, 4) and
+  sum: Σ∏C(size, 4)); `effective = ceiling × VPY` — the sample extrapolated to the whole
+  pool, i.e. an estimate of the number of GOOD boards. This is the config's capacity as
+  a bank of tests — the answer to "not one game but many".
 - **mode-2 (overlaps as traps):** precondition — ≥ 1 category pair with |intersection| ≥ 4;
   a candidate board W must contain a term holding ≥ 2 tags within the chosen four categories S,
   with no word reused; valid = `is_unique`. τ₂ is not set → the gate runs on exists (calibration TBD).
