@@ -1,8 +1,8 @@
-# validation/ — весь код валидации конфигов (движок R1–R7 + приёмка + адаптеры)
+# Validation: весь код валидации конфигов (движок R1–R7 + приёмка + адаптеры)
 
 Независимый слой приёмки конфигов по спеке «Валидация требований конфигов».
-НЕ заменяет self-check генерилки (`connections_v2.validate`, 11 publishability-гейтов) —
-это вторая, внешняя линия: генерилка проверяет себя, приёмка проверяет генерилку.
+НЕ заменяет self-check генерации конфигов (`connections_v2.validate`, 11 publishability-гейтов) —
+это вторая, внешняя линия: генерация конфигов проверяет себя, приёмка проверяет её выход.
 
 Вход (авто-детект): v1-конфиг (`tags`/`axes`), input-schema (specialty строкой)
 или нативный v2-пул (`schema_version: connections_v2_config_pool`).
@@ -14,7 +14,7 @@
   `report`, `run` (validate/validate_full + CLI), `schema_check`, `thresholds.yaml` (пороги, required_gates);
 - **приёмка**: `acceptance.py` — единая точка вердикта (metric gates + assembly gates),
   `puzzle_assembly.py` + `repro_check.mjs` / `enumerate.mjs` (Node-обвязка реального генератора);
-- **адаптеры**: `rich_to_v1.py`, `legacy_to_v1.py`, `from_generator.py` (E2E: генерилка → вердикт);
+- **адаптеры**: `rich_to_v1.py`, `legacy_to_v1.py`, `from_generator.py` (E2E: генерация конфигов → вердикт);
 - **наследие**: `puzzle_eval.py` + `golden.json` — оценка банка терминов ЖИВОЙ игры
   (старые форматы configs/*.json; M1 сборка/эталон, M2–M4 структура, M5 LLM-judge);
   используется sampling_test.ipynb. Предок движка config_metrics.py удалён 2026-06-11

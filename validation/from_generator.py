@@ -1,4 +1,4 @@
-"""from_generator.py — E2E-приёмка выхода генерилки: rich-JSON → rich_to_v1 →
+"""from_generator.py — E2E-приёмка выхода генерации конфигов: rich-JSON → rich_to_v1 →
 v1-конфиг на диск → acceptance() → вердикт (единично или батчем по папке).
 
 from_generator.py — E2E acceptance of the generator output: rich JSON → rich_to_v1 →

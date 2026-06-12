@@ -1,6 +1,6 @@
 """loader.py — загрузка конфига, нормализация tags/axes, дедуп, граф принадлежности.
 Принимает три формата: v1 input-schema (`tags`), старый v1 (`axes`) и нативный
-v2-пул генерилки (`schema_version: connections_v2_config_pool`) через pool_v2_to_config().
+v2-пул генерации конфигов (`schema_version: connections_v2_config_pool`) через pool_v2_to_config().
 
 loader.py — config loading, tags/axes normalization, dedup, membership graph.
 Accepts three formats: v1 input-schema (`tags`), legacy v1 (`axes`), and the

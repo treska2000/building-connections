@@ -87,7 +87,7 @@ def test_enrichment_metrics_pending_without_clients(acc):
 @pytest.mark.parametrize("cfg_path", sorted(GEN.glob("*.v1.json"))[:4],
                          ids=lambda p: p.stem)
 def test_from_generator_configs_validate(acc, cfg_path):
-    """Выход генерилки (адаптированный в v1) проходит пайплайн без ошибок."""
+    """Выход генерации конфигов (адаптированный в v1) проходит пайплайн без ошибок."""
     rep = validate(str(cfg_path), acc)
     assert rep["verdict"] in ("accept", "reject", "pending")
     assert rep["requirements"]["R2"]["metrics"]["is_eligible_mode1"]["value"] >= 0

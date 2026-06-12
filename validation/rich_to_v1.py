@@ -1,4 +1,4 @@
-"""rich_to_v1.py — адаптер старого rich-формата генерилки (seeds/*.json,
+"""rich_to_v1.py — адаптер старого rich-формата генерации конфигов (seeds/*.json,
 serialize_pool) в схему v1. Для нативного v2-пула адаптер не нужен —
 его нормализует loader.pool_v2_to_config.
 
@@ -42,7 +42,7 @@ ARXIV_ID_RE = re.compile(r"\b(\d{4}\.\d{4,5})\b")
 
 
 def _arxiv_url(source):
-    """Строка источника генерилки → arXiv-URL; None для плейсхолдеров/без id.
+    """Строка источника генерации конфигов → arXiv-URL; None для плейсхолдеров/без id.
     Вход: source (str). Выход: str | None.
     Generator source string → arXiv URL; None for placeholders / unrecognized ids.
     In: source (str). Out: str | None."""

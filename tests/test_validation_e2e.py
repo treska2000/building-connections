@@ -2,7 +2,7 @@
 
 Цепочки:
   1. Нативный v2-пул (pool.json) → validate_full() напрямую (авто-детект схемы);
-     кросс-чек с self-валидацией генерилки (validation.publishable).
+     кросс-чек с self-валидацией генерации конфигов (validation.publishable).
   2. v2-пул → connections_v2.export_input.pool_to_input_schema() → input-схема v1
      → validate(); граф принадлежности эквивалентен прямому прогону пула.
   3. CLI: python validation/run.py <config> — exit-код соответствует вердикту.
@@ -49,7 +49,7 @@ def test_pool_v2_validates_end_to_end(acc, tmp_path):
 
 @needs_pool
 def test_pool_self_validation_cross_check():
-    """Если генерилка считает пул publishable, наш R1 (объём) тоже должен
+    """Если генерация конфигов считает пул publishable, наш R1 (объём) тоже должен
     проходить — расхождение в структуре сигналит о рассинхроне форматов."""
     pool = json.loads(POOL.read_text(encoding="utf-8"))
     cfg = loader.pool_v2_to_config(pool)

@@ -5,7 +5,7 @@
                       enrich, report, run (validate/validate_full + CLI), schema_check
     приёмка           acceptance (метрики + сборка), puzzle_assembly (+ repro_check.mjs,
                       enumerate.mjs — Node-обвязка реального генератора)
-    адаптеры          rich_to_v1, legacy_to_v1, from_generator (E2E генерилка → вердикт)
+    адаптеры          rich_to_v1, legacy_to_v1, from_generator (E2E: генерация конфигов → вердикт)
     наследие          puzzle_eval (+golden.json) — оценка банка терминов живой игры
 
 Позиционирование: connections-gen/connections_v2 валидирует сам себя
