@@ -107,10 +107,12 @@ def _metric(value, ok, det, requires=None, gameable=False, note=None, counter=No
 
 
 def run(cfg, members, term_tags, thr, enrich=None) -> dict:
-    """Считает метрики достоверности источников; без обогащения — только source_count.
+    """Считает качественные метрики достоверности; все они требуют обогащения —
+    без него возвращает все метрики со статусом PENDING (pass = None).
     Вход: cfg, members, term_tags, thr (пороги R4), enrich (Enrichment | None).
     Выход: dict {requirement, metrics, pass}.
-    Computes source-quality metrics; without enrichment only source_count is evaluated.
+    Computes the qualitative trustworthiness metrics; all of them require enrichment —
+    without it every metric is returned as PENDING (pass = None).
     In: cfg, members, term_tags, thr (R4 thresholds), enrich (Enrichment | None).
     Out: dict {requirement, metrics, pass}."""
     terms = cfg.get("terms", [])

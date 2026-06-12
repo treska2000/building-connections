@@ -194,8 +194,11 @@ CP-SAT-модель точного покрытия (каждое слово р�
 
 ### R4 · Достоверность источников (`r4_source_quality.py` + `enrich.py`)
 
-R4 — чисто качественная проверка: без обогащения весь раздел честно остаётся PENDING
-(формальный счётчик количества источников живёт в R1).
+Все метрики R4 построены на обогащении — внешних данных arXiv и OpenAlex. Если
+валидатор запущен без обогащения (`--enrich off`), ни одна метрика R4 не вычисляется:
+раздел целиком получает статус PENDING («данных о достоверности нет»), а не PASS или
+FAIL. Единственная проверка источников, не требующая внешних данных, — подсчёт их
+количества — перенесена в R1.
 
 - Через обогащение (arXiv Atom батчами + OpenAlex works по DOI; файловый кэш;
   `deterministic = False` до пина `openalex_snapshot`):
@@ -434,8 +437,10 @@ plus an honest solver check:
 
 ### R4 · Source quality (`r4_source_quality.py` + `enrich.py`)
 
-R4 is a purely qualitative check: without enrichment the whole section honestly stays
-PENDING (the formal source counter lives in R1).
+Every R4 metric is built on enrichment — external data from arXiv and OpenAlex. When
+the validator runs without enrichment (`--enrich off`), no R4 metric is computed: the
+whole section receives the PENDING status ("no trustworthiness data"), not PASS or
+FAIL. The only source check that needs no external data — counting them — moved to R1.
 
 - Via enrichment (batched arXiv Atom + OpenAlex works by DOI; file cache;
   `deterministic = False` until `openalex_snapshot` is pinned):
