@@ -129,9 +129,10 @@ CP-SAT-модель точного покрытия (каждое слово р�
   solo-термины (|tags| = 1); если категорий с ≥ 4 solo-терминами меньше четырёх, доску
   физически не из чего собрать, solver не запускается. Это счёт по множествам, играбелен
   (категорию можно набить мусором) — поэтому только пред-фильтр.
-  Шаг 2, сэмплер: все доски проверить нельзя (комбинаторно много), поэтому случайно
-  тянем N = 400 досок (4 категории × 4 термина из всех членов категории; seed = 42 —
-  воспроизводимость, R7). Замечание: спека req2 определяет кандидатов через solo-термины,
+  Шаг 2, проверка случайной выборкой (этот блок кода называется сэмплером): все доски
+  проверить нельзя — их комбинаторно много, поэтому валидатор случайным образом
+  составляет N = 400 пробных досок, каждая — 4 категории и по 4 термина из всех членов
+  каждой (seed = 42 фиксирует случайность, чтобы прогон был воспроизводим, R7). Замечание: спека req2 определяет кандидатов через solo-термины,
   код тянет из всех членов — доски, испорченные мультитеговым термином, отсеивает солвер,
   поэтому VPY дополнительно учитывает шум пересечений (расхождение со спекой, решение за
   владельцем)
@@ -153,8 +154,9 @@ CP-SAT-модель точного покрытия (каждое слово р�
   категорию, членом её не являясь.
   Предусловие: есть хотя бы одна пара категорий, у которых не меньше четырёх общих
   терминов — то есть общего материала достаточно, чтобы пересечение могло образовать
-  целую ложную четвёрку. Сэмплер: кандидат-доска обязана содержать хотя бы один термин
-  с двумя тегами из выбранных четырёх категорий (живую ловушку), слова не
+  целую ложную четвёрку. Проверка случайной выборкой: среди случайно
+  составленных досок учитываются только те, где ловушка может сработать — то есть на
+  доске есть термин, обе категории которого попали в выбранную четвёрку; слова не
   переиспользуются; валидность = однозначность по солверу.
 - **mode-3 (явные обманки).** Обманка (decoy) — термин, который похож на чужую
   категорию, но её членом не является. В конфиге это размечено полем `decoy_for_tags`:
@@ -164,8 +166,11 @@ CP-SAT-модель точного покрытия (каждое слово р�
   сама генерация конфигов.
   Предусловие: в конфиге есть не меньше 4 терминов с такой разметкой — иначе материала
   для режима недостаточно.
-  Сэмплер: тянем доску как в mode-1, но требуем, чтобы на ней была хотя бы одна живая
-  обманка — термин, чья целевая категория тоже присутствует на доске.
+  Проверка случайной выборкой: валидатор случайным образом составляет пробные доски
+  (как в mode-1) и учитывает только те, где обманка может сработать. Обманка срабатывает,
+  только если категория, на которую она похожа, тоже присутствует на доске: обманку для
+  «Поиска» бессмысленно проверять на доске без «Поиска» — игроку не к чему её ошибочно
+  отнести.
   Доска валидна, если выполнены два условия. Первое: правильная разбивка по настоящему
   членству ровно одна (однозначность по солверу). Второе: обманка действительно
   работает — если на минуту «поверить» разметке обманок и засчитать decoy-термин членом
@@ -361,9 +366,10 @@ plus an honest solver check:
   (|tags| = 1); with fewer than four categories holding ≥ 4 solo terms there is nothing
   to build a board from, and the solver is not invoked. This is plain set counting and
   it is gameable (a category can be stuffed with junk) — hence a pre-filter only.
-  Step 2, the sampler: checking every board is infeasible (combinatorially many), so we
-  randomly draw N = 400 boards (4 categories × 4 terms drawn from all category members;
-  seed = 42 for reproducibility, R7). Note: the req2 spec defines candidates via solo
+  Step 2, the random-sample check (this code block is called the sampler): checking
+  every board is infeasible — there are combinatorially many, so the validator randomly
+  assembles N = 400 trial boards, each of 4 categories with 4 terms drawn from all
+  members of each (seed = 42 pins the randomness so the run is reproducible, R7). Note: the req2 spec defines candidates via solo
   terms, while the code draws from all members — boards spoiled by a multi-tag term are
   rejected by the solver, so VPY additionally absorbs overlap noise (a spec deviation,
   owner's call) and certify each with CP-SAT → `exists_valid_puzzle_mode1` (was
@@ -384,9 +390,10 @@ plus an honest solver check:
   category without being its member.
   Precondition: at least one pair of categories shares no fewer than four terms — i.e.
   there is enough common material for the overlap to form an entire false quad.
-  Sampler: a candidate board must contain at least one term holding two tags within the
-  chosen four categories (a live trap), no word is reused; validity = solver-certified
-  uniqueness.
+  Random-sample check: among the randomly
+  assembled boards only those count where the trap can fire — i.e. the board contains a
+  term whose both categories made it into the chosen four; no word is reused;
+  validity = solver-certified uniqueness.
 - **mode-3 (explicit decoys).** A decoy is a term that resembles a foreign category
   without being its member. In the config this is annotated via the `decoy_for_tags`
   field: "this term looks like a member of these categories". Example: a term whose home
@@ -395,8 +402,10 @@ plus an honest solver check:
   "Explicit" because the annotation comes from config generation itself.
   Precondition: the config carries at least 4 terms with such annotations — otherwise
   there is not enough material for the mode.
-  Sampler: draw a board as in mode-1, but require at least one live decoy — a term whose
-  target category is also present on the board.
+  Random-sample check: the validator randomly assembles trial boards (as in mode-1) and
+  counts only those where a decoy can fire. A decoy fires only when the category it
+  resembles is also present on the board: a decoy for "Search" is pointless to test on a
+  board without "Search" — the player has nothing to misassign it to.
   A board is valid when two conditions hold. First: the correct partition by true
   membership is exactly one (solver-certified uniqueness). Second: the decoy actually
   works — if you momentarily "believe" the decoy annotations and count the decoy term as
