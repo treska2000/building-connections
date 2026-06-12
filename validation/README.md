@@ -89,6 +89,9 @@ rep = validate_full("pool.json", load_acceptance("validation/thresholds.yaml"))
 - `tests/test_acceptance.py` — гейты acceptance.py (сценарии T1–T6 из спеки, наследник test_config_metrics.py);
 - `tests/test_validation_integration.py` — validate() на конфигах репозитория, детерминизм, required_gates;
 - `tests/test_validation_e2e.py` — v2-пул → (export_input | напрямую) → валидация; CLI exit-коды; батч from-generator;
+- `tests/test_validation_challenge.py` — исполняемая гарантия: эталонный конфиг → accept;
+  синтетические негативы, ломающие по одному критерию (R1–R5), → reject с этим критерием
+  в blocked_gates (обогащение — фейковые клиенты, без сети);
 - `tests/test_from_generator.py` — rich-пул → rich_to_v1 → acceptance.
 
 Зависимости: `validation/requirements.txt` (ortools — R2; nltk — стемминг R3, опц.; PyYAML — пороги, опц.).
@@ -361,6 +364,9 @@ rep = validate_full("pool.json", load_acceptance("validation/thresholds.yaml"))
 - `tests/test_acceptance.py` — acceptance.py gates (spec scenarios T1–T6, successor of test_config_metrics.py);
 - `tests/test_validation_integration.py` — validate() on the repository configs, determinism, required_gates;
 - `tests/test_validation_e2e.py` — v2 pool → (export_input | direct) → validation; CLI exit codes; from-generator batch;
+- `tests/test_validation_challenge.py` — an executable guarantee: the etalon config → accept;
+  synthetic negatives breaking one criterion each (R1–R5) → reject with that criterion
+  in blocked_gates (enrichment via fake clients, no network);
 - `tests/test_from_generator.py` — rich pool → rich_to_v1 → acceptance.
 
 Dependencies: `validation/requirements.txt` (ortools — R2; nltk — R3 stemming, optional;
