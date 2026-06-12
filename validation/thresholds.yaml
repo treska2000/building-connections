@@ -23,5 +23,8 @@ thresholds:
   # ресёрч в бэклоге (research_backlog_thresholds_2026-06-12.md, п.1): live-прогон на корзине честных конфигов
   R4: { min_sane_sources_per_term: 1, min_share_sane: 0.90, min_share_attested: 0.90,
         min_independent_groups: 3, citations_hi: 100 }
+  # τ=0.70 — логика «2 из 3» (у термина по R1 три источника; минимум два должны быть
+  # про заявленную область): per-term это правило зашито в определение поля,
+  # per-config 2/3 ≈ 0.67 округлено с запасом до 0.70 — мягкий порог
   R5: { area_consistency_tau: 0.70 }
   R6: { margin_tau: 0.10 }

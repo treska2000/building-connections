@@ -230,9 +230,15 @@ FAIL. Единственная проверка источников, не тр�
 Все метрики R5 построены на обогащении (OpenAlex/arXiv); без него раздел целиком
 PENDING. Формальная проверка заполненности специализации перенесена в R1.
 
-- `area_term_consistency`: поле термина = модальное поле его источников (OpenAlex
-  `primary_topic.field`, fallback — маппинг архива arXiv → поле); доля терминов с полем ==
-  ожидаемому (`specialty.field`) ≥ 0.70.
+- `area_term_consistency`: поле термина = поле, на котором сходятся минимум два его
+  источника (OpenAlex `primary_topic.field`, fallback — маппинг архива arXiv → поле);
+  доля терминов с полем == ожидаемому (`specialty.field`) ≥ 0.70.
+  Почему 0.70: порог продолжает логику «2 из 3». Требование объёма (R1) — у термина три
+  источника; от хорошего термина хотим, чтобы минимум два из трёх были про заявленную
+  область — один источник может оказаться смежным, и это нормально. На уровне термина
+  правило «2 из 3» зашито в определение поля (выше); на уровне конфига та же пропорция
+  даёт 2/3 ≈ 0.67, округлено с небольшим запасом до 0.70 — мягкий порог валидации,
+  не наказывающий за единичные смежные термины.
 - `area_concentration`: модальное поле по всем терминам == ожидаемому ∧ modal_share ≥ 0.70 —
   ловит «размазанный» конфиг даже при проходной consistency.
 
@@ -487,9 +493,15 @@ FAIL. The only source check that needs no external data — counting them — mo
 Every R5 metric is built on enrichment (OpenAlex/arXiv); without it the whole section
 is PENDING. The formal specialty-filled check moved to R1.
 
-- `area_term_consistency`: a term's field = the modal field of its sources (OpenAlex
-  `primary_topic.field`, falling back to an arXiv-archive → field mapping); share of terms whose
-  field == the expected one (`specialty.field`) ≥ 0.70.
+- `area_term_consistency`: a term's field = the field at least two of its sources agree
+  on (OpenAlex `primary_topic.field`, falling back to an arXiv-archive → field mapping);
+  share of terms whose field == the expected one (`specialty.field`) ≥ 0.70.
+  Why 0.70: the threshold extends the "2 of 3" logic. The volume requirement (R1) gives
+  every term three sources; a good term should have at least two of the three about the
+  declared area — one source may turn out adjacent, and that is fine. At the term level
+  the "2 of 3" rule is built into the field definition (above); at the config level the
+  same proportion gives 2/3 ≈ 0.67, rounded up with a small margin to 0.70 — a soft
+  validation threshold that does not punish occasional adjacent terms.
 - `area_concentration`: the modal field across all terms == expected ∧ modal_share ≥ 0.70 —
   catches a "smeared" config even when consistency passes.
 

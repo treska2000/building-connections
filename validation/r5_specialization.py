@@ -38,10 +38,14 @@ def _expected_field(cfg) -> str | None:
 
 
 def _term_field(ids, metas, works) -> str | None:
-    """Поле термина = модальное поле его источников: OpenAlex primary_topic.field,
-    fallback — архив arXiv. Вход: ids (arXiv id), metas, works. Выход: str | None.
-    A term's field = the modal field of its sources: OpenAlex primary_topic.field,
-    falling back to the arXiv archive. In: ids (arXiv ids), metas, works. Out: str | None."""
+    """Поле термина = поле, на котором сходятся минимум два его источника («2 из 3»
+    при требовании трёх источников): OpenAlex primary_topic.field, fallback — архив
+    arXiv. Если ни одна пара источников не согласна (все поля разные), поле термина
+    неизвестно → None. Вход: ids (arXiv id), metas, works. Выход: str | None.
+    A term's field = the field at least two of its sources agree on ("2 of 3" given
+    the three-source requirement): OpenAlex primary_topic.field, falling back to the
+    arXiv archive. When no two sources agree (all fields differ), the term's field is
+    unknown → None. In: ids (arXiv ids), metas, works. Out: str | None."""
     fields = []
     for i in ids:
         w = works.get(i) if works else None
@@ -56,7 +60,12 @@ def _term_field(ids, metas, works) -> str | None:
                 fields.append(f)
     if not fields:
         return None
-    return Counter(fields).most_common(1)[0][0]
+    top, n_top = Counter(fields).most_common(1)[0]
+    # with several sources a single vote is not evidence: require >= 2 agreeing
+    # (a lone resolvable source still defines the field on its own)
+    if len(fields) > 1 and n_top < 2:
+        return None
+    return top
 
 
 def run(cfg, members, term_tags, thr, enrich=None) -> dict:
