@@ -167,10 +167,13 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
         fm = [_field_match((m or {}).get("primary_category"), allowed) for m in s1_known]
         if not red and fm and all(v is False for v in fm):
             red, why = True, "все источники из чужого поля"
-        # faithfulness / sanity: the term occurs in title+abstract of >=1 source
+        # faithfulness / sanity: the term occurs in title+abstract of >= K of its
+        # sources (K = min_sane_sources_per_term; raise it for hand-picked top-N sources)
         texts = [(m.get("title", "") + " " + m.get("abstract", ""))
                  for m in s1_known if m.get("exists")]
-        sane = any(TU.term_in_text(name, tx) for tx in texts) if texts else None
+        k_sane = thr.get("min_sane_sources_per_term", 1)
+        n_matched = sum(1 for tx in texts if TU.term_in_text(name, tx))
+        sane = (n_matched >= k_sane) if texts else None
         if sane is not None:
             sanity_known += 1
             if sane:
@@ -205,7 +208,8 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
         share_sane,
         None if share_sane is None else share_sane >= thr.get("min_share_sane", 0.9),
         det=det, gameable=True, counter="сила связи R6",
-        note=f"термин в title+abstract ≥1 источника; known={sanity_known}/{len(term_srcs)}"
+        note=f"термин в title+abstract ≥{thr.get('min_sane_sources_per_term', 1)} "
+             f"источника(ов); known={sanity_known}/{len(term_srcs)}"
              + (f" · WARNING network: {net_note}" if net_note else ""))
     metrics["source_attestation"] = _metric(
         {"share_attested": share_attested, "reds": reds[:8]},
