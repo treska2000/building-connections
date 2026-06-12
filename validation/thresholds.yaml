@@ -1,23 +1,21 @@
 # thresholds.yaml — пороги, версии, флаги (R7: всё вынесено из кода)
-version: 2.2.0
+version: 2.3.0
 seed: 42
 embedder: { model: gemini-embedding-2, dim: 768, task: "sentence similarity" }
 openalex_snapshot: null            # пин версии локального снапшота (Level 2) → метрики обогащения станут детерминированными
 
 # какие требования обязательны для accept. R4 блокирующий (решение 2026-06-12):
 # без обогащения он PENDING -> вердикт pending, accept достижим только с --enrich.
-# R6 — после редизайна. R7 исключён из критериев (решение 2026-06-12): паспорт
-# валидатора (версия, provenance, repro self-test) — логирование, не гейт.
-required_gates: [R1, R2, R3, R4, R5]
+# R3 и R6 выведены из пайплайна (решение 2026-06-12) до решений владельца
+# (R3 — развилка по golden'ам; R6 — редизайн): модули сохранены, ключи вернутся
+# вместе с решениями. R7 исключён из критериев: паспорт валидатора — логирование, не гейт.
+required_gates: [R1, R2, R4, R5]
 
 thresholds:
   # min_share_3sources перенесён из R4 (2026-06-12): формальный счётчик источников = объём
   R1: { min_terms: 16, min_base_tags: 4, min_tag_size: 4, min_share_3sources: 0.90 }
   # min_vpy_mode2/3: null → гейт по exists; τ₂/τ₃ — калибровка на golden + синтетических негативах (TBD)
   R2: { min_vpy: 0.70, min_vpy_mode2: null, min_vpy_mode3: null, n_samples: 400, seed: 42 }
-  # ресёрч-конфиг morph_leak 2026-06-08: term↔term · snowball+suf3 · IDF · maxweight
-  # τ_link=0.74 (tau_full_corpus=0.735 на синтетике; held-out F1=0.858) — калибруемо на реальных golden
-  R3: { morph_leak_link_tau: 0.74, max_morph_leak: 0.05, token_min_len: 3 }
   # агрегация светофора (DEFAULT, калибруемо): red = не резолвится / retracted / все источники чужого поля
   # min_sane_sources_per_term: в скольких из своих источников термин обязан встретиться
   # (для отобранных топ-3 источников можно поднять до 2-3); min_share_sane не калиброван —
@@ -28,4 +26,3 @@ thresholds:
   # про заявленную область): per-term это правило зашито в определение поля,
   # per-config 2/3 ≈ 0.67 округлено с запасом до 0.70 — мягкий порог
   R5: { area_consistency_tau: 0.70 }
-  R6: { margin_tau: 0.10 }

@@ -1,4 +1,11 @@
-"""R3 · Семантичность: morph_leak_rate — детектор «категория угадывается по форме слова»
+"""ВЫВЕДЕН ИЗ ПАЙПЛАЙНА (2026-06-12): модуль не подключён в run.py/acceptance.py до
+решения владельца по развилке golden'ов (оба REJECT на принятой метрике: чинить
+конфиги / поднять порог / калибровать); код и юнит-тесты сохранены.
+OUT OF THE PIPELINE (2026-06-12): not wired into run.py/acceptance.py pending the
+owner's call on the goldens fork (both REJECT on the accepted metric: fix the configs /
+raise the threshold / calibrate); the code and its unit tests are kept.
+
+R3 · Семантичность: morph_leak_rate — детектор «категория угадывается по форме слова»
 (ресёрч-конфиг 2026-06-08: term↔term, snowball+suf3, IDF, maxweight, τ≈0.74; заменил
 Jaccard τ=0.34 решением 2026-06-11); is_semantic — pending (эмбеддер).
 

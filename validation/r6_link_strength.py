@@ -1,4 +1,9 @@
-"""R6 · Сила связи категория↔термин — LEGACY-плейсхолдер старой спеки
+"""ВЫВЕДЕН ИЗ ПАЙПЛАЙНА (2026-06-12): модуль не подключён в run.py до редизайна
+по ревизии 2026-06-11 (source-пространство); код сохранён как референс старой спеки.
+OUT OF THE PIPELINE (2026-06-12): not wired into run.py until the redesign per the
+2026-06-11 revision (source space); kept as a reference for the old spec.
+
+R6 · Сила связи категория↔термин — LEGACY-плейсхолдер старой спеки
 (sim_in / sim_margin / pmi, requires embedder + arXiv-корпус); в required_gates
 не входит. Ждёт редизайна по ревизии 2026-06-11: cluster_cohesion + label_fidelity +
 NPMI термин↔термин в пространстве абстрактов источников.

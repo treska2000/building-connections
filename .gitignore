@@ -19,3 +19,7 @@ tests/.pytest_cache/
 
 # Temporary symlinks to sibling projects
 /connections-gen
+
+# Research caches (machine-generated, regeneratable)
+validation/research/.vpy_calib_cache_v2/
+validation/enrich_cache/

@@ -19,7 +19,7 @@ import json
 
 # Validator code version: bump on any change to metric logic or thresholds defaults,
 # so reports can be compared across versions ("this version is good, that one is not").
-VALIDATOR_VERSION = "1.0"
+VALIDATOR_VERSION = "1.1"
 
 
 def provenance(acceptance: dict, config: dict) -> dict:

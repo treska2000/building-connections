@@ -4,10 +4,11 @@
    давать reject с этим критерием в blocked_gates.
 
 Негативы синтетические (по одному на критерий): R1 — объём / дубль / источники /
-specialty; R2 — нет solo-терминов (mode-1 не собирается); R3 — форм-лик имён;
-R4 — фейк-ссылка и неверные источники (термина нет в абстрактах); R5 — все
-источники из чужого поля. Обогащение — фейковые клиенты (без сети), поэтому
-R4/R5 проверяются по-настоящему, а не остаются PENDING.
+specialty; R2 — нет solo-терминов (mode-1 не собирается); R4 — фейк-ссылка и
+неверные источники (термина нет в абстрактах); R5 — все источники из чужого поля.
+Обогащение — фейковые клиенты (без сети), поэтому R4/R5 проверяются по-настоящему,
+а не остаются PENDING. R3/R6 выведены из пайплайна (2026-06-12) — их негативы
+вернутся вместе с критериями.
 
 E2E challenge of the validator — an executable guarantee of two promises:
 1) on the etalon (honest) config the validator must accept;
@@ -15,10 +16,11 @@ E2E challenge of the validator — an executable guarantee of two promises:
    with that criterion in blocked_gates.
 
 The negatives are synthetic (one per criterion): R1 — volume / duplicate / sources /
-specialty; R2 — no solo terms (mode-1 unbuildable); R3 — a form leak in names;
-R4 — a fake link and wrong sources (the term absent from the abstracts); R5 — all
-sources off-field. Enrichment uses fake clients (no network), so R4/R5 are genuinely
-exercised instead of staying PENDING.
+specialty; R2 — no solo terms (mode-1 unbuildable); R4 — a fake link and wrong
+sources (the term absent from the abstracts); R5 — all sources off-field.
+Enrichment uses fake clients (no network), so R4/R5 are genuinely exercised instead
+of staying PENDING. R3/R6 are out of the pipeline (2026-06-12) — their negatives
+return together with the criteria.
 
 Запуск: pytest tests/test_validation_challenge.py -q  (без сети; нужен ortools)
 """
@@ -142,14 +144,6 @@ def _neg_r2_no_solo_terms(cfg):
     return cfg
 
 
-def _neg_r3_form_leak(cfg):
-    # two same-category terms share a rare stem (df=2) -> the link leaks;
-    # 2 leaked links of 17 total > 5%
-    cfg["terms"][0]["name"] = "Spectral Gap"
-    cfg["terms"][1]["name"] = "Spectral Mesh"
-    return cfg
-
-
 def _neg_r4_fake_link(cfg):
     cfg["terms"][0]["sources"] = [{"url": "https://arxiv.org/abs/2401.99999"}]
     return cfg
@@ -161,7 +155,6 @@ NEGATIVES = [
     ("R1", _neg_r1_missing_sources),
     ("R1", _neg_r1_empty_specialty),
     ("R2", _neg_r2_no_solo_terms),
-    ("R3", _neg_r3_form_leak),
     ("R4", _neg_r4_fake_link),
 ]
 

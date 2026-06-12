@@ -134,9 +134,7 @@ def test_from_generator_relaxed_gates_accept_synthetic(tmp_path):
     rich_path.write_text(json.dumps(_rich_pool()), encoding="utf-8")
     v1_dir = tmp_path / "v1"
 
-    # Drop the gates we know the generator pool can't satisfy
-    # (R3_morph_leak: плейсхолдерные имена Concept-i-j делят единственный
-    # токен "concept" → вырожденный IDF-корпус флагает все связи).
+    # Drop the gates we know the synthetic pool can't satisfy (R4/R5 need enrichment)
     relaxed = ("R1_volume", "R2_mode1",
                "assembly_normal", "assembly_advanced")
     v = fg.verdict_for_rich(rich_path, n_seeds=10, v1_dir=v1_dir,

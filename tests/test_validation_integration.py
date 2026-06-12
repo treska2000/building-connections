@@ -31,8 +31,9 @@ def acc():
 def test_report_structure_on_repo_config(acc):
     rep = validate(str(V1 / "ai-safety-v1.json"), acc)
     assert rep["verdict"] in ("accept", "reject", "pending")
-    assert set(rep["requirements"]) == {"R1", "R2", "R3", "R4", "R5", "R6"}
-    for rid in ("R1", "R2", "R3"):
+    # R3/R6 выведены из пайплайна (2026-06-12) — активные критерии R1/R2/R4/R5
+    assert set(rep["requirements"]) == {"R1", "R2", "R4", "R5"}
+    for rid in ("R1", "R2"):
         for m in rep["requirements"][rid]["metrics"].values():
             assert {"value", "pass", "deterministic", "requires"} <= set(m)
     assert rep["provenance"]["config_id"] == "ai-safety-v1"
@@ -40,7 +41,7 @@ def test_report_structure_on_repo_config(acc):
     # (static metric property, 2026-06-12 decision) — the per-metric flag stays
     assert rep["provenance"]["validator_version"]
     assert "determinism_flags" not in rep
-    assert rep["requirements"]["R3"]["metrics"]["morph_leak_rate"]["deterministic"] is True
+    assert rep["requirements"]["R1"]["metrics"]["is_dedup"]["deterministic"] is True
 
 
 @needs_ortools
@@ -88,8 +89,6 @@ def test_enrichment_metrics_pending_without_clients(acc):
     assert rep["verdict"] != "accept"
     assert r4["source_attestation"]["pass"] is None
     assert r4["source_attestation"]["requires"]
-    r6 = rep["requirements"]["R6"]["metrics"]
-    assert all(m["pass"] is None for m in r6.values())
 
 
 @needs_ortools
@@ -100,16 +99,14 @@ def test_from_generator_configs_validate(acc, cfg_path):
     rep = validate(str(cfg_path), acc)
     assert rep["verdict"] in ("accept", "reject", "pending")
     assert rep["requirements"]["R2"]["metrics"]["is_eligible_mode1"]["value"] >= 0
-    # R3 считается всегда (детерминированное ядро)
-    assert rep["requirements"]["R3"]["metrics"]["morph_leak_rate"]["value"] is not None
 
 
 @needs_ortools
 def test_only_isolation_runs_selected_requirements(acc):
     """Режим отладки --only: выполняются только выбранные блоки."""
     from validation import validate as v_validate
-    rep = v_validate(str(V1 / "ai-safety-v1.json"), acc, only={"R1", "R3"})
-    assert set(rep["requirements"]) == {"R1", "R3"}
+    rep = v_validate(str(V1 / "ai-safety-v1.json"), acc, only={"R1"})
+    assert set(rep["requirements"]) == {"R1"}
     # невыбранные требования не считались и в required дают pending, не false
     assert "R2" in rep["pending_gates"] or rep["verdict"] in ("reject", "pending")
 
@@ -120,4 +117,4 @@ def test_acceptance_yaml_overrides(tmp_path):
     acc = load_acceptance(str(y))
     assert acc["required_gates"] == ["R1"]
     assert acc["version"] == "9.9.9"
-    assert "R3" in acc["thresholds"]          # дефолтные пороги сохранились
+    assert "R2" in acc["thresholds"]          # дефолтные пороги сохранились

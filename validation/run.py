@@ -1,12 +1,16 @@
-"""run.py — оркестратор пайплайна валидации (R1–R7) + CLI. Принимает v1-конфиг
-(tags/axes) и нативный v2-пул. exit: 0 accept · 1 reject · 2 pending.
+"""run.py — оркестратор пайплайна валидации + CLI. Активные критерии: R1, R2, R4, R5
+(R3 и R6 выведены из пайплайна 2026-06-12 до решений владельца — модули сохранены,
+но не подключены). Принимает v1-конфиг (tags/axes) и нативный v2-пул.
+exit: 0 accept · 1 reject · 2 pending.
 
-run.py — validation pipeline orchestrator (R1–R7) + CLI. Accepts a v1 config
-(tags/axes) and the native v2 pool. exit: 0 accept · 1 reject · 2 pending.
+run.py — validation pipeline orchestrator + CLI. Active criteria: R1, R2, R4, R5
+(R3 and R6 were taken out of the pipeline on 2026-06-12 pending owner decisions —
+the modules are kept but not wired in). Accepts a v1 config (tags/axes) and the
+native v2 pool. exit: 0 accept · 1 reject · 2 pending.
 
 Usage:
     python validation/run.py <config.json|pool.json> [--acceptance thresholds.yaml]
-                             [--out reports/] [--enrich off|live|cache] [--only R2,R3]
+                             [--out reports/] [--enrich off|live|cache] [--only R2,R4]
                              [--repro]
 """
 from __future__ import annotations
@@ -21,34 +25,37 @@ if __package__ in (None, ""):  # script mode: python validation/run.py
     sys.path.insert(0, str(HERE.parent))
     from validation import loader, enrich  # type: ignore
     from validation import report as rep  # type: ignore
-    from validation import (r1_volume, r2_solvability, r3_semanticity,  # type: ignore
+    from validation import (r1_volume, r2_solvability,  # type: ignore
                             r4_source_quality, r5_specialization,
-                            r6_link_strength, r7_reproducibility)
+                            r7_reproducibility)
 else:  # package mode: from validation import validate
     from . import loader, enrich
     from . import report as rep
-    from . import (r1_volume, r2_solvability, r3_semanticity,
+    from . import (r1_volume, r2_solvability,
                    r4_source_quality, r5_specialization,
-                   r6_link_strength, r7_reproducibility)
+                   r7_reproducibility)
+# r3_semanticity and r6_link_strength are intentionally not imported: both criteria
+# were taken out of the pipeline (2026-06-12) pending owner decisions
+# (R3 — the goldens fork; R6 — the source-space redesign)
 
 DEFAULT_ACCEPTANCE = {
-    "version": "2.2.0", "seed": 42,
+    "version": "2.3.0", "seed": 42,
     "embedder": {"model": "gemini-embedding-2", "dim": 768},
     "openalex_snapshot": None,
     # R7 is not a criterion anymore (2026-06-12): the validator passport
-    # (provenance, determinism flags, repro self-test) lives outside the gates
-    "required_gates": ["R1", "R2", "R3", "R4", "R5"],
+    # (provenance, repro self-test) lives outside the gates.
+    # R3 and R6 are out of the pipeline (2026-06-12) pending owner decisions;
+    # their threshold keys return together with the modules.
+    "required_gates": ["R1", "R2", "R4", "R5"],
     "thresholds": {
         "R1": {"min_terms": 16, "min_base_tags": 4, "min_tag_size": 4,
                "min_share_3sources": 0.90},
         "R2": {"min_vpy": 0.70, "min_vpy_mode2": None, "min_vpy_mode3": None,
                "n_samples": 400, "seed": 42},
-        "R3": {"morph_leak_link_tau": 0.74, "max_morph_leak": 0.05, "token_min_len": 3},
         "R4": {"min_sane_sources_per_term": 1,
                "min_share_sane": 0.90, "min_share_attested": 0.90,
                "min_independent_groups": 3, "citations_hi": 100},
         "R5": {"area_consistency_tau": 0.70},
-        "R6": {"margin_tau": 0.10},
     },
 }
 
@@ -97,10 +104,9 @@ def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None,
     runners = {
         "R1": lambda: r1_volume.run(cfg, members, term_tags, _thr(acceptance, "R1")),
         "R2": lambda: r2_solvability.run(cfg, members, term_tags, _thr(acceptance, "R2")),
-        "R3": lambda: r3_semanticity.run(cfg, members, term_tags, _thr(acceptance, "R3")),
         "R4": lambda: r4_source_quality.run(cfg, members, term_tags, _thr(acceptance, "R4"), en),
         "R5": lambda: r5_specialization.run(cfg, members, term_tags, _thr(acceptance, "R5"), en),
-        "R6": lambda: r6_link_strength.run(cfg, members, term_tags, _thr(acceptance, "R6"), en),
+        # R3/R6 are parked (2026-06-12): wire them back here once the owner decides
     }
     selected = set(only) if only else set(runners)
     requirements = {rid: fn() for rid, fn in runners.items() if rid in selected}
@@ -133,7 +139,7 @@ def main() -> int:
     ap.add_argument("--enrich", choices=["off", "live", "cache"], default="off",
                     help="off=детерм. ядро · live=arXiv+OpenAlex (кэш пишется) · cache=только кэш (офлайн)")
     ap.add_argument("--only", default=None,
-                    help="debug isolation: run only the listed requirements, e.g. --only R2,R3")
+                    help="debug isolation: run only the listed requirements, e.g. --only R2,R4")
     ap.add_argument("--repro", action="store_true",
                     help="validator self-test: two inner runs, diff of deterministic metrics must be 0")
     args = ap.parse_args()

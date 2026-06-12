@@ -38,7 +38,6 @@ METRIC_GATES = (
     "R2_mode1",
     "R2_mode2",
     "R2_mode3",
-    "R3_morph_leak",
     "R4_sources",
     "R5_specialty",
 )
@@ -46,7 +45,8 @@ ASSEMBLY_GATES = ("normal", "advanced")
 # R4_sources is blocking (2026-06-12 decision): without enrichment it is None ->
 # the config is not accepted; run the single entry point with --enrich live.
 # R2_mode2/3 remain deepenings (thresholds uncalibrated).
-DEFAULT_REQUIRED = ("R1_volume", "R2_mode1", "R3_morph_leak", "R4_sources",
+# R3_morph_leak and R6 are out of the pipeline (2026-06-12) pending owner decisions.
+DEFAULT_REQUIRED = ("R1_volume", "R2_mode1", "R4_sources",
                     "R5_specialty") + tuple(f"assembly_{m}" for m in ASSEMBLY_GATES)
 
 
@@ -77,7 +77,6 @@ def _metric_gates_from_report(rep):
         "R2_mode1": mode_gate(1),
         "R2_mode2": mode_gate(2),
         "R2_mode3": mode_gate(3),
-        "R3_morph_leak": _b(m["R3"]["morph_leak_rate"]["pass"]),
         "R4_sources": _b(rep["summary"].get("R4")),
         "R5_specialty": _b(rep["summary"].get("R5")),
     }

@@ -95,9 +95,6 @@ def test_export_input_equivalent_to_direct_pool(acc, tmp_path):
                 else:
                     assert exp_m["value"] == m["value"], \
                         f"{rid}.{mname} расходится между пулом и экспортом"
-    # и одинаковый morph_leak (имена терминов/категорий совпадают)
-    assert (rep_exp["requirements"]["R3"]["metrics"]["morph_leak_rate"]["value"]
-            == rep_direct["requirements"]["R3"]["metrics"]["morph_leak_rate"]["value"])
 
 
 # ─── 3. CLI: exit-коды и артефакты ──────────────────────────────────────

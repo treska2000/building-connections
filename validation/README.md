@@ -103,7 +103,10 @@ env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и откры
 
 Контракт каждой метрики единый: `{value, pass, deterministic, requires, gameable, counter}`.
 Метрика с невыполненным `requires` даёт `pass = None` (PENDING) и не блокирует вердикт, если её
-требование не входит в `required_gates` (дефолт: R1, R2, R3, R4, R5; R4 блокирующий — accept достижим только с обогащением). Пороги — в `thresholds.yaml`.
+требование не входит в `required_gates` (дефолт: R1, R2, R4, R5; R4 блокирующий — accept
+достижим только с обогащением). Пороги — в `thresholds.yaml`. R3 и R6 выведены из
+пайплайна (2026-06-12) до решений владельца — модули и их юнит-тесты сохранены,
+но в run.py/acceptance.py не подключены.
 
 ### R1 · Объём (`r1_volume.py`, детерминированно)
 
@@ -193,7 +196,11 @@ CP-SAT-модель точного покрытия (каждое слово р�
   формально решаема, но режим «с обманками» на ней не играется.
 - Вердикт R2 = mode-1 (pass_base); mode-2/3 — углубления: репортятся, гейт не блокируют.
 
-### R3 · Семантичность (`r3_semanticity.py` + `textutil.py`)
+### R3 · Семантичность (`r3_semanticity.py` + `textutil.py`) — выведен из пайплайна
+
+Решение 2026-06-12: критерий выведен из пайплайна до решения владельца по развилке
+golden'ов (оба REJECT на принятой метрике: чинить конфиги / поднять порог / калибровать).
+Модуль и юнит-тесты сохранены; описание ниже — справочное.
 
 - `morph_leak_rate` (детерм., ресёрч-конфиг 2026-06-08, held-out F1 = 0.858): токены имени =
   snowball-стем + помеченный 3-символьный суффикс (`~ase`), L = 3; IDF строится по именам
@@ -245,10 +252,10 @@ PENDING. Формальная проверка заполненности спе
 - `area_concentration`: модальное поле по всем терминам == ожидаемому ∧ modal_share ≥ 0.70 —
   ловит «размазанный» конфиг даже при проходной consistency.
 
-### R6 · Сила связи (`r6_link_strength.py`) — legacy
+### R6 · Сила связи (`r6_link_strength.py`) — выведен из пайплайна
 
-Старая спека (sim_in / sim_margin / pmi); все метрики pending (requires embedder), в
-`required_gates` не входит. Ждёт редизайна по ревизии 2026-06-11: cluster_cohesion +
+Старая спека (sim_in / sim_margin / pmi); выведен из пайплайна (2026-06-12), в run.py
+не подключён. Ждёт редизайна по ревизии 2026-06-11: cluster_cohesion +
 label_fidelity + NPMI термин↔термин в пространстве абстрактов ИСТОЧНИКОВ (sim к
 синтетическому описанию — самосогласованность генератора, не гейт).
 
@@ -378,7 +385,10 @@ open decision points — `spec_rework_plan_2026-06-11.md` in the research folder
 
 Every metric follows one contract: `{value, pass, deterministic, requires, gameable, counter}`.
 A metric whose `requires` is unmet yields `pass = None` (PENDING) and does not block the verdict
-unless its requirement is in `required_gates` (default: R1, R2, R3, R4, R5; R4 is blocking — accept is reachable only with enrichment). Thresholds live in `thresholds.yaml`.
+unless its requirement is in `required_gates` (default: R1, R2, R4, R5; R4 is blocking —
+accept is reachable only with enrichment). Thresholds live in `thresholds.yaml`. R3 and R6
+are out of the pipeline (2026-06-12) pending owner decisions — the modules and their unit
+tests are kept, but they are not wired into run.py/acceptance.py.
 
 ### R1 · Volume (`r1_volume.py`, deterministic)
 
@@ -469,7 +479,12 @@ plus an honest solver check:
   formally solvable, but the decoy mode is simply not playable on it.
 - R2 verdict = mode-1 (pass_base); modes 2/3 are deepenings: reported, never block the gate.
 
-### R3 · Semanticity (`r3_semanticity.py` + `textutil.py`)
+### R3 · Semanticity (`r3_semanticity.py` + `textutil.py`) — out of the pipeline
+
+2026-06-12 decision: the criterion is out of the pipeline pending the owner's call on
+the goldens fork (both REJECT on the accepted metric: fix the configs / raise the
+threshold / calibrate). The module and its unit tests are kept; the description below
+is reference material.
 
 - `morph_leak_rate` (deterministic, research config 2026-06-08, held-out F1 = 0.858): name
   tokens = Snowball stem + a marked 3-character suffix token (`~ase`), L = 3; IDF is built over
@@ -520,10 +535,10 @@ is PENDING. The formal specialty-filled check moved to R1.
 - `area_concentration`: the modal field across all terms == expected ∧ modal_share ≥ 0.70 —
   catches a "smeared" config even when consistency passes.
 
-### R6 · Link strength (`r6_link_strength.py`) — legacy
+### R6 · Link strength (`r6_link_strength.py`) — out of the pipeline
 
-The old spec (sim_in / sim_margin / pmi); all metrics pending (requires embedder), not in
-`required_gates`. Awaits the redesign per the 2026-06-11 revision: cluster_cohesion +
+The old spec (sim_in / sim_margin / pmi); out of the pipeline (2026-06-12), not wired
+into run.py. Awaits the redesign per the 2026-06-11 revision: cluster_cohesion +
 label_fidelity + term↔term NPMI in the space of SOURCE abstracts (similarity to a synthetic
 description is generator self-consistency, not a gate).
 
