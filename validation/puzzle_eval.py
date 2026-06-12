@@ -5,14 +5,14 @@ M5 распространённость термина (LLM-as-judge + web searc
 калибровка). Не часть приёмки v1/v2-конфигов (это acceptance.py) — инструмент
 для sampling_test.ipynb. M5 требует ANTHROPIC_API_KEY + пакет anthropic.
 
-puzzle_eval.py — LEGACY: quality of the LIVE game's term bank (old configs/*.json
+puzzle_eval.py — LEGACY: quality of the LIVE game's term bank (old configs/game/*.json
 formats), 5 metrics: M1 assembly+reproducibility (the real Node generator, checked
 against the golden.json baseline), M2–M4 bank structure (broad categories, depth),
 M5 term recognizability (LLM-as-judge + web search, double-checked, calibrated).
 Not part of v1/v2 config acceptance (that is acceptance.py) — a tool for
 sampling_test.ipynb. M5 needs ANTHROPIC_API_KEY + the anthropic package.
 
-CLI:      python validation/puzzle_eval.py configs/category-templates-new.json
+CLI:      python validation/puzzle_eval.py configs/game/category-templates-new.json
 Notebook: from puzzle_eval import run_report; run_report(path)
 """
 from __future__ import annotations
@@ -480,6 +480,6 @@ def run_report(config_path, lang="en", run_metric5=False, model="claude-sonnet-4
 
 if __name__ == "__main__":
     import sys
-    cfg = sys.argv[1] if len(sys.argv) > 1 else str(ROOT / "configs" / "category-templates-new.json")
+    cfg = sys.argv[1] if len(sys.argv) > 1 else str(ROOT / "configs" / "game" / "category-templates-new.json")
     lang = sys.argv[2] if len(sys.argv) > 2 else "en"
     run_report(cfg, lang=lang, run_metric5=bool(os.environ.get("ANTHROPIC_API_KEY")))

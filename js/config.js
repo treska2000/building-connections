@@ -8,7 +8,7 @@ const CONFIG = {
     TOOLTIP_DELAY: 300
 };
 
-// Concept definitions: populated from category-templates-new.json (and any custom templates)
+// Concept definitions: populated from configs/game/category-templates-new.json (and any custom templates)
 const CONCEPT_DEFINITIONS = {};
 
 // Category templates for puzzle generation - flat list of term entries
@@ -18,7 +18,7 @@ let CATEGORY_TEMPLATES = [];
 // Load category templates from JSON file (use import.meta.url so path resolves from module location)
 async function loadCategoryTemplates() {
     try {
-        const url = new URL('../configs/category-templates-new.json', import.meta.url).href;
+        const url = new URL('../configs/game/category-templates-new.json', import.meta.url).href;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Failed to load category templates: ${response.statusText}`);

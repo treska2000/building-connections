@@ -1,11 +1,46 @@
 # Validation: весь код валидации конфигов (движок R1–R7 + приёмка + адаптеры)
 
+> This document is bilingual: the full Russian version comes first; the English version follows below.
+> Документ двуязычный: сначала полная русская версия, ниже английская.
+
+---
+
+# Русская версия
+
 Независимый слой приёмки конфигов по спеке «Валидация требований конфигов».
 НЕ заменяет self-check генерации конфигов (`connections_v2.validate`, 11 publishability-гейтов) —
 это вторая, внешняя линия: генерация конфигов проверяет себя, приёмка проверяет её выход.
 
-Вход (авто-детект): v1-конфиг (`tags`/`axes`), input-schema (specialty строкой)
-или нативный v2-пул (`schema_version: connections_v2_config_pool`).
+## Что подаётся на вход
+
+Один JSON-файл с конфигом. Формат указывать не нужно — `loader.load_config`
+распознаёт его автоматически по структуре файла. Поддержаны три формата
+(три поколения пайплайна, валидатор принимает все):
+
+1. **v1-конфиг** — рабочий формат сборки, файлы в `configs/v1/`. Категории — в поле
+   `tags` (в старых файлах оно называется `axes` — тоже читается), у термина — имя,
+   список категорий и источники:
+
+   ```json
+   {"config_id": "ai-safety-v1",
+    "specialty": {"field": "computer science", "subfield": "ai", "area": "ai safety"},
+    "tags": [{"name": "Alignment Failures"}, ...],
+    "terms": [{"name": "Reward Hacking", "tags": ["Alignment Failures"],
+               "sources": [{"url": "https://arxiv.org/abs/2201.xxxxx"}]}, ...]}
+   ```
+
+2. **Input-schema** — то же самое, но как его выдаёт экспорт генерации конфигов
+   (`connections_v2.export_input`): единственное отличие — `specialty` не объект,
+   а одна строка (`"specialty": "diffusion text-to-image..."`).
+
+3. **Нативный v2-пул** — сырой выход генерации конфигов (например,
+   `connections-gen/pool.json`), без экспорта. Распознаётся по полю
+   `"schema_version": "connections_v2_config_pool"`; категории там — объекты
+   с `id`/`label`, у терминов — `home_category` и `candidate_categories`.
+   Loader сам приводит его к виду v1 (label-имена, home-категория первой).
+
+Практически: можно подать и файл из `configs/v1/`, и `pool.json` прямо из репозитория
+генерации конфигов — оба пройдут одним и тем же пайплайном.
 
 ## Состав папки (2026-06-11, реорганизация: код валидации здесь, в tests/ — только тесты)
 
@@ -16,7 +51,7 @@
   `puzzle_assembly.py` + `repro_check.mjs` / `enumerate.mjs` (Node-обвязка реального генератора);
 - **адаптеры**: `rich_to_v1.py`, `legacy_to_v1.py`, `from_generator.py` (E2E: генерация конфигов → вердикт);
 - **наследие**: `puzzle_eval.py` + `golden.json` — оценка банка терминов ЖИВОЙ игры
-  (старые форматы configs/*.json; M1 сборка/эталон, M2–M4 структура, M5 LLM-judge);
+  (старые форматы configs/game/*.json; M1 сборка/эталон, M2–M4 структура, M5 LLM-judge);
   используется sampling_test.ipynb. Предок движка config_metrics.py удалён 2026-06-11
   (история в git, маппинг гейтов — в docstring acceptance.py); ресёрч sem_vs_morph
   переехал в ресёрч-папку проекта.
@@ -24,7 +59,7 @@
 ## Запуск
 
 ```bash
-python validation/run.py configs/v1/ai-safety-v1.json --out reports/   # R1–R7, вердикт+exit-код
+python validation/run.py configs/v1/ai-safety-v1.json --out reports/   # R1-R7, вердикт+exit-код
 python validation/run.py ../connections-gen/pool.json --enrich live    # + arXiv/OpenAlex
 python validation/acceptance.py configs/v1/ai-safety-v1.json           # метрики + сборка (Node)
 python validation/from_generator.py ../connections-gen/seeds --batch   # батч rich-пулов
@@ -49,13 +84,7 @@ rep = validate_full("pool.json", load_acceptance("validation/thresholds.yaml"))
 env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и открытые развилки —
 `spec_rework_plan_2026-06-11.md` в ресёрч-папке.
 
----
-
-# Метрики R1–R7: логика реализации / Metrics R1–R7: implementation logic
-
-Двуязычное описание: сначала русский, затем английский. / Bilingual: Russian first, then English.
-
-## Русский
+## Метрики R1–R7: логика реализации
 
 Контракт каждой метрики единый: `{value, pass, deterministic, requires, gameable, counter}`.
 Метрика с невыполненным `requires` даёт `pass = None` (⏳) и не валит вердикт, если её
@@ -151,7 +180,87 @@ R1_volume, R2_mode1, R3_morph_leak, R5_specialty + обе сборки.
 
 ---
 
-## English
+# English version
+
+An independent config-acceptance layer implementing the "Config requirements validation"
+spec. It does NOT replace the config generation's own self-check (`connections_v2.validate`,
+11 publishability gates) — it is the second, external line: config generation checks itself,
+acceptance checks its output.
+
+## What the input is
+
+A single JSON config file. No format flag is needed — `loader.load_config` recognizes
+the format automatically from the file's structure. Three formats are supported
+(three generations of the pipeline; the validator accepts them all):
+
+1. **v1 config** — the assembly-side working format, files in `configs/v1/`. Categories
+   live in the `tags` field (older files call it `axes` — also accepted); each term has
+   a name, its categories, and sources:
+
+   ```json
+   {"config_id": "ai-safety-v1",
+    "specialty": {"field": "computer science", "subfield": "ai", "area": "ai safety"},
+    "tags": [{"name": "Alignment Failures"}, ...],
+    "terms": [{"name": "Reward Hacking", "tags": ["Alignment Failures"],
+               "sources": [{"url": "https://arxiv.org/abs/2201.xxxxx"}]}, ...]}
+   ```
+
+2. **Input schema** — the same thing as emitted by the config-generation export
+   (`connections_v2.export_input`): the only difference is that `specialty` is a single
+   string (`"specialty": "diffusion text-to-image..."`) rather than an object.
+
+3. **Native v2 pool** — the raw config-generation output (e.g.
+   `connections-gen/pool.json`), no export step. Recognized by the
+   `"schema_version": "connections_v2_config_pool"` field; categories there are objects
+   with `id`/`label`, and terms carry `home_category` and `candidate_categories`.
+   The loader normalizes it to the v1 shape itself (label names, home category first).
+
+In practice: you can feed either a file from `configs/v1/` or `pool.json` straight from
+the config-generation repository — both go through the same pipeline.
+
+## Folder contents (2026-06-11 reorganization: validation code lives here, tests/ holds tests only)
+
+- **R1–R7 engine**: `loader`, `textutil`, `solver` (CP-SAT: modes 1/2/3 + trap_quality),
+  `r1_volume` … `r7_reproducibility`, `enrich` (arXiv+OpenAlex, live+cache+offline),
+  `report`, `run` (validate/validate_full + CLI), `schema_check`, `thresholds.yaml` (thresholds, required_gates);
+- **acceptance**: `acceptance.py` — the single verdict entry point (metric gates + assembly gates),
+  `puzzle_assembly.py` + `repro_check.mjs` / `enumerate.mjs` (the Node harness around the real generator);
+- **adapters**: `rich_to_v1.py`, `legacy_to_v1.py`, `from_generator.py` (E2E: config generation → verdict);
+- **legacy**: `puzzle_eval.py` + `golden.json` — quality evaluation of the LIVE game's term bank
+  (old configs/game/*.json formats; M1 assembly/baseline, M2–M4 structure, M5 LLM judge);
+  used by sampling_test.ipynb. The engine's predecessor config_metrics.py was removed on
+  2026-06-11 (history in git, the gate-name mapping lives in the acceptance.py docstring);
+  the sem_vs_morph research moved to the project's research folder.
+
+## Usage
+
+```bash
+python validation/run.py configs/v1/ai-safety-v1.json --out reports/   # R1–R7, verdict+exit code
+python validation/run.py ../connections-gen/pool.json --enrich live    # + arXiv/OpenAlex
+python validation/acceptance.py configs/v1/ai-safety-v1.json           # metrics + assembly (Node)
+python validation/from_generator.py ../connections-gen/seeds --batch   # batch over rich pools
+# exit: 0 accept · 1 reject · 2 pending
+```
+
+```python
+from validation import validate_full, load_acceptance
+rep = validate_full("pool.json", load_acceptance("validation/thresholds.yaml"))
+```
+
+## Tests (pytest, from the repo root; tests/ holds tests only)
+
+- `tests/test_validation_unit.py` — unit: textutil/solver/loader/R3/R4/R5 on synthetic data and fake clients (no network);
+- `tests/test_acceptance.py` — acceptance.py gates (spec scenarios T1–T6, successor of test_config_metrics.py);
+- `tests/test_validation_integration.py` — validate() on the repository configs, determinism, required_gates;
+- `tests/test_validation_e2e.py` — v2 pool → (export_input | direct) → validation; CLI exit codes; from-generator batch;
+- `tests/test_from_generator.py` — rich pool → rich_to_v1 → acceptance.
+
+Dependencies: `validation/requirements.txt` (ortools — R2; nltk — R3 stemming, optional;
+PyYAML — thresholds, optional). R4/R5 enrichment: arXiv + OpenAlex, cache in
+`validation/enrich_cache/`, env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Architecture and
+open decision points — `spec_rework_plan_2026-06-11.md` in the research folder.
+
+## Metrics R1–R7: implementation logic
 
 Every metric follows one contract: `{value, pass, deterministic, requires, gameable, counter}`.
 A metric whose `requires` is unmet yields `pass = None` (⏳) and does not block the verdict
@@ -186,7 +295,7 @@ plus an honest solver check:
   member_of (the tempting wrong quad exists only because of decoy edges);
   valid₃ = `is_unique(member_of)` ∧ trap_quality ≥ 1. Without explicit decoys — pending until
   the embedder (margin-based decoy inference).
-- R2 verdict = mode-1 (pass_base); mode-2/3 are deepenings: reported, never block the gate.
+- R2 verdict = mode-1 (pass_base); modes 2/3 are deepenings: reported, never block the gate.
 
 ### R3 · Semanticity (`r3_semanticity.py` + `textutil.py`)
 
