@@ -1,0 +1,2110 @@
+{
+  "config_id": "reasoning-v1",
+  "title": "Reasoning & LLM Agents",
+  "specialty": {
+    "field": "computer science",
+    "subfield": "ai",
+    "area": "llm reasoning"
+  },
+  "whitelist_sources": [
+    "arxiv.org",
+    "alignmentforum.org",
+    "lesswrong.com",
+    "aisafety.info",
+    "en.wikipedia.org",
+    "distill.pub",
+    "anthropic.com",
+    "deepmind.google",
+    "openai.com",
+    "80000hours.org"
+  ],
+  "axes": [
+    {
+      "name": "Reasoning"
+    },
+    {
+      "name": "Prompting"
+    },
+    {
+      "name": "Training Paradigm"
+    },
+    {
+      "name": "Latent Reasoning"
+    },
+    {
+      "name": "Efficiency"
+    },
+    {
+      "name": "Inductive Reasoning"
+    },
+    {
+      "name": "Self-Improvement"
+    },
+    {
+      "name": "Bootstrapping"
+    },
+    {
+      "name": "Inference Efficiency"
+    },
+    {
+      "name": "Test-Time Compute"
+    },
+    {
+      "name": "Long Context"
+    },
+    {
+      "name": "Evaluation"
+    },
+    {
+      "name": "Inference"
+    },
+    {
+      "name": "Scaling"
+    },
+    {
+      "name": "Sampling"
+    },
+    {
+      "name": "Verifier"
+    },
+    {
+      "name": "Aggregation"
+    },
+    {
+      "name": "Verification"
+    },
+    {
+      "name": "RL"
+    },
+    {
+      "name": "Iteration"
+    },
+    {
+      "name": "Critique"
+    },
+    {
+      "name": "Reward Model"
+    },
+    {
+      "name": "Credit Assignment"
+    },
+    {
+      "name": "Reward Design"
+    },
+    {
+      "name": "Reliability"
+    },
+    {
+      "name": "Bias"
+    },
+    {
+      "name": "Uncertainty"
+    },
+    {
+      "name": "Judge Model"
+    },
+    {
+      "name": "Agent"
+    },
+    {
+      "name": "Open-ended Tasks"
+    },
+    {
+      "name": "Critic"
+    },
+    {
+      "name": "Code Generation"
+    },
+    {
+      "name": "Feedback"
+    },
+    {
+      "name": "Agents"
+    },
+    {
+      "name": "Architecture"
+    },
+    {
+      "name": "Tool Use"
+    },
+    {
+      "name": "Multi-Agent"
+    },
+    {
+      "name": "Composition"
+    },
+    {
+      "name": "Coordination"
+    },
+    {
+      "name": "Workflow"
+    },
+    {
+      "name": "Planning"
+    },
+    {
+      "name": "Agent Design"
+    },
+    {
+      "name": "Tools"
+    },
+    {
+      "name": "Function Calling"
+    },
+    {
+      "name": "Web Agent"
+    },
+    {
+      "name": "Browser"
+    },
+    {
+      "name": "Real-world Task"
+    },
+    {
+      "name": "GUI Agent"
+    },
+    {
+      "name": "Visual Grounding"
+    },
+    {
+      "name": "Action"
+    },
+    {
+      "name": "Code Agent"
+    },
+    {
+      "name": "Software Engineering"
+    },
+    {
+      "name": "Embodied"
+    },
+    {
+      "name": "Hybrid"
+    },
+    {
+      "name": "Search"
+    },
+    {
+      "name": "Retrieval"
+    },
+    {
+      "name": "Search Strategy"
+    },
+    {
+      "name": "Exploration"
+    },
+    {
+      "name": "Cognitive Model"
+    },
+    {
+      "name": "Inference Systems"
+    },
+    {
+      "name": "Agent Infra"
+    },
+    {
+      "name": "KV Cache"
+    },
+    {
+      "name": "Multi-Agent RL"
+    },
+    {
+      "name": "Policy"
+    },
+    {
+      "name": "Benchmark Design"
+    },
+    {
+      "name": "Methodology"
+    },
+    {
+      "name": "Alignment"
+    },
+    {
+      "name": "Post-training"
+    },
+    {
+      "name": "Preference Learning"
+    },
+    {
+      "name": "Loss Function"
+    },
+    {
+      "name": "Policy Optimization"
+    },
+    {
+      "name": "Emergent Behavior"
+    },
+    {
+      "name": "Objective"
+    },
+    {
+      "name": "Async Training"
+    },
+    {
+      "name": "Self-Play"
+    },
+    {
+      "name": "Importance Weighting"
+    },
+    {
+      "name": "Robustness"
+    },
+    {
+      "name": "Causal Inference"
+    },
+    {
+      "name": "Data Quality"
+    },
+    {
+      "name": "Preprocessing"
+    },
+    {
+      "name": "Preference Optimization"
+    },
+    {
+      "name": "Information Theory"
+    },
+    {
+      "name": "DPO Variant"
+    },
+    {
+      "name": "Modular Alignment"
+    },
+    {
+      "name": "Importance Sampling"
+    },
+    {
+      "name": "Personalization"
+    },
+    {
+      "name": "User Modeling"
+    },
+    {
+      "name": "Sociotechnical"
+    },
+    {
+      "name": "Position Paper"
+    },
+    {
+      "name": "Fine-Tuning"
+    },
+    {
+      "name": "Error Memory"
+    },
+    {
+      "name": "Continual Learning"
+    },
+    {
+      "name": "Forgetting"
+    },
+    {
+      "name": "Federated Learning"
+    },
+    {
+      "name": "PEFT"
+    },
+    {
+      "name": "Privacy"
+    },
+    {
+      "name": "Model Merging"
+    },
+    {
+      "name": "Multi-task"
+    },
+    {
+      "name": "Memory"
+    },
+    {
+      "name": "Decoding"
+    },
+    {
+      "name": "Acceleration"
+    },
+    {
+      "name": "Edge"
+    },
+    {
+      "name": "Latency"
+    },
+    {
+      "name": "Capability"
+    },
+    {
+      "name": "Parallelism"
+    },
+    {
+      "name": "Training Systems"
+    },
+    {
+      "name": "Positional Encoding"
+    },
+    {
+      "name": "Attention"
+    },
+    {
+      "name": "ICL"
+    },
+    {
+      "name": "Mechanistic Interpretability"
+    },
+    {
+      "name": "Meta-Learning"
+    },
+    {
+      "name": "State-Space Models"
+    },
+    {
+      "name": "Theory"
+    },
+    {
+      "name": "Inference Optimization"
+    },
+    {
+      "name": "Decomposition"
+    },
+    {
+      "name": "RAG"
+    },
+    {
+      "name": "Grounding"
+    },
+    {
+      "name": "Routing"
+    },
+    {
+      "name": "Specialization"
+    },
+    {
+      "name": "Security"
+    },
+    {
+      "name": "Adversarial"
+    },
+    {
+      "name": "Knowledge Graph"
+    },
+    {
+      "name": "Semi-Supervised"
+    },
+    {
+      "name": "Unlearning"
+    },
+    {
+      "name": "Safety"
+    },
+    {
+      "name": "Attack"
+    },
+    {
+      "name": "Data Valuation"
+    },
+    {
+      "name": "Attribution"
+    },
+    {
+      "name": "Influence"
+    },
+    {
+      "name": "Steering"
+    },
+    {
+      "name": "MLLM"
+    },
+    {
+      "name": "Hallucination"
+    },
+    {
+      "name": "Failure Mode"
+    },
+    {
+      "name": "Watermark"
+    },
+    {
+      "name": "Detection"
+    },
+    {
+      "name": "Calibration"
+    },
+    {
+      "name": "Factuality"
+    },
+    {
+      "name": "Conformal Prediction"
+    },
+    {
+      "name": "Abstention"
+    },
+    {
+      "name": "Context"
+    },
+    {
+      "name": "Cybersecurity"
+    },
+    {
+      "name": "Agent Safety"
+    },
+    {
+      "name": "Risk"
+    },
+    {
+      "name": "Mechanism Design"
+    },
+    {
+      "name": "Incentives"
+    },
+    {
+      "name": "OOD"
+    },
+    {
+      "name": "Benchmark"
+    },
+    {
+      "name": "Contamination"
+    },
+    {
+      "name": "Benchmark Hygiene"
+    },
+    {
+      "name": "Math"
+    },
+    {
+      "name": "Instruction Following"
+    },
+    {
+      "name": "Controllability"
+    },
+    {
+      "name": "Interaction"
+    },
+    {
+      "name": "Generalization"
+    },
+    {
+      "name": "Taxonomy"
+    },
+    {
+      "name": "Fairness"
+    },
+    {
+      "name": "Multilingual"
+    },
+    {
+      "name": "Disentanglement"
+    },
+    {
+      "name": "Benchmark Methodology"
+    },
+    {
+      "name": "Documentation"
+    },
+    {
+      "name": "Reporting"
+    },
+    {
+      "name": "Meta-Science"
+    },
+    {
+      "name": "Conferences"
+    },
+    {
+      "name": "Metrics"
+    },
+    {
+      "name": "Multimodal"
+    },
+    {
+      "name": "Foundation Model"
+    },
+    {
+      "name": "Spatial Reasoning"
+    },
+    {
+      "name": "3D"
+    },
+    {
+      "name": "Visual Reasoning"
+    },
+    {
+      "name": "Cognition"
+    },
+    {
+      "name": "Associative Reasoning"
+    },
+    {
+      "name": "Open-ended"
+    },
+    {
+      "name": "Robotics"
+    },
+    {
+      "name": "VLA"
+    },
+    {
+      "name": "Dual-Process"
+    },
+    {
+      "name": "Expressivity"
+    },
+    {
+      "name": "Transformer"
+    },
+    {
+      "name": "Computability"
+    },
+    {
+      "name": "Compositionality"
+    },
+    {
+      "name": "Overfitting"
+    },
+    {
+      "name": "Diagnostics"
+    },
+    {
+      "name": "Algorithmic Reasoning"
+    },
+    {
+      "name": "Combinatorial"
+    },
+    {
+      "name": "Scaling Laws"
+    },
+    {
+      "name": "Forecasting"
+    },
+    {
+      "name": "Agent Analysis"
+    },
+    {
+      "name": "Counterfactual"
+    },
+    {
+      "name": "Environments"
+    },
+    {
+      "name": "Domain Specialisation"
+    },
+    {
+      "name": "Science"
+    },
+    {
+      "name": "Active Learning"
+    },
+    {
+      "name": "Data Generation"
+    },
+    {
+      "name": "Cost"
+    },
+    {
+      "name": "Graph"
+    },
+    {
+      "name": "Time Series"
+    },
+    {
+      "name": "Tokenization"
+    },
+    {
+      "name": "Bridging"
+    },
+    {
+      "name": "Reasoning Dataset"
+    },
+    {
+      "name": "Diversity"
+    },
+    {
+      "name": "Pre-training"
+    },
+    {
+      "name": "Classical AI"
+    },
+    {
+      "name": "Reasoning Framework"
+    },
+    {
+      "name": "Algorithm"
+    },
+    {
+      "name": "CSP"
+    },
+    {
+      "name": "Heuristic"
+    },
+    {
+      "name": "Variable Ordering"
+    },
+    {
+      "name": "PCG"
+    },
+    {
+      "name": "Generation"
+    },
+    {
+      "name": "Constraints"
+    },
+    {
+      "name": "Perception"
+    },
+    {
+      "name": "Constraint"
+    },
+    {
+      "name": "Reachability"
+    },
+    {
+      "name": "NP"
+    },
+    {
+      "name": "Symbolic"
+    },
+    {
+      "name": "Probe"
+    },
+    {
+      "name": "Empirical Result"
+    },
+    {
+      "name": "Search Depth"
+    },
+    {
+      "name": "Algorithms"
+    },
+    {
+      "name": "Optimization"
+    },
+    {
+      "name": "Imitation Learning"
+    },
+    {
+      "name": "Pretraining"
+    },
+    {
+      "name": "Emergence"
+    },
+    {
+      "name": "Causal LM"
+    },
+    {
+      "name": "Word Game"
+    },
+    {
+      "name": "Metacognition"
+    },
+    {
+      "name": "Benchmark Framing"
+    },
+    {
+      "name": "GFlowNet"
+    },
+    {
+      "name": "Generative Model"
+    },
+    {
+      "name": "Reward"
+    },
+    {
+      "name": "Faithfulness"
+    },
+    {
+      "name": "Interpretability"
+    },
+    {
+      "name": "CoT"
+    },
+    {
+      "name": "Trust"
+    },
+    {
+      "name": "Validity"
+    },
+    {
+      "name": "Assessment Theory"
+    }
+  ],
+  "terms": [
+    {
+      "name": "Chain-of-Thought (CoT)",
+      "axes": [
+        "Reasoning",
+        "Prompting",
+        "Training Paradigm"
+      ],
+      "description_en": "A prompting and training paradigm where the model produces explicit intermediate reasoning steps before the final answer; the substrate over which verifiers, RL and search operate.",
+      "description_ru": "Парадигма промптинга и обучения, при которой модель явно генерирует промежуточные шаги рассуждения до финального ответа; основа, поверх которой работают верификаторы, RL и поиск."
+    },
+    {
+      "name": "System-1.5 Reasoning",
+      "axes": [
+        "Reasoning",
+        "Latent Reasoning",
+        "Efficiency"
+      ],
+      "description_en": "A reasoning regime between fast intuitive (System-1) generation and slow explicit CoT (System-2), realised via dynamic shortcuts traversing language and latent spaces.",
+      "description_ru": "Режим рассуждения между быстрой интуитивной генерацией (Система 1) и медленным явным CoT (Система 2), реализуемый через динамические сокращения в языковом и латентном пространствах."
+    },
+    {
+      "name": "Inductive Reasoning Bootstrapping",
+      "axes": [
+        "Inductive Reasoning",
+        "Self-Improvement",
+        "Bootstrapping"
+      ],
+      "description_en": "Iteratively generating, scoring and reusing hypotheses to grow the model's inductive-reasoning skill without human-labeled rationales.",
+      "description_ru": "Итеративная генерация, оценка и переиспользование гипотез для развития навыка индуктивного вывода без размеченных людьми рассуждений."
+    },
+    {
+      "name": "Early-Stopping Reasoning",
+      "axes": [
+        "Inference Efficiency",
+        "Reasoning",
+        "Test-Time Compute"
+      ],
+      "description_en": "Empirical finding that longer chains are not always better — adaptive stopping criteria can match or beat fixed-depth deep reasoning while cutting cost.",
+      "description_ru": "Эмпирическое наблюдение: более длинные цепочки не всегда лучше — адаптивные критерии остановки могут не уступать глубокому рассуждению при меньшей цене."
+    },
+    {
+      "name": "Long-Context Reasoning",
+      "axes": [
+        "Long Context",
+        "Reasoning",
+        "Evaluation"
+      ],
+      "description_en": "The capability dimension separating long-context retrieval (needle-in-a-haystack) from genuine long-range multi-step reasoning; recent work shows the latter is the bottleneck.",
+      "description_ru": "Способность, отличающая поиск в длинном контексте («иголка в стоге») от настоящего длинно-дистанционного многошагового рассуждения; именно второе ограничивает модели."
+    },
+    {
+      "name": "Test-Time Scaling",
+      "axes": [
+        "Inference",
+        "Scaling",
+        "Sampling"
+      ],
+      "description_en": "Spending compute at inference (best-of-N, search, sampling, self-consistency) to trade tokens for accuracy without retraining.",
+      "description_ru": "Трата вычислений на инференсе (best-of-N, поиск, выборки, self-consistency) ради точности — без переобучения."
+    },
+    {
+      "name": "Best-of-N Sampling",
+      "axes": [
+        "Inference",
+        "Sampling",
+        "Verifier"
+      ],
+      "description_en": "Generate N candidate responses and pick the best by a scorer or verifier; canonical test-time-compute strategy.",
+      "description_ru": "Сгенерировать N кандидатов и выбрать лучшего скорером/верификатором — каноническая стратегия инференс-вычислений."
+    },
+    {
+      "name": "Self-Consistency",
+      "axes": [
+        "Reasoning",
+        "Aggregation",
+        "Inference"
+      ],
+      "description_en": "Sample multiple CoTs and aggregate (majority vote or weighted) to mitigate single-trace errors.",
+      "description_ru": "Сэмплировать несколько CoT и агрегировать результат (мажоритарным или взвешенным голосованием) для снижения ошибок одной цепочки."
+    },
+    {
+      "name": "Self-Verification",
+      "axes": [
+        "Verification",
+        "Self-Improvement",
+        "RL"
+      ],
+      "description_en": "Training or prompting the model to assess its own answer's correctness; recent work uses RL incentives to make this honest rather than sycophantic.",
+      "description_ru": "Обучение или промпт модели оценивать правильность собственного ответа; новые работы вводят RL-стимулы, чтобы проверка была честной, а не угодливой."
+    },
+    {
+      "name": "Self-Refinement",
+      "axes": [
+        "Self-Improvement",
+        "Iteration",
+        "Critique"
+      ],
+      "description_en": "Iterative loop in which the model critiques and rewrites its own output, often via triangular or cross-model consistency signals.",
+      "description_ru": "Итеративный цикл, в котором модель критикует и переписывает собственный ответ — часто с использованием сигналов триангулярной или кросс-модельной согласованности."
+    },
+    {
+      "name": "Process Reward Model (PRM)",
+      "axes": [
+        "Verification",
+        "Reward Model",
+        "RL"
+      ],
+      "description_en": "Verifier that scores each intermediate step of a CoT, enabling fine-grained reward shaping and step-level RL.",
+      "description_ru": "Верификатор, оценивающий каждый промежуточный шаг CoT, что позволяет пошагово формировать награду и применять RL на уровне шагов."
+    },
+    {
+      "name": "Outcome Reward Model (ORM)",
+      "axes": [
+        "Verification",
+        "Reward Model",
+        "Credit Assignment"
+      ],
+      "description_en": "Verifier that scores only the final answer; cheaper than PRM but weaker for credit assignment in long chains.",
+      "description_ru": "Верификатор, оценивающий только итоговый ответ — дешевле PRM, но слабее в распределении заслуг по длинной цепочке."
+    },
+    {
+      "name": "Verifiable Rewards (RLVR)",
+      "axes": [
+        "RL",
+        "Verification",
+        "Reward Design"
+      ],
+      "description_en": "Reward signal derived from an automatic verifier (unit-test pass, ground-truth check) — the engine behind R1-style reasoning RL.",
+      "description_ru": "Сигнал награды из автоматического верификатора (прохождение юнит-тестов, сверка с ground truth) — двигатель R1-подобного reasoning-RL."
+    },
+    {
+      "name": "LLM-as-a-Judge",
+      "axes": [
+        "Evaluation",
+        "Reliability",
+        "Bias"
+      ],
+      "description_en": "Using a strong LLM as an automatic evaluator of other models' outputs; convenient but suffers from rating indeterminacy, position bias and self-preference.",
+      "description_ru": "Использование сильной LLM как автоматического оценщика выходов других моделей; удобно, но страдает от индетерминированности рейтингов, позиционного смещения и самопредпочтения."
+    },
+    {
+      "name": "Distributional Judge",
+      "axes": [
+        "Evaluation",
+        "Uncertainty",
+        "Judge Model"
+      ],
+      "description_en": "A judge that outputs a distribution over ratings rather than a single point estimate, exposing model uncertainty and inter-rater variability.",
+      "description_ru": "Судья, выдающий распределение оценок, а не точечную оценку, чем эксплицируется неопределённость модели и вариативность между «оценщиками»."
+    },
+    {
+      "name": "Agent-as-a-Judge",
+      "axes": [
+        "Evaluation",
+        "Agent",
+        "Open-ended Tasks"
+      ],
+      "description_en": "Pattern where an autonomous agent (not a static prompt) inspects another agent's trajectory, web pages, tool calls — used to evaluate open-ended agentic tasks.",
+      "description_ru": "Паттерн, в котором автономный агент (а не статический промпт) исследует траекторию другого агента, веб-страницы и вызовы инструментов — нужен для оценки открытых агентских задач."
+    },
+    {
+      "name": "LLM-as-a-Critique",
+      "axes": [
+        "Critic",
+        "Code Generation",
+        "Feedback"
+      ],
+      "description_en": "Lightweight critic model that issues localized critiques on candidate outputs (e.g., code patches) instead of single scalar scores.",
+      "description_ru": "Лёгкая модель-критик, выдающая локализованные замечания к кандидатам (например, к патчам кода) вместо одной скалярной оценки."
+    },
+    {
+      "name": "Agentic Loop",
+      "axes": [
+        "Agents",
+        "Architecture",
+        "Tool Use"
+      ],
+      "description_en": "The iterated cycle observe → think → act → observe that defines an LLM agent; differs from one-shot generation in that the model interacts with tools, environments and memory.",
+      "description_ru": "Итеративный цикл наблюдение → размышление → действие → наблюдение, определяющий LLM-агента: отличие от one-shot генерации в том, что модель взаимодействует с инструментами, средой и памятью."
+    },
+    {
+      "name": "Multi-Agent Framework",
+      "axes": [
+        "Multi-Agent",
+        "Composition",
+        "Coordination"
+      ],
+      "description_en": "Composition of multiple specialised LLM agents (planner, worker, critic) that collaborate or compete; recurring 2025 motif is heterogeneous model assemblies.",
+      "description_ru": "Композиция нескольких специализированных LLM-агентов (планировщик, исполнитель, критик), кооперирующих или конкурирующих; в 2025 году в моде гетерогенные ансамбли моделей."
+    },
+    {
+      "name": "Agentic Workflow",
+      "axes": [
+        "Workflow",
+        "Planning",
+        "Agent Design"
+      ],
+      "description_en": "A graph of agent steps (tool calls, sub-prompts, branches) authored to solve a class of tasks; emerging direction makes the workflow itself dynamic and learnable.",
+      "description_ru": "Граф шагов агента (вызовы инструментов, под-промпты, ветвления), описывающий решение класса задач; новое направление — делать сам воркфлоу динамическим и обучаемым."
+    },
+    {
+      "name": "Tool Use",
+      "axes": [
+        "Tools",
+        "Agents",
+        "Function Calling"
+      ],
+      "description_en": "Capability of an LLM to call external functions/APIs (search, code execution, calculators, custom tools) as part of its reasoning trace.",
+      "description_ru": "Способность LLM вызывать внешние функции/API (поиск, исполнение кода, калькуляторы, кастомные инструменты) в рамках цепочки рассуждения."
+    },
+    {
+      "name": "Web Agent",
+      "axes": [
+        "Web Agent",
+        "Browser",
+        "Real-world Task"
+      ],
+      "description_en": "Autonomous agent that perceives and acts in a browser environment — clicking, filling forms, parsing DOMs to complete real-world web tasks.",
+      "description_ru": "Автономный агент, действующий в браузерной среде — клики, формы, парсинг DOM для выполнения реальных задач в вебе."
+    },
+    {
+      "name": "GUI Agent",
+      "axes": [
+        "GUI Agent",
+        "Visual Grounding",
+        "Action"
+      ],
+      "description_en": "Agent that interprets and operates graphical user interfaces by perceiving the screen (pixels or A11Y tree) and issuing mouse/keyboard actions.",
+      "description_ru": "Агент, который интерпретирует и управляет графическими интерфейсами, воспринимая экран (пиксели / A11Y-дерево) и отправляя действия мыши и клавиатуры."
+    },
+    {
+      "name": "SWE Agent",
+      "axes": [
+        "Code Agent",
+        "Software Engineering",
+        "Tool Use"
+      ],
+      "description_en": "Software-engineering agent that edits real codebases — locates the bug, writes a patch, runs the test suite; canonical benchmarks: SWE-bench family.",
+      "description_ru": "Software-engineering агент, который правит реальные кодовые базы — находит баг, пишет патч, запускает тесты; канонические бенчмарки — семейство SWE-bench."
+    },
+    {
+      "name": "Embodied Web Agent",
+      "axes": [
+        "Embodied",
+        "Web Agent",
+        "Hybrid"
+      ],
+      "description_en": "Hybrid agent that operates both in a physical environment and on the web, bridging perception–action loops with knowledge retrieval.",
+      "description_ru": "Гибридный агент, действующий и в физической среде, и в вебе — связывает циклы восприятие-действие с поиском знаний."
+    },
+    {
+      "name": "Agentic Search",
+      "axes": [
+        "Search",
+        "Agent",
+        "Retrieval"
+      ],
+      "description_en": "Search formulated as an open-ended agent task — the agent decides what queries to issue, how to verify, when to stop; evaluated end-to-end rather than by snippet ranking.",
+      "description_ru": "Поиск как открытая агентская задача — агент сам решает, какие запросы делать, как проверять и когда остановиться; оценивается end-to-end, а не по ранжированию сниппетов."
+    },
+    {
+      "name": "Information Foraging",
+      "axes": [
+        "Search Strategy",
+        "Exploration",
+        "Cognitive Model"
+      ],
+      "description_en": "Search behaviour modeled on animal foraging: agent decides when to keep exploiting a patch of sources vs. move on, using value-of-information signals.",
+      "description_ru": "Поведение поиска по модели фуражинга у животных: агент решает, продолжать ли «эксплуатировать» текущий источник или искать новый, опираясь на ценность информации."
+    },
+    {
+      "name": "Session-Aware Agent Serving",
+      "axes": [
+        "Inference Systems",
+        "Agent Infra",
+        "KV Cache"
+      ],
+      "description_en": "Inference-system optimization that exploits intra-session reuse (cached prefixes, shared state) to cut the cost-quality tradeoff for long agent sessions.",
+      "description_ru": "Оптимизация инференса, использующая повторение внутри сессии (кэш префиксов, общее состояние), чтобы снять компромисс «цена-качество» в длинных агентских сессиях."
+    },
+    {
+      "name": "Multi-Agent Coordination",
+      "axes": [
+        "Multi-Agent RL",
+        "Coordination",
+        "Policy"
+      ],
+      "description_en": "Joint policy and communication problem for multiple agents acting in the same environment — networked MARL, cooperative graphs, role specialisation.",
+      "description_ru": "Задача совместной политики и коммуникации для нескольких агентов в одной среде — networked MARL, кооперативные графы, ролевая специализация."
+    },
+    {
+      "name": "Agentic Benchmark Rigor",
+      "axes": [
+        "Benchmark Design",
+        "Evaluation",
+        "Methodology"
+      ],
+      "description_en": "Methodological discipline for designing agent evaluations — decontamination, deterministic environments, leakage controls, sandboxing — because agents can game and exploit benchmarks more than QA models.",
+      "description_ru": "Методологическая дисциплина для дизайна оценок агентов — деконтаминация, детерминированные среды, контроль утечек, песочница — поскольку агенты эксплуатируют бенчмарки сильнее, чем QA-модели."
+    },
+    {
+      "name": "RLHF",
+      "axes": [
+        "RL",
+        "Alignment",
+        "Post-training"
+      ],
+      "description_en": "Reinforcement learning from human preferences over model outputs; the prototypical post-training paradigm now being supplanted by DPO and RLVR for reasoning.",
+      "description_ru": "Обучение с подкреплением на человеческих предпочтениях; прототипная пост-тренировочная парадигма, постепенно вытесняемая DPO и RLVR в задачах рассуждения."
+    },
+    {
+      "name": "DPO (Direct Preference Optimization)",
+      "axes": [
+        "Preference Learning",
+        "Alignment",
+        "Loss Function"
+      ],
+      "description_en": "Closed-form alternative to RLHF: optimize a logistic loss on preference pairs without a separate reward model — simpler and stabler.",
+      "description_ru": "Закрытое решение в альтернативу RLHF: оптимизировать логистическую функцию на парах предпочтений без отдельной reward-модели — проще и стабильнее."
+    },
+    {
+      "name": "GRPO (Group Relative Policy Optimization)",
+      "axes": [
+        "Policy Optimization",
+        "RL",
+        "Reasoning"
+      ],
+      "description_en": "Variant of PPO popularised by DeepSeek-R1 that normalises advantages within a group of completions per prompt — well-suited for verifiable-reward reasoning RL.",
+      "description_ru": "Вариант PPO, популяризированный DeepSeek-R1, который нормализует преимущества внутри группы генераций на один промпт — удобен для RL с проверяемыми наградами."
+    },
+    {
+      "name": "R1-Zero-Like Training",
+      "axes": [
+        "RL",
+        "Reasoning",
+        "Emergent Behavior"
+      ],
+      "description_en": "Pure RL-from-scratch on verifiable tasks (no SFT warmup) that elicits emergent reasoning; rapidly transferred from math to vision, GUI, code.",
+      "description_ru": "Чистый RL с нуля на задачах с проверяемой наградой (без SFT-прогрева), эмерджентно порождающий рассуждение; быстро переносится из математики в зрение, GUI и код."
+    },
+    {
+      "name": "Reasoning RL",
+      "axes": [
+        "RL",
+        "Reasoning",
+        "Post-training"
+      ],
+      "description_en": "Family of post-training methods that maximises a verifiable reward on multi-step reasoning traces; foundation of reasoning models.",
+      "description_ru": "Семейство методов пост-обучения, максимизирующих проверяемую награду на многошаговых цепочках рассуждения; основа reasoning-моделей."
+    },
+    {
+      "name": "Trajectory Balance",
+      "axes": [
+        "Objective",
+        "RL",
+        "Async Training"
+      ],
+      "description_en": "GFlowNet-inspired objective that matches forward and backward likelihoods over reasoning trajectories — used to decouple exploration from learning in async LLM post-training.",
+      "description_ru": "Цель в духе GFlowNets, согласующая прямую и обратную вероятности на траекториях рассуждения — позволяет в асинхронном пост-обучении LLM отделить exploration от learning."
+    },
+    {
+      "name": "Token-Level Self-Play",
+      "axes": [
+        "Self-Play",
+        "Post-training",
+        "Importance Weighting"
+      ],
+      "description_en": "Post-training in which the model plays against itself at the token-decoding level, importance-weighted to focus on decisive tokens.",
+      "description_ru": "Пост-обучение, в котором модель играет сама с собой на уровне декодирования токенов, с importance-весами, направляющими внимание на критичные токены."
+    },
+    {
+      "name": "Doubly Robust Alignment",
+      "axes": [
+        "Alignment",
+        "Robustness",
+        "Causal Inference"
+      ],
+      "description_en": "Borrowing the doubly-robust estimator from causal inference to make preference-based alignment less sensitive to misspecified reward or policy models.",
+      "description_ru": "Перенос doubly-robust оценщика из каузального вывода в выравнивание по предпочтениям, чтобы снизить чувствительность к ошибкам в reward- или policy-модели."
+    },
+    {
+      "name": "Preference Data Cleaning",
+      "axes": [
+        "Data Quality",
+        "Alignment",
+        "Preprocessing"
+      ],
+      "description_en": "Pre-alignment step that filters noisy, leaked or inconsistent preference pairs — found to matter more than the alignment algorithm itself.",
+      "description_ru": "Шаг перед alignment'ом, фильтрующий шумные, утечённые и противоречивые пары предпочтений — оказывается важнее самого алгоритма выравнивания."
+    },
+    {
+      "name": "VPO (V-Usable Information Preference Optimization)",
+      "axes": [
+        "Preference Optimization",
+        "Information Theory",
+        "DPO Variant"
+      ],
+      "description_en": "DPO variant that weights preference signal by V-usable information (Xu et al.) — emphasises pairs that actually move predictions.",
+      "description_ru": "Вариант DPO, взвешивающий сигнал предпочтения по V-usable information (Xu et al.) — выделяет пары, реально меняющие предсказания."
+    },
+    {
+      "name": "Importance-Sampling Detached Alignment",
+      "axes": [
+        "Modular Alignment",
+        "Importance Sampling",
+        "Inference"
+      ],
+      "description_en": "Approach where alignment modules are factored out and reweighted via importance sampling, so a single base model can swap alignment behaviours at inference.",
+      "description_ru": "Подход, в котором модули выравнивания выносятся отдельно и перенастраиваются через importance sampling, так что одну базу можно «переключать» между разными alignment'ами на инференсе."
+    },
+    {
+      "name": "Personalized Alignment",
+      "axes": [
+        "Personalization",
+        "Alignment",
+        "User Modeling"
+      ],
+      "description_en": "Aligning a model to evolving individual user preferences via dynamic profile modeling rather than a single global reward.",
+      "description_ru": "Выравнивание модели под изменяющиеся индивидуальные предпочтения пользователя через динамическое моделирование профиля, а не одну глобальную награду."
+    },
+    {
+      "name": "Bidirectional Human-AI Alignment",
+      "axes": [
+        "Alignment",
+        "Sociotechnical",
+        "Position Paper"
+      ],
+      "description_en": "Position that alignment is not one-way (humans teach AI) but bidirectional: humans also adapt to AI behaviour and that loop must be designed.",
+      "description_ru": "Позиция, согласно которой выравнивание — не одностороннее (люди учат ИИ), а двустороннее: люди тоже адаптируются под ИИ, и этот цикл нужно проектировать."
+    },
+    {
+      "name": "Mistake-Log Fine-Tuning",
+      "axes": [
+        "Fine-Tuning",
+        "Error Memory",
+        "Self-Improvement"
+      ],
+      "description_en": "Training scheme that stores and replays the model's own past mistakes during fine-tuning, akin to a Copilot that learns from its bug log.",
+      "description_ru": "Схема обучения, в которой собственные ошибки модели сохраняются и переигрываются на файнтюнинге — как Copilot, учащийся на собственном баг-логе."
+    },
+    {
+      "name": "Low-Perplexity Token Mitigation",
+      "axes": [
+        "Continual Learning",
+        "Fine-Tuning",
+        "Forgetting"
+      ],
+      "description_en": "Catastrophic-forgetting mitigation that downweights gradient on tokens the model already predicts confidently — protecting prior knowledge during fine-tuning.",
+      "description_ru": "Метод борьбы с катастрофическим забыванием: ослабление градиента на токенах, которые модель уже уверенно предсказывает, чтобы защитить ранее усвоенное знание."
+    },
+    {
+      "name": "Federated LLM Fine-Tuning",
+      "axes": [
+        "Federated Learning",
+        "PEFT",
+        "Privacy"
+      ],
+      "description_en": "Fine-tuning a shared LLM across decentralised data sources without raw-data transfer — usually via parameter-efficient adapters (LoRA) over a federated optimiser.",
+      "description_ru": "Файнтюнинг общей LLM по децентрализованным источникам данных без передачи сырых данных — обычно через параметр-эффективные адаптеры (LoRA) поверх федеративного оптимизатора."
+    },
+    {
+      "name": "Model Merging",
+      "axes": [
+        "Model Merging",
+        "Multi-task",
+        "Post-training"
+      ],
+      "description_en": "Combining the parameters of multiple specialist LLMs into one — task arithmetic, TIES, DARE — increasingly benchmarked across domains.",
+      "description_ru": "Объединение параметров нескольких специализированных LLM в одну — task arithmetic, TIES, DARE — всё чаще оценивается на кросс-доменных бенчмарках."
+    },
+    {
+      "name": "KV Cache Compression",
+      "axes": [
+        "Inference",
+        "Memory",
+        "Long Context"
+      ],
+      "description_en": "Cutting memory of the attention KV cache via quantization, eviction, low-rank or small-model side-cars to enable long-context inference.",
+      "description_ru": "Снижение объёма KV-кэша в attention через квантизацию, вытеснение, low-rank или side-car маленькую модель — для длинного контекста на инференсе."
+    },
+    {
+      "name": "Speculative Decoding",
+      "axes": [
+        "Inference",
+        "Decoding",
+        "Acceleration"
+      ],
+      "description_en": "Generate tokens with a small draft model and verify with the target model in parallel; lossless speedup with growing multimodal variants.",
+      "description_ru": "Генерация токенов маленькой draft-моделью с параллельной верификацией целевой моделью; ускорение без потерь, с растущими мультимодальными вариантами."
+    },
+    {
+      "name": "Edge-Assisted LLM Serving",
+      "axes": [
+        "Inference Systems",
+        "Edge",
+        "Latency"
+      ],
+      "description_en": "Distributed inference architecture where edge nodes pre-compute prefixes or cache fragments to reduce central cost and latency for interactive LLMs.",
+      "description_ru": "Распределённая архитектура инференса: edge-узлы предвычисляют префиксы и фрагменты кэша, снижая нагрузку центрального сервиса и задержку интерактивных LLM."
+    },
+    {
+      "name": "Long-Context Ability",
+      "axes": [
+        "Long Context",
+        "Capability",
+        "Evaluation"
+      ],
+      "description_en": "Aggregate capability dimension covering effective context use, retrieval over long inputs and multi-hop reasoning across distant tokens.",
+      "description_ru": "Агрегированная способность: эффективное использование контекста, поиск по длинным входам, многошаговое рассуждение между удалёнными токенами."
+    },
+    {
+      "name": "Mixtures of Subspaces",
+      "axes": [
+        "Parallelism",
+        "Training Systems",
+        "Long Context"
+      ],
+      "description_en": "Parameter-parallel training trick that shards attention along learned subspaces — bandwidth-efficient context parallelism for long sequences.",
+      "description_ru": "Трюк параметр-параллельного обучения: шардирование attention по обученным подпространствам — bandwidth-эффективный context parallelism для длинных последовательностей."
+    },
+    {
+      "name": "RoPE / Hybrid Attention",
+      "axes": [
+        "Positional Encoding",
+        "Attention",
+        "Long Context"
+      ],
+      "description_en": "Rotary positional encoding and hybrid schemes that mix RoPE with NoPE-style layers to balance length generalization and locality.",
+      "description_ru": "Rotary-позиционное кодирование и гибридные схемы, чередующие RoPE с NoPE-слоями для баланса генерализации по длине и локальности."
+    },
+    {
+      "name": "In-Context Learning (ICL)",
+      "axes": [
+        "ICL",
+        "Mechanistic Interpretability",
+        "Meta-Learning"
+      ],
+      "description_en": "Adapting model behaviour purely via examples in the prompt; recent mechanistic work attributes it to specific attention heads and meta-learning dynamics.",
+      "description_ru": "Адаптация поведения модели исключительно через примеры в промпте; новые механистические работы связывают ICL с конкретными головами attention и динамикой meta-learning."
+    },
+    {
+      "name": "Trained Mamba as Online Gradient Descent",
+      "axes": [
+        "State-Space Models",
+        "Theory",
+        "ICL"
+      ],
+      "description_en": "Theoretical result that trained Mamba state-space models emulate online gradient descent on in-context regression — a mechanistic bridge to ICL.",
+      "description_ru": "Теоретический результат: обученные state-space модели Mamba эмулируют онлайн-градиентный спуск на in-context регрессии — механистический мост к ICL."
+    },
+    {
+      "name": "Parallel Prompt Decomposition",
+      "axes": [
+        "Inference Optimization",
+        "Decomposition",
+        "Parallelism"
+      ],
+      "description_en": "Extracting independent sub-queries inside a single user prompt and running them in parallel to cut latency and cost.",
+      "description_ru": "Извлечение независимых под-запросов внутри одного пользовательского промпта и их параллельное исполнение для снижения латентности и стоимости."
+    },
+    {
+      "name": "RAG (Retrieval-Augmented Generation)",
+      "axes": [
+        "RAG",
+        "Retrieval",
+        "Grounding"
+      ],
+      "description_en": "Architecture that retrieves external documents to ground generation in fresh, large or proprietary knowledge — now itself an attack surface and a routing problem.",
+      "description_ru": "Архитектура, дополняющая генерацию поиском внешних документов для опоры на свежее, большое или приватное знание — сама по себе и поверхность атаки, и задача маршрутизации."
+    },
+    {
+      "name": "Multi-RAG Routing",
+      "axes": [
+        "RAG",
+        "Routing",
+        "Specialization"
+      ],
+      "description_en": "Learning to route a query to one of several retrieval-augmented LLMs (each specialised in a corpus) instead of a single monolithic RAG.",
+      "description_ru": "Обучение маршрутизировать запрос к одной из нескольких retrieval-augmented LLM (каждая со своим корпусом) вместо монолитного RAG."
+    },
+    {
+      "name": "RAG Poisoning",
+      "axes": [
+        "Security",
+        "RAG",
+        "Adversarial"
+      ],
+      "description_en": "Adversarial manipulation of the external knowledge base read by a RAG system, optimised (e.g., via genetic search) to flip downstream outputs.",
+      "description_ru": "Состязательная манипуляция внешней базой знаний, читаемой RAG-системой, оптимизированная (например, генетикой) для подмены ответов."
+    },
+    {
+      "name": "Embedding Adequacy",
+      "axes": [
+        "RAG",
+        "Retrieval",
+        "Efficiency"
+      ],
+      "description_en": "Pre-reranking step that asks whether the retrieved embeddings actually carry the answer before paying for a heavy reranker — cuts RAG compute.",
+      "description_ru": "Этап перед reranker'ом, проверяющий, несут ли извлечённые эмбеддинги ответ — экономит вычисления RAG."
+    },
+    {
+      "name": "Knowledge Graph Completion under Uncertainty",
+      "axes": [
+        "Knowledge Graph",
+        "Uncertainty",
+        "Semi-Supervised"
+      ],
+      "description_en": "Learning to complete a knowledge graph with calibrated confidence over edges — semi-supervised, distributional, audit-ready.",
+      "description_ru": "Достройка графа знаний с откалиброванной уверенностью на рёбрах — полу-надзорное, распределённое, аудитопригодное."
+    },
+    {
+      "name": "LLM Unlearning",
+      "axes": [
+        "Unlearning",
+        "Privacy",
+        "Safety"
+      ],
+      "description_en": "Removing specific knowledge from a trained LLM (privacy, copyright, harmful facts); benchmark families now exist to compare methods and verify residual leakage.",
+      "description_ru": "Удаление конкретных знаний из обученной LLM (приватность, копирайт, вредные факты); появились семейства бенчмарков для сравнения методов и проверки остаточных утечек."
+    },
+    {
+      "name": "Data Extraction Attack",
+      "axes": [
+        "Privacy",
+        "Attack",
+        "Unlearning"
+      ],
+      "description_en": "Adversarial recovery of training data from a model — survives even exact unlearning in some settings, hence a residual-risk metric.",
+      "description_ru": "Состязательное восстановление обучающих данных из модели — в некоторых условиях переживает даже «точное» unlearning, отсюда метрика остаточного риска."
+    },
+    {
+      "name": "Influence Functions for LLM-Scale Data Valuation",
+      "axes": [
+        "Data Valuation",
+        "Attribution",
+        "Influence"
+      ],
+      "description_en": "Scaling classical influence functions to estimate the marginal value of each training example for a frontier LLM — useful for data attribution and pruning.",
+      "description_ru": "Масштабирование классических influence-функций для оценки маржинальной ценности каждого обучающего примера для фронтирной LLM — для атрибуции и прореживания данных."
+    },
+    {
+      "name": "Test Awareness",
+      "axes": [
+        "Safety",
+        "Evaluation",
+        "Steering"
+      ],
+      "description_en": "Reasoning models can detect when they are being evaluated and shift behaviour (Hawthorne effect); steering this signal becomes a safety lever.",
+      "description_ru": "Reasoning-модели умеют распознавать ситуацию оценки и менять поведение (эффект Хоторна); управление этим сигналом превращается в рычаг безопасности."
+    },
+    {
+      "name": "Sophisticated Strategic Behaviour",
+      "axes": [
+        "Safety",
+        "Position Paper",
+        "Evaluation"
+      ],
+      "description_en": "Forward-looking AI systems may plan over the testing process itself — a class of failures that conventional benchmarks under-detect.",
+      "description_ru": "Прогрессивные ИИ-системы могут планировать вокруг самого процесса тестирования — класс сбоев, который обычные бенчмарки слабо ловят."
+    },
+    {
+      "name": "Adversarial Robustness of MLLMs",
+      "axes": [
+        "Adversarial",
+        "MLLM",
+        "Safety"
+      ],
+      "description_en": "Vulnerability of vision-language models to adversarial images, prompts and multimodal compositions — increasingly the bottleneck for deployment.",
+      "description_ru": "Уязвимость vision-language моделей к состязательным изображениям, промптам и мультимодальным композициям — всё чаще главный барьер для деплоя."
+    },
+    {
+      "name": "Causal Hijacking in ICL",
+      "axes": [
+        "Adversarial",
+        "ICL",
+        "Attack"
+      ],
+      "description_en": "Attack in which adversarial demonstrations rewire the model's in-context causal hypothesis, flipping outputs under a tight perturbation budget.",
+      "description_ru": "Атака, в которой состязательные демонстрации перерисовывают «каузальную гипотезу» модели в контексте, переворачивая ответы при ограниченном бюджете возмущений."
+    },
+    {
+      "name": "Hallucination in MLLMs",
+      "axes": [
+        "Hallucination",
+        "MLLM",
+        "Failure Mode"
+      ],
+      "description_en": "Failure mode where MLLMs invent objects, relations or attributes not present in the input; particularly acute in cross-scene compositional reasoning.",
+      "description_ru": "Сбой, при котором MLLM придумывает объекты, отношения и атрибуты, которых нет на входе; особенно остро — в композиционном межсценарном рассуждении."
+    },
+    {
+      "name": "Contrastive Decoding",
+      "axes": [
+        "Decoding",
+        "Hallucination",
+        "Inference"
+      ],
+      "description_en": "Inference-time trick that subtracts the logits of a weaker or counterfactual model from the strong model — reduces hallucinations and steers behaviour.",
+      "description_ru": "Приём на инференсе: из логитов сильной модели вычитаются логиты более слабой или counterfactual модели — снижает галлюцинации и направляет поведение."
+    },
+    {
+      "name": "Watermarking for LLMs",
+      "axes": [
+        "Watermark",
+        "Detection",
+        "Theory"
+      ],
+      "description_en": "Embedding a statistically detectable signal in LLM-generated text — formalised in 2025 with pivot tests, optimal detection rules and theoretical limits.",
+      "description_ru": "Встраивание статистически детектируемого сигнала в текст, сгенерированный LLM — в 2025 году формализовано через pivot-тесты, оптимальные правила детекции и теоретические границы."
+    },
+    {
+      "name": "Conformal Linguistic Calibration",
+      "axes": [
+        "Calibration",
+        "Factuality",
+        "Conformal Prediction"
+      ],
+      "description_en": "Calibration that adjusts the specificity of a model's hedged language (likely, always) to deliver guaranteed factuality under conformal-prediction style guarantees.",
+      "description_ru": "Калибровка, регулирующая специфичность осторожных формулировок модели («вероятно», «всегда») так, чтобы давать гарантированную фактическую корректность в духе conformal prediction."
+    },
+    {
+      "name": "Abstention",
+      "axes": [
+        "Abstention",
+        "Calibration",
+        "Reasoning"
+      ],
+      "description_en": "Capability of a reasoning model to say I don't know on unanswerable questions; reasoning-tuned LLMs are found to abstain less despite being more cautious in tone.",
+      "description_ru": "Способность reasoning-модели сказать «не знаю» на неразрешимых вопросах; reasoning-тюнинг, как оказалось, уменьшает частоту отказов при той же осторожной интонации."
+    },
+    {
+      "name": "Privacy Reasoning",
+      "axes": [
+        "Privacy",
+        "Reasoning",
+        "Context"
+      ],
+      "description_en": "Reasoning over what information may be revealed in an ambiguous social context — required for assistants that handle PII or third-party data.",
+      "description_ru": "Рассуждение о том, какую информацию допустимо раскрыть в неоднозначном социальном контексте — необходимо для ассистентов с PII или данными третьих лиц."
+    },
+    {
+      "name": "Offensive Cybersecurity Agent Risk",
+      "axes": [
+        "Cybersecurity",
+        "Agent Safety",
+        "Risk"
+      ],
+      "description_en": "Capability-based risk assessment specifically for agents that can plan and execute multi-step offensive cyber operations.",
+      "description_ru": "Оценка риска на основе capabilities, специально для агентов, способных планировать и исполнять многошаговые наступательные кибер-операции."
+    },
+    {
+      "name": "Truthful Aggregation of LLMs",
+      "axes": [
+        "Mechanism Design",
+        "Aggregation",
+        "Incentives"
+      ],
+      "description_en": "Mechanism-design view of combining multiple LLMs (or model providers) so that no party benefits from misreporting — applied to LLM-driven advertising auctions.",
+      "description_ru": "Взгляд на агрегацию нескольких LLM (или провайдеров моделей) через mechanism design: ни одна сторона не выигрывает от искажения отчёта — применено к LLM-аукционам рекламы."
+    },
+    {
+      "name": "Out-of-Distribution Reasoning Eval",
+      "axes": [
+        "OOD",
+        "Benchmark",
+        "Contamination"
+      ],
+      "description_en": "Dynamic or generated benchmarks designed to escape training-set contamination and measure genuine OOD generalisation of reasoning.",
+      "description_ru": "Динамические или процедурно генерируемые бенчмарки, уклоняющиеся от загрязнения обучающим набором, чтобы измерять реальную OOD-генерализацию рассуждения."
+    },
+    {
+      "name": "Decontaminated Evaluation",
+      "axes": [
+        "Benchmark Hygiene",
+        "Contamination",
+        "Methodology"
+      ],
+      "description_en": "Pipelines that automatically filter benchmark items that overlap with public training corpora — increasingly mandatory for credible 2025 SWE and math benchmarks.",
+      "description_ru": "Конвейеры, автоматически фильтрующие элементы бенчмарка, пересекающиеся с публичными обучающими корпусами — почти обязательны для серьёзных SWE и math-бенчмарков 2025 года."
+    },
+    {
+      "name": "Uncontaminated Math Benchmark",
+      "axes": [
+        "Math",
+        "Benchmark",
+        "Contamination"
+      ],
+      "description_en": "Continuously refreshed math-competition stream evaluated before items leak into pretraining corpora.",
+      "description_ru": "Непрерывно обновляющийся поток математических соревнований, оцениваемый до того, как задачи утекут в обучающие корпусы."
+    },
+    {
+      "name": "Length Instruction Following",
+      "axes": [
+        "Instruction Following",
+        "Benchmark",
+        "Controllability"
+      ],
+      "description_en": "Capability to obey explicit length constraints in a prompt; surprisingly hard for current LLMs and now its own benchmark dimension.",
+      "description_ru": "Способность подчиняться явным ограничениям длины в промпте; неожиданно сложна для текущих LLM и теперь — самостоятельное измерение бенчмарков."
+    },
+    {
+      "name": "Question-Asking Capability",
+      "axes": [
+        "Interaction",
+        "Reasoning",
+        "Benchmark"
+      ],
+      "description_en": "Evaluating whether an LLM can request the right missing piece of information instead of confabulating — central for interactive reasoning.",
+      "description_ru": "Оценка того, способна ли LLM запросить недостающую информацию, а не сочинить её — ключевое для интерактивного рассуждения."
+    },
+    {
+      "name": "Compositional / Transformative Generalization",
+      "axes": [
+        "Generalization",
+        "Reasoning",
+        "Taxonomy"
+      ],
+      "description_en": "Three-axis taxonomy (exploratory, compositional, transformative) of how far a reasoner can move from training distribution — popularised for math evals.",
+      "description_ru": "Трёх-осевая таксономия (исследовательская, композиционная, трансформативная) того, насколько reasoner может отойти от обучающего распределения — популярна для math-evals."
+    },
+    {
+      "name": "Linguistic Robustness Across Englishes",
+      "axes": [
+        "Robustness",
+        "Fairness",
+        "Multilingual"
+      ],
+      "description_en": "Evaluating LLM behaviour across English varieties (AAVE, Indian English, etc.) — robustness, fairness and dialect-bias signal.",
+      "description_ru": "Оценка поведения LLM на разных вариантах английского (AAVE, индийский английский и т. д.) — сигнал робастности, справедливости и диалектного смещения."
+    },
+    {
+      "name": "Multilingual Reasoning",
+      "axes": [
+        "Multilingual",
+        "Reasoning",
+        "Benchmark"
+      ],
+      "description_en": "Evaluating reasoning ability beyond English; current models often translate-then-reason and degrade on low-resource languages.",
+      "description_ru": "Оценка рассуждения за пределами английского; современные модели часто «переводят, потом рассуждают» и теряют качество на низкоресурсных языках."
+    },
+    {
+      "name": "Language-Reasoning Disentanglement",
+      "axes": [
+        "Multilingual",
+        "Reasoning",
+        "Disentanglement"
+      ],
+      "description_en": "Architectural or training intervention that disentangles language identity from reasoning steps, improving multilingual reasoning.",
+      "description_ru": "Архитектурное или тренировочное вмешательство, отделяющее идентичность языка от шагов рассуждения, что улучшает мультиязычное рассуждение."
+    },
+    {
+      "name": "BenchmarkCards",
+      "axes": [
+        "Benchmark Methodology",
+        "Documentation",
+        "Reporting"
+      ],
+      "description_en": "Standardized documentation format for LLM benchmarks — scope, contamination state, license, score interpretation — modelled on Model Cards.",
+      "description_ru": "Стандартизированный формат документирования бенчмарков LLM — скоуп, статус загрязнения, лицензия, интерпретация скоров — по аналогии с Model Cards."
+    },
+    {
+      "name": "Refutations & Critiques Track",
+      "axes": [
+        "Meta-Science",
+        "Conferences",
+        "Position Paper"
+      ],
+      "description_en": "Proposal that ML conferences host a dedicated venue for negative results and methodological refutations to fix the field's incentives.",
+      "description_ru": "Предложение, чтобы ML-конференции вели отдельный трек для негативных результатов и методологических опровержений, корректируя стимулы поля."
+    },
+    {
+      "name": "Capability-Per-Resource",
+      "axes": [
+        "Position Paper",
+        "Efficiency",
+        "Metrics"
+      ],
+      "description_en": "Re-framing AI progress not as raw scale but as capability divided by compute or energy — proposed as the primary reporting metric.",
+      "description_ru": "Переосмысление прогресса ИИ — не как чистого масштаба, а как способности, делённой на вычисления или энергию — предложено как основная метрика отчётности."
+    },
+    {
+      "name": "Vision-Language Model (VLM/MLLM)",
+      "axes": [
+        "Multimodal",
+        "Foundation Model",
+        "Architecture"
+      ],
+      "description_en": "Foundation model that jointly processes images (or video) and text — the substrate for spatial reasoning, GUI agents and document understanding.",
+      "description_ru": "Foundation-модель, совместно обрабатывающая изображения (или видео) и текст — основа для пространственного рассуждения, GUI-агентов и анализа документов."
+    },
+    {
+      "name": "Spatial Reasoning in MLLMs",
+      "axes": [
+        "Spatial Reasoning",
+        "MLLM",
+        "3D"
+      ],
+      "description_en": "Reasoning about geometry, occlusion, relative position and 3D structure from visual input — a structural weakness of current MLLMs.",
+      "description_ru": "Рассуждение о геометрии, перекрытиях, относительной позиции и 3D-структуре по визуальному входу — структурная слабость текущих MLLM."
+    },
+    {
+      "name": "Visual Binding Problem",
+      "axes": [
+        "Visual Reasoning",
+        "Cognition",
+        "Failure Mode"
+      ],
+      "description_en": "Failure of MLLMs to bind attributes to the correct object in a scene; analogous to the classical binding problem in cognitive science.",
+      "description_ru": "Сбой MLLM в привязке атрибутов к правильному объекту в сцене; аналог классической binding-проблемы в когнитивных науках."
+    },
+    {
+      "name": "Mental Visualization",
+      "axes": [
+        "Multimodal",
+        "Cognition",
+        "Benchmark"
+      ],
+      "description_en": "Evaluating whether an MLLM can simulate visual content in its head given only verbal input — analogous to human imagery.",
+      "description_ru": "Оценка способности MLLM «представить» визуальный контент в голове по только вербальному входу — аналог человеческой имагинации."
+    },
+    {
+      "name": "Open-Ended Association Reasoning",
+      "axes": [
+        "Associative Reasoning",
+        "Open-ended",
+        "Multimodal"
+      ],
+      "description_en": "Tasks where the model must propose non-obvious associations between concepts — the kind of Connections-style reasoning highlighted as a frontier for VLMs.",
+      "description_ru": "Задачи, где модель должна предлагать неочевидные ассоциации между концептами — рассуждение «Connections»-типа, выделенное как фронтир для VLM."
+    },
+    {
+      "name": "Dual-System VLA",
+      "axes": [
+        "Robotics",
+        "VLA",
+        "Dual-Process"
+      ],
+      "description_en": "Vision-Language-Action architecture that splits a fast manipulation policy from a slow reasoning controller — recasting System-1/System-2 in robotics.",
+      "description_ru": "Архитектура Vision-Language-Action, разделяющая быструю манипуляционную политику и медленный reasoning-контроллер — System-1/System-2 в робототехнике."
+    },
+    {
+      "name": "Embodied Reasoning",
+      "axes": [
+        "Embodied",
+        "Reasoning",
+        "3D"
+      ],
+      "description_en": "Reasoning grounded in an agent body and its 3D scene — affordances, contact, task feasibility — increasingly tackled via MLLMs with action heads.",
+      "description_ru": "Рассуждение, заземлённое в теле агента и 3D-сцене — affordance, контакт, выполнимость задачи — всё чаще решается через MLLM с action-головами."
+    },
+    {
+      "name": "Substructure Reasoning in Transformers",
+      "axes": [
+        "Mechanistic Interpretability",
+        "Reasoning",
+        "Theory"
+      ],
+      "description_en": "Mechanistic finding that transformers solve reasoning by composing internal sub-circuits over learned substructures — opens a path from sequence-level to structure-level analysis.",
+      "description_ru": "Механистический результат: трансформеры решают reasoning, комбинируя внутренние под-цепи на выученных подструктурах — открывает путь от sequence-уровня к structure-уровню анализа."
+    },
+    {
+      "name": "Universal Approximation of Transformers",
+      "axes": [
+        "Theory",
+        "Expressivity",
+        "Transformer"
+      ],
+      "description_en": "Unified theoretical framework establishing universal-approximation properties for transformer-type architectures across regimes.",
+      "description_ru": "Единый теоретический фреймворк, устанавливающий свойства универсальной аппроксимации для трансформер-подобных архитектур в разных режимах."
+    },
+    {
+      "name": "Constant-Bit Transformers Are Turing-Complete",
+      "axes": [
+        "Theory",
+        "Expressivity",
+        "Computability"
+      ],
+      "description_en": "Theoretical result showing that even constant-bit-size transformers (no growing precision) are Turing-complete — strong expressivity baseline.",
+      "description_ru": "Теоретический результат: даже трансформеры с константной разрядностью (без роста точности) Тьюринг-полны — сильная база по выразительности."
+    },
+    {
+      "name": "Strassen Attention",
+      "axes": [
+        "Attention",
+        "Theory",
+        "Compositionality"
+      ],
+      "description_en": "Attention variant connecting Strassen's algorithm and split-VC-dimension bounds — formal handle on compositionality limits of transformers.",
+      "description_ru": "Вариант attention, связывающий алгоритм Strassen и split-VC-границы — формальный инструмент для оценки пределов композициональности в трансформерах."
+    },
+    {
+      "name": "Residual Stream Overfitting",
+      "axes": [
+        "Mechanistic Interpretability",
+        "Overfitting",
+        "Diagnostics"
+      ],
+      "description_en": "Mechanistic diagnostic that traces overfitting and structural disruption directly in the transformer residual stream — interpretability-driven debugging.",
+      "description_ru": "Механистическая диагностика, отслеживающая переобучение и структурные сбои прямо в residual stream трансформера — интерпретируемость как инструмент отладки."
+    },
+    {
+      "name": "Neural Algorithmic Reasoning (Tropical Attention)",
+      "axes": [
+        "Algorithmic Reasoning",
+        "Attention",
+        "Combinatorial"
+      ],
+      "description_en": "Replacing softmax with tropical (max-plus) operations to recover combinatorial-algorithm behaviour in transformers — a bridge to NAR.",
+      "description_ru": "Замена softmax на tropical (max-plus) операции, чтобы воспроизвести в трансформере поведение комбинаторных алгоритмов — мост к NAR."
+    },
+    {
+      "name": "Scaling Law (Farseer-style)",
+      "axes": [
+        "Scaling Laws",
+        "Forecasting",
+        "Theory"
+      ],
+      "description_en": "Refined scaling laws that go beyond naive power-laws to predict reasoning-model behaviour across compute and data — toolset for forecasting.",
+      "description_ru": "Уточнённые scaling-законы, выходящие за пределы наивных степенных, предсказывающие поведение reasoning-моделей по compute и data — инструмент прогноза."
+    },
+    {
+      "name": "Compression-View of LLM Behaviour",
+      "axes": [
+        "Information Theory",
+        "Theory",
+        "Scaling"
+      ],
+      "description_en": "Framing data generation, knowledge acquisition and scaling laws of LLMs through information-theoretic compression — a unifying lens.",
+      "description_ru": "Рассмотрение генерации данных, приобретения знаний и scaling-законов LLM через теоретико-информационное сжатие — объединяющая оптика."
+    },
+    {
+      "name": "Translation Mechanism of LLMs",
+      "axes": [
+        "Mechanistic Interpretability",
+        "Multilingual",
+        "Theory"
+      ],
+      "description_en": "Mechanistic study of how LLMs internally route information across languages — locates concept-translation circuits inside the residual stream.",
+      "description_ru": "Механистическое исследование того, как LLM внутренне маршрутизирует информацию между языками — локализует концепт-переводящие цепи в residual stream."
+    },
+    {
+      "name": "Counterfactuals for Language Agents",
+      "axes": [
+        "Causal Inference",
+        "Agent Analysis",
+        "Counterfactual"
+      ],
+      "description_en": "Causal-inference toolkit (abstract counterfactuals) for analysing and intervening on the decisions of LLM agents.",
+      "description_ru": "Инструментарий каузального вывода (абстрактные контрфактуалы) для анализа и вмешательства в решения LLM-агентов."
+    },
+    {
+      "name": "Algorithmic Reasoning with Ranked Preferences",
+      "axes": [
+        "Algorithmic Reasoning",
+        "Mechanism Design",
+        "Evaluation"
+      ],
+      "description_en": "Testing LLMs as participants in matching markets and ranked-preference algorithms (Gale-Shapley etc.) — a structured-reasoning evaluation.",
+      "description_ru": "Тестирование LLM как участников matching-рынков и алгоритмов на ранжированных предпочтениях (Gale-Shapley и др.) — структурированная оценка рассуждения."
+    },
+    {
+      "name": "Reasoning Gym",
+      "axes": [
+        "RL",
+        "Reasoning",
+        "Environments"
+      ],
+      "description_en": "Suite of procedurally generated reasoning environments with verifiable rewards — RL training ground analogous to Atari/MuJoCo for reasoning.",
+      "description_ru": "Набор процедурно генерируемых reasoning-сред с проверяемыми наградами — RL-полигон, аналогичный Atari/MuJoCo, но для рассуждения."
+    },
+    {
+      "name": "Scientific Reasoning Model",
+      "axes": [
+        "Domain Specialisation",
+        "Reasoning",
+        "Science"
+      ],
+      "description_en": "Domain-specialised reasoning LLM trained for a scientific discipline (chemistry, clinical genetics) — a mid-frontier between general and tool-augmented reasoners.",
+      "description_ru": "Доменно-специализированная reasoning-LLM, обученная под научную дисциплину (химия, клиническая генетика) — промежуточный фронтир между общими и tool-augmented reasoner'ами."
+    },
+    {
+      "name": "Cost-Aware Online Annotation",
+      "axes": [
+        "Active Learning",
+        "Data Generation",
+        "Cost"
+      ],
+      "description_en": "Active-learning over LLM-generated annotations that explicitly trades label cost against expected downstream gain.",
+      "description_ru": "Активное обучение поверх LLM-разметки, явно балансирующее цену лейбла и ожидаемый downstream-прирост."
+    },
+    {
+      "name": "Graph-Based Reasoning Instruction",
+      "axes": [
+        "Data Generation",
+        "Reasoning",
+        "Graph"
+      ],
+      "description_en": "Generating reasoning data as graphs (sub-claims, dependencies) rather than linear chains — improves controllability and step composition.",
+      "description_ru": "Генерация reasoning-данных в виде графов (под-утверждения, зависимости) вместо линейных цепочек — повышает управляемость и композицию шагов."
+    },
+    {
+      "name": "Symbolization of Time Series for LLMs",
+      "axes": [
+        "Time Series",
+        "Tokenization",
+        "Bridging"
+      ],
+      "description_en": "Converting numeric time series into discrete symbols/tokens so an LLM can analyze them — a bridging pattern for LLM as time-series analyzer.",
+      "description_ru": "Превращение числовых временных рядов в дискретные символы/токены, чтобы LLM могла их анализировать — паттерн «LLM как анализатор временных рядов»."
+    },
+    {
+      "name": "NaturalReasoning / Reasoning in the Wild",
+      "axes": [
+        "Reasoning Dataset",
+        "Diversity",
+        "Pre-training"
+      ],
+      "description_en": "Large-scale corpus of naturalistic reasoning questions (in the wild) for diverse, less-gameable training and evaluation of reasoners.",
+      "description_ru": "Крупный корпус «природных» reasoning-вопросов, собранных в дикой среде, для разнообразного и менее эксплуатируемого обучения и оценки reasoner'ов."
+    },
+    {
+      "name": "Constraint Satisfaction Problem (CSP)",
+      "axes": [
+        "Classical AI",
+        "Search",
+        "Reasoning Framework"
+      ],
+      "description_en": "Formal triple (variables, domains, constraints) where the goal is to assign each variable a value from its domain so that all constraints are satisfied; backbone of classical AI search and a useful frame for puzzle-style reasoning.",
+      "description_ru": "Формальная тройка (переменные, домены, ограничения), в которой нужно присвоить каждой переменной значение из её домена так, чтобы выполнились все ограничения; основа классического ИИ-поиска и удобная рамка для головоломочного рассуждения."
+    },
+    {
+      "name": "Backtracking Search",
+      "axes": [
+        "Search",
+        "Algorithm",
+        "CSP"
+      ],
+      "description_en": "Refined brute-force solver that recursively assigns variables and rolls back on constraint violation; basis of CSP solvers and of explicit Depth-First Search strategies inside LLM trial-and-error reasoning.",
+      "description_ru": "Усовершенствованный полный перебор: рекурсивно присваивает переменные и откатывается при нарушении ограничений; основа CSP-решателей и явных DFS-стратегий внутри LLM «trial-and-error» рассуждения."
+    },
+    {
+      "name": "Minimum Remaining Value (MRV) Heuristic",
+      "axes": [
+        "Heuristic",
+        "CSP",
+        "Variable Ordering"
+      ],
+      "description_en": "CSP variable-ordering heuristic: pick the variable with the smallest remaining domain first; cuts backtracking dramatically and transfers to step-ordering in LLM solvers.",
+      "description_ru": "Эвристика выбора переменной в CSP: брать переменную с наименьшим оставшимся доменом первой; резко сокращает откаты и переносится на упорядочение шагов в LLM-решателях."
+    },
+    {
+      "name": "Procedural Content Generation (PCG)",
+      "axes": [
+        "PCG",
+        "Generation",
+        "Constraints"
+      ],
+      "description_en": "Algorithmic generation of game/puzzle content (rooms, levels, items) under explicit constraints — a CSP-friendly cousin of LLM data synthesis that supplies guarantees and controllability.",
+      "description_ru": "Алгоритмическая генерация игрового/головоломочного контента (комнаты, уровни, объекты) с явными ограничениями — родственник синтеза данных в LLM, дающий гарантии и управляемость через CSP."
+    },
+    {
+      "name": "10,000 Bowls of Oatmeal Problem",
+      "axes": [
+        "PCG",
+        "Diversity",
+        "Perception"
+      ],
+      "description_en": "Kate Compton's failure mode of procedural generation: a system can produce huge variety mathematically yet feel identical to humans; the diagnostic frame for any generator (puzzle, dungeon, dataset).",
+      "description_ru": "Описанный Кейт Комптон режим сбоя процедурной генерации: система математически выдаёт огромное разнообразие, но воспринимается людьми как одинаковая; диагностическая рамка для любого генератора (головоломки, подземелья, датасета)."
+    },
+    {
+      "name": "Tags & Triggers (PCG)",
+      "axes": [
+        "PCG",
+        "Composition",
+        "Context"
+      ],
+      "description_en": "Loose-coupling pattern: a higher-level generator emits a bag of tags as context; lower-level generators add content conditionally on triggers over those tags. Generalises to LLM agent context-passing.",
+      "description_ru": "Паттерн слабой связности: генератор более высокого уровня выдаёт «мешок тегов» как контекст; нижестоящие генераторы добавляют контент условно на триггерах поверх этих тегов. Обобщается на передачу контекста между LLM-агентами."
+    },
+    {
+      "name": "Connectivity Constraint",
+      "axes": [
+        "Constraint",
+        "Reachability",
+        "PCG"
+      ],
+      "description_en": "Constraint requiring that all free cells of a generated structure remain reachable from each other; verified by DFS with cheap local heuristics to avoid full re-checks.",
+      "description_ru": "Ограничение, требующее, чтобы все свободные клетки сгенерированной структуры оставались взаимно достижимыми; проверяется DFS с дешёвыми локальными эвристиками вместо полной перепроверки."
+    },
+    {
+      "name": "Generate-and-Verify Paradigm",
+      "axes": [
+        "Reasoning",
+        "Verification",
+        "NP"
+      ],
+      "description_en": "Solving an NP-class problem by iteratively proposing candidate solutions and validating them with a cheap verifier; recast as a recipe for getting reasoning out of decoder-only LLMs without external tools.",
+      "description_ru": "Решение задачи класса NP через итеративное предложение кандидатов и их проверку дешёвым верификатором; переоформляется как рецепт извлечения рассуждения из decoder-only LLM без внешних инструментов."
+    },
+    {
+      "name": "Neuro-Symbolic Reasoning",
+      "axes": [
+        "Hybrid",
+        "Symbolic",
+        "Reasoning"
+      ],
+      "description_en": "Hybrid approach that pairs neural perception/generation with symbolic search or constraint reasoning; baseline against which pure-LLM combinatorial solvers (e.g., GPT-2 on Sudoku) are now measured.",
+      "description_ru": "Гибридный подход, сочетающий нейронное восприятие/генерацию с символьным поиском или рассуждением по ограничениям; базовая планка, против которой теперь сравнивают чистых LLM-решателей комбинаторных задач (например, GPT-2 на судоку)."
+    },
+    {
+      "name": "Sudoku as Reasoning Probe",
+      "axes": [
+        "Reasoning",
+        "Probe",
+        "Combinatorial"
+      ],
+      "description_en": "Use of Sudoku puzzles as a clean, verifiable benchmark for whether a decoder-only Transformer can learn search, backtracking and rule-application from next-token training alone.",
+      "description_ru": "Использование судоку как чистого и верифицируемого бенчмарка того, может ли decoder-only трансформер выучить поиск, backtracking и применение правил исключительно из next-token обучения."
+    },
+    {
+      "name": "Informed Guessing",
+      "axes": [
+        "Search",
+        "Heuristic",
+        "Reasoning"
+      ],
+      "description_en": "When deterministic rule application stalls, the solver makes a structured guess from a narrowed candidate set instead of random sampling — bridges classical CSP heuristics and LLM trial-and-error.",
+      "description_ru": "Когда детерминированное применение правил буксует, решатель делает структурированную догадку из суженного множества кандидатов вместо случайной выборки — мост между CSP-эвристиками и trial-and-error в LLM."
+    },
+    {
+      "name": "Depth-1 Guessing",
+      "axes": [
+        "Reasoning",
+        "Empirical Result",
+        "Search Depth"
+      ],
+      "description_en": "Empirical finding (Giannoulis et al., 2025) that almost all Sudoku — and a broader class of CSPs — can be solved by rule application plus at most one guess; argues against deep search for many reasoning tasks.",
+      "description_ru": "Эмпирический результат (Giannoulis et al., 2025): почти все судоку и более широкий класс CSP решаются применением правил плюс не более чем одной догадкой; аргумент против глубокого поиска во многих reasoning-задачах."
+    },
+    {
+      "name": "Min-Sum Set Cover",
+      "axes": [
+        "Algorithms",
+        "Theory",
+        "Optimization"
+      ],
+      "description_en": "Classical algorithmic problem (covering elements with sets minimising sum of access positions) used as a formal handle for analysing guess-minimisation in trial-and-error LLM reasoning.",
+      "description_ru": "Классическая алгоритмическая задача (покрыть элементы множествами, минимизируя сумму позиций доступа), используемая как формальный инструмент анализа минимизации догадок в trial-and-error рассуждении LLM."
+    },
+    {
+      "name": "Imitation Learning of Rules",
+      "axes": [
+        "Imitation Learning",
+        "Reasoning",
+        "Pretraining"
+      ],
+      "description_en": "Training a Transformer on traces of a rule-based solver so that the model internalises domain rules (e.g., Sudoku constraints) before any RL or search wrapper is added.",
+      "description_ru": "Обучение трансформера на трассах rule-based решателя, чтобы модель впитала доменные правила (например, ограничения судоку) до подключения RL- или поисковой обёртки."
+    },
+    {
+      "name": "Causal-LM Search Emergence",
+      "axes": [
+        "Emergence",
+        "Reasoning",
+        "Causal LM"
+      ],
+      "description_en": "The finding that plain causal language modelling (next-token prediction) can elicit search-like and backtracking behaviour on combinatorial puzzles — no special architecture required.",
+      "description_ru": "Наблюдение, что обычное causal language modelling (предсказание следующего токена) способно эмерджентно порождать поведение поиска и backtracking на комбинаторных головоломках — без специальной архитектуры."
+    },
+    {
+      "name": "Tree of Thoughts (ToT)",
+      "axes": [
+        "Reasoning",
+        "Search",
+        "Prompting"
+      ],
+      "description_en": "Reasoning paradigm that branches multiple candidate thoughts at each step into a tree and prunes via self-evaluation; used as a generation strategy for hard puzzles and creative tasks (e.g., Connections puzzle generation).",
+      "description_ru": "Парадигма рассуждения, разветвляющая на каждом шаге несколько кандидатов-мыслей в дерево и подрезающая их через самооценку; применяется как стратегия генерации для сложных головоломок и креативных задач (например, генерация Connections-головоломок)."
+    },
+    {
+      "name": "NYT Connections Benchmark",
+      "axes": [
+        "Benchmark",
+        "Reasoning",
+        "Word Game"
+      ],
+      "description_en": "Use of the New York Times Connections word-grouping game as a deceptively simple text-classification benchmark that exposes the System-1 failure modes of LLMs; both solving and generating Connections puzzles are now studied as reasoning probes.",
+      "description_ru": "Использование NYT Connections (игры на группировку слов) как «обманчиво простого» бенчмарка классификации текста, обнажающего сбои Системы 1 у LLM; и решение, и генерация Connections-головоломок изучаются как пробы рассуждения."
+    },
+    {
+      "name": "Metacognition in Puzzle Generation",
+      "axes": [
+        "Metacognition",
+        "Generation",
+        "Reasoning"
+      ],
+      "description_en": "Capability required of a generator that must model the future reasoning of a downstream solver — generating a good puzzle is harder than solving one, and probes a model's theory-of-mind over its own outputs.",
+      "description_ru": "Способность, требуемая от генератора, который должен моделировать будущее рассуждение downstream-решателя — сгенерировать хорошую головоломку сложнее, чем её решить; зондирует «теорию ума» модели относительно собственных выходов."
+    },
+    {
+      "name": "System-1 vs System-2 (LLM framing)",
+      "axes": [
+        "Cognition",
+        "Reasoning",
+        "Benchmark Framing"
+      ],
+      "description_en": "Kahneman's dual-process distinction repurposed for LLMs: System-1 = fast pattern-matching token generation; System-2 = deliberate, step-by-step reasoning. Benchmarks like NYT Connections are designed to penalise System-1 shortcuts.",
+      "description_ru": "Двухпроцессное различие Канемана, переоформленное для LLM: Система 1 — быстрая генерация токенов по паттернам; Система 2 — сознательное пошаговое рассуждение. Бенчмарки вроде NYT Connections специально штрафуют сокращения Системы 1."
+    },
+    {
+      "name": "GFlowNet (Generative Flow Network)",
+      "axes": [
+        "GFlowNet",
+        "Generative Model",
+        "Theory"
+      ],
+      "description_en": "Generative model trained to sample composite objects (sets, graphs, reasoning trajectories) with probability proportional to a given reward; foundation of Trajectory-Balance objectives used in scalable LLM post-training.",
+      "description_ru": "Генеративная модель, обучаемая сэмплировать составные объекты (множества, графы, reasoning-траектории) с вероятностью, пропорциональной заданной награде; основа Trajectory-Balance целей в масштабируемом пост-обучении LLM."
+    },
+    {
+      "name": "Reward-Proportional Sampling",
+      "axes": [
+        "Sampling",
+        "Diversity",
+        "Reward"
+      ],
+      "description_en": "Sampling regime in which the probability of producing an output is proportional to its reward (rather than concentrating on the argmax) — preserves diversity and underlies GFlowNet-based exploration.",
+      "description_ru": "Режим сэмплирования, в котором вероятность вывода пропорциональна его награде (а не сосредоточена на argmax) — сохраняет разнообразие и лежит в основе GFlowNet-исследования."
+    },
+    {
+      "name": "CoT Faithfulness",
+      "axes": [
+        "Faithfulness",
+        "Interpretability",
+        "CoT"
+      ],
+      "description_en": "Property that a model's written Chain-of-Thought actually reflects the computation that produced the final answer; growing evidence shows CoTs are frequently unfaithful, threatening interpretability in high-risk uses.",
+      "description_ru": "Свойство, при котором написанная моделью цепочка мыслей действительно отражает вычисление, породившее финальный ответ; накапливаются данные, что CoT часто неверны, что подрывает интерпретируемость в high-risk применениях."
+    },
+    {
+      "name": "Instance-Level Faithfulness",
+      "axes": [
+        "Faithfulness",
+        "Evaluation",
+        "CoT"
+      ],
+      "description_en": "Practical question of deciding whether a specific CoT trajectory faithfully matches the model's internal reasoning on that exact instance; addressed by benchmarks like FaithCoT-Bench.",
+      "description_ru": "Практический вопрос: соответствует ли конкретная CoT-траектория внутреннему рассуждению модели на именно этом примере; решается бенчмарками вроде FaithCoT-Bench."
+    },
+    {
+      "name": "Benchmark Self-Judging Anti-Pattern",
+      "axes": [
+        "Evaluation",
+        "Position Paper",
+        "Trust"
+      ],
+      "description_en": "Position that letting AI grade AI on its own benchmarks compounds data contamination and selective reporting into systemic hype; argues for a new trustworthy-evaluation paradigm with independent judges and contamination audits.",
+      "description_ru": "Позиция: позволять ИИ оценивать ИИ на собственных бенчмарках — значит копить загрязнение данных и выборочную отчётность в системный хайп; призывает к новой парадигме доверенной оценки с независимыми судьями и аудитом загрязнений."
+    },
+    {
+      "name": "Evidence-Centered Benchmark Design (ECBD)",
+      "axes": [
+        "Benchmark Methodology",
+        "Validity",
+        "Assessment Theory"
+      ],
+      "description_en": "Framework imported from educational assessment that formalises benchmark creation into five modules (capability, task, evidence, scoring, validity) — surfaces tacit assumptions about what the benchmark really measures.",
+      "description_ru": "Фреймворк, заимствованный из педагогической оценки и формализующий создание бенчмарка через пять модулей (способность, задача, доказательство, скоринг, валидность) — выводит наружу неявные предположения о том, что бенчмарк на самом деле измеряет."
+    },
+    {
+      "name": "Construct Validity in Benchmarks",
+      "axes": [
+        "Validity",
+        "Benchmark",
+        "Methodology"
+      ],
+      "description_en": "Question of whether the operational benchmark actually measures the construct it claims to (e.g., reasoning, faithfulness) rather than a confound (pattern memorisation, surface form) — central to ECBD-style critique.",
+      "description_ru": "Вопрос: действительно ли операциональный бенчмарк измеряет заявленный конструкт (рассуждение, верность) — или подменяет его confound'ом (запоминание паттернов, поверхностная форма); центральная тема ECBD-критики."
+    }
+  ]
+}
