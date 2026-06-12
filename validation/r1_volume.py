@@ -1,12 +1,14 @@
-"""R1 · Объём: терминов ≥ 16, базовых категорий ≥ 4, дублей нет, у терминов ≥ 3 источников.
-Детерминированно. Счётчик источников перенесён сюда из R4 решением от 2026-06-12:
-это формальная проверка объёма, качество источников оценивает R4.
-R1 · Volume: ≥ 16 terms, ≥ 4 base categories, zero duplicates, ≥ 3 sources per term.
-Deterministic. The source counter moved here from R4 per the 2026-06-12 decision:
-it is a formal volume check; source QUALITY is assessed by R4."""
+"""R1 · Объём и полнота: терминов ≥ 16, базовых категорий ≥ 4, дублей нет, у терминов
+≥ 3 источников, специализация заполнена. Детерминированно. Счётчик источников перенесён
+из R4, проверка заполненности специализации — из R5 (решения 2026-06-12): это формальные
+блок-проверки полноты конфига; КАЧЕСТВО источников оценивает R4, СООТВЕТСТВИЕ области — R5.
+R1 · Volume and completeness: ≥ 16 terms, ≥ 4 base categories, zero duplicates,
+≥ 3 sources per term, specialty filled in. Deterministic. The source counter moved here
+from R4 and the specialty-filled check from R5 (2026-06-12 decisions): these are formal
+completeness gates; source QUALITY is assessed by R4, area CONSISTENCY by R5."""
 from __future__ import annotations
 from . import loader
-from .loader import get_sources
+from .loader import get_sources, get_area
 
 
 def run(cfg, members, term_tags, thr) -> dict:
@@ -44,6 +46,13 @@ def run(cfg, members, term_tags, thr) -> dict:
                                           "deterministic": True, "requires": None,
                                           "gameable": True, "counter": "R4 attestation + R5 grounding"},
     }
+    area = get_area(cfg)
+    is_specialty_ok = bool(area and str(area).strip())
+    metrics["is_specialty_filled"] = {
+        "value": area, "pass": is_specialty_ok,
+        "deterministic": True, "requires": None, "gameable": True,
+        "counter": "соответствие области — R5 (consistency/concentration по OpenAlex)",
+        "note": "формальная проверка заполненности; перенесена из R5 2026-06-12"}
     metrics["is_sources_count_ge_3"] = {
         "value": share_3plus, "pass": is_sources_ok,
         "deterministic": True, "requires": None, "gameable": True,
@@ -54,6 +63,7 @@ def run(cfg, members, term_tags, thr) -> dict:
     metrics["bonus_size3_pool"] = {"value": len(pool3), "pass": None,
                                    "deterministic": True, "requires": None, "gameable": False,
                                    "note": "категории по 3 термина → пул обманок (не штраф)"}
-    passed = is_terms_count and is_base and is_dedup_ok and is_sources_ok
+    passed = (is_terms_count and is_base and is_dedup_ok and is_sources_ok
+              and is_specialty_ok)
     return {"requirement": "R1 · Объём", "metrics": metrics, "pass": passed,
             "extra": {"n_terms": n_terms, "n_categories": n_cats, "tag_sizes": sizes}}

@@ -119,7 +119,7 @@ def test_from_generator_end_to_end(tmp_path):
     assert Path(v["v1_path"]).exists()
     # R1, R5 always pass for this fixture.
     assert v["metric_gates"]["R1_volume"]
-    assert v["metric_gates"]["R5_specialty"]
+    assert v["metric_gates"]["R5_specialty"] is None   # качественный, без обогащения PENDING
     # счётчик источников теперь в R1 (3 arXiv-источника на термин → проходит);
     # R4 без обогащения — честно PENDING
     assert v["metric_gates"]["R1_volume"] is True
@@ -137,7 +137,7 @@ def test_from_generator_relaxed_gates_accept_synthetic(tmp_path):
     # Drop the gates we know the generator pool can't satisfy
     # (R3_morph_leak: плейсхолдерные имена Concept-i-j делят единственный
     # токен "concept" → вырожденный IDF-корпус флагает все связи).
-    relaxed = ("R1_volume", "R2_mode1", "R5_specialty",
+    relaxed = ("R1_volume", "R2_mode1",
                "assembly_normal", "assembly_advanced")
     v = fg.verdict_for_rich(rich_path, n_seeds=10, v1_dir=v1_dir,
                             required_gates=relaxed, make_plot=False)

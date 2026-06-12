@@ -81,12 +81,20 @@ def test_export_input_equivalent_to_direct_pool(acc, tmp_path):
     rep_exp = validate(str(p), acc)
     rep_direct = validate(str(POOL), acc)
 
-    # один и тот же граф принадлежности → одинаковые структурные метрики
+    # один и тот же граф принадлежности → одинаковые структурные метрики.
+    # is_specialty_filled сравниваем по pass: значение area у пула и экспорта
+    # различается по форме (строка specialty vs area) — известное расщепление
+    # формата specialty (П7 плана доработки спеки).
     for rid in ("R1", "R2"):
         for mname, m in rep_direct["requirements"][rid]["metrics"].items():
             if m["requires"] is None and m["value"] is not None:
-                assert rep_exp["requirements"][rid]["metrics"][mname]["value"] == m["value"], \
-                    f"{rid}.{mname} расходится между пулом и экспортом"
+                exp_m = rep_exp["requirements"][rid]["metrics"][mname]
+                if mname == "is_specialty_filled":
+                    assert exp_m["pass"] == m["pass"], \
+                        f"{rid}.{mname} pass расходится между пулом и экспортом"
+                else:
+                    assert exp_m["value"] == m["value"], \
+                        f"{rid}.{mname} расходится между пулом и экспортом"
     # и одинаковый morph_leak (имена терминов/категорий совпадают)
     assert (rep_exp["requirements"]["R3"]["metrics"]["morph_leak_rate"]["value"]
             == rep_direct["requirements"]["R3"]["metrics"]["morph_leak_rate"]["value"])

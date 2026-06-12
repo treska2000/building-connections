@@ -1,13 +1,15 @@
-"""R5 · Покрытие специализации: specialty_filled — детерминированно;
-consistency/concentration — поле термина из OpenAlex topics его источников
-(fallback: архив arXiv → поле). area_term_consistency = доля терминов с ожидаемым
-полем ≥ τ; area_concentration = модальное поле == ожидаемому ∧ modal_share ≥ τ.
+"""R5 · Покрытие специализации — чисто КАЧЕСТВЕННАЯ проверка через обогащение:
+поле термина выводится из OpenAlex topics его источников (fallback: архив arXiv →
+поле). Без обогащения весь R5 = PENDING. Формальная проверка заполненности
+специализации перенесена в R1 (решение 2026-06-12). area_term_consistency = доля
+терминов с ожидаемым полем ≥ τ; area_concentration = модальное поле == ожидаемому
+∧ modal_share ≥ τ.
 
-R5 · Specialization coverage: specialty_filled is deterministic;
-consistency/concentration derive a term's field from the OpenAlex topics of its
-sources (fallback: arXiv archive → field). area_term_consistency = share of terms
-with the expected field ≥ τ; area_concentration = modal field == expected ∧
-modal_share ≥ τ.
+R5 · Specialization coverage — a purely QUALITATIVE check via enrichment: a term's
+field is derived from the OpenAlex topics of its sources (fallback: arXiv archive →
+field). Without enrichment the whole R5 is PENDING. The formal specialty-filled check
+moved to R1 (2026-06-12 decision). area_term_consistency = share of terms with the
+expected field ≥ τ; area_concentration = modal field == expected ∧ modal_share ≥ τ.
 """
 from __future__ import annotations
 from collections import Counter
@@ -58,19 +60,15 @@ def _term_field(ids, metas, works) -> str | None:
 
 
 def run(cfg, members, term_tags, thr, enrich=None) -> dict:
-    """Считает метрики покрытия специализации; без обогащения — только specialty_filled.
+    """Считает качественные метрики покрытия специализации; все требуют обогащения —
+    без него возвращает все метрики со статусом PENDING (pass = None).
     Вход: cfg, members, term_tags, thr (пороги R5), enrich (Enrichment | None).
     Выход: dict {requirement, metrics, pass}.
-    Computes specialization-coverage metrics; without enrichment only specialty_filled.
+    Computes the qualitative specialization-coverage metrics; all require enrichment —
+    without it every metric is returned as PENDING (pass = None).
     In: cfg, members, term_tags, thr (R5 thresholds), enrich (Enrichment | None).
     Out: dict {requirement, metrics, pass}."""
-    area = get_area(cfg)
-    filled = bool(area and str(area).strip())
-    metrics = {
-        "specialty_filled": {"value": area, "pass": filled,
-                             "deterministic": True, "requires": None, "gameable": True,
-                             "counter": "area_term_consistency (OpenAlex)"},
-    }
+    metrics = {}
 
     if enrich is None or not enrich.sources_available():
         metrics["area_term_consistency"] = {
@@ -81,8 +79,9 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
             "value": None, "pass": None, "deterministic": True,
             "requires": "OpenAlex (распределение по полям)",
             "note": "modal_field == area И modal_share ≥ tau"}
+        # no field data without enrichment: the requirement is honestly PENDING
         return {"requirement": "R5 · Покрытие специализации", "metrics": metrics,
-                "pass": filled}
+                "pass": None}
 
     det = enrich.deterministic()
     tau = thr.get("area_consistency_tau", 0.70)
@@ -122,7 +121,7 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
         "pass": conc_pass, "deterministic": det, "requires": None, "gameable": False,
         "note": f"τ={tau}"}
 
-    gates = [filled, cons_pass, conc_pass]
+    gates = [cons_pass, conc_pass]
     known_g = [g for g in gates if g is not None]
     return {"requirement": "R5 · Покрытие специализации", "metrics": metrics,
             "pass": all(known_g) if known_g else None}

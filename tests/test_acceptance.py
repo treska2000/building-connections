@@ -141,9 +141,9 @@ def test_acceptance_minimal_passes_structural_core(tmp_path, minimal_valid_cfg):
     assert v["metric_gates"]["R1_volume"] is True
     assert v["metric_gates"]["R2_mode1"] is True
     assert v["metric_gates"]["R3_morph_leak"] is True
-    assert v["metric_gates"]["R5_specialty"] is True
-    # R4 — чисто качественный: без обогащения честно PENDING (None)
+    # R4 и R5 — чисто качественные: без обогащения честно PENDING (None)
     assert v["metric_gates"]["R4_sources"] is None
+    assert v["metric_gates"]["R5_specialty"] is None
 
 
 @needs_ortools
@@ -203,7 +203,7 @@ def test_acceptance_relaxed_gates_let_blocked_config_through(tmp_path, minimal_v
     for t in cfg["terms"]:
         t.pop("sources", None)
     v = ac.acceptance(_write(tmp_path, cfg), n_seeds_for_variety=10, n_samples=60,
-                      required_gates=("R2_mode1", "R5_specialty"))
+                      required_gates=("R2_mode1", "R3_morph_leak"))
     assert v["accepted"], f"blocked: {v['blocked_gates']}"
 
 

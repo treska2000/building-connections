@@ -284,6 +284,12 @@ def test_r5_consistency_and_alien_field(cfg, graph, fake_en):
     assert r2["metrics"]["area_term_consistency"]["pass"] is False
 
 
+def test_r5_pending_without_enrichment(cfg, graph):
+    r = r5_specialization.run(cfg, *graph, {"area_consistency_tau": 0.7}, None)
+    assert "specialty_filled" not in r["metrics"]   # перенесена в R1 (2026-06-12)
+    assert r["pass"] is None
+
+
 def test_offline_cache_degrades_to_pending(cfg, graph, tmp_path):
     m, tt = graph
     en = Enrichment.live(cache_dir=str(tmp_path / "cache"), offline=True)

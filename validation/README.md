@@ -110,8 +110,11 @@ env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и откры
 - `is_sources_count_ge_3` — доля терминов с ≥ 3 источниками не ниже 0.90. Формальный
   счётчик, перенесён из R4 (решение 2026-06-12): количество источников — вопрос объёма,
   их качество оценивает R4.
+- `is_specialty_filled` — специализация (area) заполнена. Формальная проверка полноты,
+  перенесена из R5 (решение 2026-06-12): соответствие терминов заявленной области
+  оценивает R5.
 - `bonus_size3_pool` — справочно: категории ровно по 3 термина как пул естественных обманок; не гейт.
-- Вердикт R1 = четыре блокирующие метрики выше.
+- Вердикт R1 = пять блокирующих метрик выше.
 
 ### R2 · Решаемость (`r2_solvability.py` + `solver.py`, CP-SAT, детерминированно)
 
@@ -221,7 +224,9 @@ FAIL. Единственная проверка источников, не тр�
 
 ### R5 · Покрытие специализации (`r5_specialization.py`)
 
-- `specialty_filled` (детерм.): area заполнен.
+Все метрики R5 построены на обогащении (OpenAlex/arXiv); без него раздел целиком
+PENDING. Формальная проверка заполненности специализации перенесена в R1.
+
 - `area_term_consistency`: поле термина = модальное поле его источников (OpenAlex
   `primary_topic.field`, fallback — маппинг архива arXiv → поле); доля терминов с полем ==
   ожидаемому (`specialty.field`) ≥ 0.70.
@@ -357,8 +362,11 @@ unless its requirement is in `required_gates` (default: R1, R2, R3, R4, R5, R7; 
 - `is_sources_count_ge_3` — the share of terms with ≥ 3 sources is at least 0.90. A formal
   counter moved here from R4 (2026-06-12 decision): the NUMBER of sources is a volume
   question; their QUALITY is assessed by R4.
+- `is_specialty_filled` — the specialty (area) is filled in. A formal completeness check
+  moved here from R5 (2026-06-12 decision): whether the terms actually MATCH the declared
+  area is assessed by R5.
 - `bonus_size3_pool` — informational: categories with exactly 3 terms as a pool of natural decoys; not a gate.
-- R1 verdict = the four blocking metrics above.
+- R1 verdict = the five blocking metrics above.
 
 ### R2 · Solvability (`r2_solvability.py` + `solver.py`, CP-SAT, deterministic)
 
@@ -468,7 +476,9 @@ FAIL. The only source check that needs no external data — counting them — mo
 
 ### R5 · Specialization coverage (`r5_specialization.py`)
 
-- `specialty_filled` (deterministic): area is non-empty.
+Every R5 metric is built on enrichment (OpenAlex/arXiv); without it the whole section
+is PENDING. The formal specialty-filled check moved to R1.
+
 - `area_term_consistency`: a term's field = the modal field of its sources (OpenAlex
   `primary_topic.field`, falling back to an arXiv-archive → field mapping); share of terms whose
   field == the expected one (`specialty.field`) ≥ 0.70.
