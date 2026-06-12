@@ -146,7 +146,7 @@ CP-SAT-модель точного покрытия (каждое слово р�
   ceiling × VPY` — экстраполяция выборки на весь пул, то есть оценка числа ХОРОШИХ
   досок. Это ёмкость конфига как банка тестов — ответ на вопрос «не одна игра,
   а множество».
-- **mode-2 (пересечения-ловушки).** Ловушка-пересечение — это термин, который реально
+- **mode-2 (пересечения-ловушки).** Ловушка-пересечение — это термин, который
   принадлежит двум категориям сразу (у него ≥ 2 тегов): когда обе категории оказываются
   на одной доске, игрок законно может отнести его к любой из них, но правильная разбивка
   кладёт его только в одну. Это отличие от mode-3: там обманка лишь похожа на чужую
@@ -156,12 +156,6 @@ CP-SAT-модель точного покрытия (каждое слово р�
   целую ложную четвёрку. Сэмплер: кандидат-доска обязана содержать хотя бы один термин
   с двумя тегами из выбранных четырёх категорий (живую ловушку), слова не
   переиспользуются; валидность = однозначность по солверу.
-  Порог τ₂ (минимальная доля валидных досок среди кандидатов) пока не задан — гейт
-  работает по факту «хотя бы одна валидная доска нашлась»; методология калибровки —
-  отдельная ресёрч-задача. Известная находка: если пересечение слишком плотное
-  относительно размеров категорий (вокруг ловушки не остаётся ≥ 4 непересекающихся
-  терминов), доска с ловушкой структурно не извлекается — предусловие проходит,
-  солвер честно говорит «нет».
 - **mode-3 (явные обманки):** пул = термины с `decoy_for_tags` (≥ 4); расширенное отношение
   R₃ = member_of ∪ decoy_for; `trap_quality(W)` = квадры, монохромные под R₃, но не под
   member_of (соблазнительная неверная четвёрка существует только из-за decoy-рёбер);
@@ -371,7 +365,7 @@ plus an honest solver check:
   ceiling × VPY` — the sample extrapolated to the whole pool, i.e. an estimate of the
   number of GOOD boards. This is the config's capacity as a bank of tests — the answer
   to "not one game but many".
-- **mode-2 (overlaps as traps).** An overlap trap is a term that genuinely belongs to
+- **mode-2 (overlaps as traps).** An overlap trap is a term that belongs to
   two categories at once (it carries ≥ 2 tags): when both categories land on one board,
   the player can legitimately assign it to either, yet the correct partition places it
   in exactly one. This differs from mode-3, where a decoy merely resembles a foreign
@@ -381,12 +375,6 @@ plus an honest solver check:
   Sampler: a candidate board must contain at least one term holding two tags within the
   chosen four categories (a live trap), no word is reused; validity = solver-certified
   uniqueness.
-  The τ₂ threshold (the minimum share of valid boards among trap-bearing candidates) is
-  not set yet — the gate runs on "at least one valid board was found"; the calibration
-  methodology is a separate research task. Known finding: when the overlap is too dense
-  relative to category sizes (fewer than 4 non-overlapping terms remain around the
-  trap), a trap-bearing board is structurally unbuildable — the precondition passes
-  while the solver honestly says no.
 - **mode-3 (explicit decoys):** pool = terms with `decoy_for_tags` (≥ 4); extended relation
   R₃ = member_of ∪ decoy_for; `trap_quality(W)` = quads monochromatic under R₃ but not under
   member_of (the tempting wrong quad exists only because of decoy edges);
