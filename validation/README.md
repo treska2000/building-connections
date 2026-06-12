@@ -56,7 +56,7 @@
 
 ## Запуск
 
-**Единый вход dалидации конфига»** (максимум проверок при разумном ресурсе:
+**Единый вход валидации конфига** (максимум проверок при разумном ресурсе:
 метрики R1–R7 + обогащение источников + реальная JS-сборка; первый прогон с
 обогащением — до минуты, дальше кэш):
 
@@ -121,7 +121,10 @@ CP-SAT-модель точного покрытия (каждое слово р�
 Каждая мода = играбельное предусловие (счёт по множествам) + честная проверка solver'ом:
 
 - **mode-1 (чистый пазл)** — доска 4×4, где каждый термин принадлежит ровно одной
-  категории; проверка идёт в три шага от дешёвого к дорогому.
+  категории. Проверка устроена по принципу fail-fast: сначала дешёвый структурный
+  фильтр (подсчёт множеств, микросекунды), и только если он пройден — дорогая проверка
+  солвером (сотни запусков CP-SAT, секунды); третий шаг — бесплатная арифметика поверх
+  результатов второго.
   Шаг 1, предусловие: для чистой доски нужны термины, не состоящие больше нигде, —
   solo-термины (|tags| = 1); если категорий с ≥ 4 solo-терминами меньше четырёх, доску
   физически не из чего собрать, solver не запускается. Это счёт по множествам, играбелен
@@ -326,7 +329,10 @@ the new cutoff. Each mode = a gameable precondition (set counting)
 plus an honest solver check:
 
 - **mode-1 (clean puzzle)** — a 4×4 board where every term belongs to exactly one
-  category; the check runs in three steps, from cheap to expensive.
+  category. The check follows a fail-fast pattern: first a cheap structural filter
+  (set counting, microseconds), and only if it passes — the expensive solver check
+  (hundreds of CP-SAT runs, seconds); the third step is free arithmetic on top of
+  the second one's results.
   Step 1, precondition: a clean board needs terms that belong nowhere else — solo terms
   (|tags| = 1); with fewer than four categories holding ≥ 4 solo terms there is nothing
   to build a board from, and the solver is not invoked. This is plain set counting and
