@@ -1,6 +1,6 @@
 """R2 · Решаемость (OR-Tools): mode-1/2 полные; mode-3 — на явных decoy_for из входа
 (margin-вывод обманок ждёт эмбеддер). Вердикт R2 = mode-1 (pass_base); mode-2/3 —
-углубления, репортятся, гейт не валят до калибровки τ₂/τ₃ (min_vpy_mode2/3 = null →
+углубления, репортятся, гейт не блокируют до калибровки τ₂/τ₃ (min_vpy_mode2/3 = null →
 гейт по exists). Спека: req2_solvability_spec_2026-06-07.md.
 
 R2 · Solvability (OR-Tools): modes 1/2 complete; mode-3 runs on explicit decoy_for

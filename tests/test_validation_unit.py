@@ -256,7 +256,7 @@ def test_r4_faithfulness_and_reds(cfg, graph, fake_en):
     assert pt["Gradient Descent"]["sane"] is True
     assert pt["Phantom Method"]["verdict"] == "red"            # S1: фейк-ссылка
     assert pt["Gradient Descent"]["groups"] == 3               # S6: 3 независимые группы
-    assert r["metrics"]["source_attestation"]["pass"] is False  # один red валит гейт
+    assert r["metrics"]["source_attestation"]["pass"] is False  # один red блокирует гейт
     assert r["metrics"]["source_attestation"]["deterministic"] is False  # live помечен
 
 
