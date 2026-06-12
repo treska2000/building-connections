@@ -100,7 +100,7 @@ env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и откры
 
 Контракт каждой метрики единый: `{value, pass, deterministic, requires, gameable, counter}`.
 Метрика с невыполненным `requires` даёт `pass = None` (PENDING) и не блокирует вердикт, если её
-требование не входит в `required_gates` (дефолт: R1, R2, R3, R4, R5, R7; R4 блокирующий — accept достижим только с обогащением). Пороги — в `thresholds.yaml`.
+требование не входит в `required_gates` (дефолт: R1, R2, R3, R4, R5; R4 блокирующий — accept достижим только с обогащением). Пороги — в `thresholds.yaml`.
 
 ### R1 · Объём (`r1_volume.py`, детерминированно)
 
@@ -249,12 +249,21 @@ PENDING. Формальная проверка заполненности спе
 label_fidelity + NPMI термин↔термин в пространстве абстрактов ИСТОЧНИКОВ (sim к
 синтетическому описанию — самосогласованность генератора, не гейт).
 
-### R7 · Воспроизводимость (`r7_reproducibility.py`, мета — на сам валидатор)
+### Паспорт валидатора (`r7_reproducibility.py`) — логирование, не критерий
 
-- `determinism_flags`: каждая метрика декларирует deterministic/requires — недетерминированное
-  (live API, LLM) изолировано и помечено.
-- `provenance`: config_id/version, версия acceptance, seed, эмбеддер, снапшот OpenAlex — в каждом отчёте.
-- `reproducibility_check`: два независимых прогона validate(), diff детерминированных значений == 0.
+Бывший R7. Решение 2026-06-12: это не критерий валидации конфига, а логирование самого
+валидатора, поэтому из `required_gates` исключён и в отчёте вынесен в отдельный блок.
+
+- `provenance` — паспорт прогона в каждом отчёте: версия валидатора (`validator_version`,
+  поднимается при изменении логики метрик — чтобы сравнивать «эта версия хорошая, эта
+  плохая»), config_id/version, версия порогов, seed, эмбеддер, снапшот OpenAlex.
+- `reproducibility_check` — self-test валидатора (два независимых прогона, diff
+  детерминированных значений == 0). В каждом прогоне не гоняется: метрики настраиваются
+  один раз, и детерминизм проверяется тогда же — тестовым контрактом (pytest) и по
+  флагу `--repro` при необходимости.
+- Сводка determinism_flags из отчёта удалена — это статическая характеристика метрик,
+  от прогона к прогону не меняется; per-metric флаг `deterministic` остаётся внутри
+  каждой метрики (его читает self-test, и live-обогащение честно помечается).
 - Автоматизация/e2e закрыты CLI (`run.py`, exit 0 accept / 1 reject / 2 pending) и тестовым контрактом.
 
 ### Гейтовый слой (`acceptance.py`)
@@ -363,7 +372,7 @@ open decision points — `spec_rework_plan_2026-06-11.md` in the research folder
 
 Every metric follows one contract: `{value, pass, deterministic, requires, gameable, counter}`.
 A metric whose `requires` is unmet yields `pass = None` (PENDING) and does not block the verdict
-unless its requirement is in `required_gates` (default: R1, R2, R3, R4, R5, R7; R4 is blocking — accept is reachable only with enrichment). Thresholds live in `thresholds.yaml`.
+unless its requirement is in `required_gates` (default: R1, R2, R3, R4, R5; R4 is blocking — accept is reachable only with enrichment). Thresholds live in `thresholds.yaml`.
 
 ### R1 · Volume (`r1_volume.py`, deterministic)
 
@@ -512,12 +521,22 @@ The old spec (sim_in / sim_margin / pmi); all metrics pending (requires embedder
 label_fidelity + term↔term NPMI in the space of SOURCE abstracts (similarity to a synthetic
 description is generator self-consistency, not a gate).
 
-### R7 · Reproducibility (`r7_reproducibility.py`, meta — about the validator itself)
+### Validator passport (`r7_reproducibility.py`) — logging, not a criterion
 
-- `determinism_flags`: every metric declares deterministic/requires — the non-deterministic
-  parts (live APIs, LLMs) are isolated and labeled.
-- `provenance`: config_id/version, acceptance version, seed, embedder, OpenAlex snapshot — in every report.
-- `reproducibility_check`: two independent validate() runs; the diff of deterministic values must be 0.
+The former R7. 2026-06-12 decision: this is not a config-validation criterion but the
+validator's own logging, so it is excluded from `required_gates` and rendered as a
+separate report block.
+
+- `provenance` — the run passport in every report: validator version (`validator_version`,
+  bumped on any metric-logic change — so versions can be compared as "this one is good,
+  that one is not"), config_id/version, thresholds version, seed, embedder, OpenAlex snapshot.
+- `reproducibility_check` — the validator's self-test (two independent runs, diff of
+  deterministic values == 0). It does not run on every validation: metrics are tuned
+  once, and determinism is verified then — by the test contract (pytest) and via the
+  `--repro` flag when needed.
+- The determinism_flags summary was removed from the report — it is a static property
+  of the metrics that does not change between runs; the per-metric `deterministic` flag
+  stays inside each metric (the self-test reads it, and live enrichment is honestly labeled).
 - Automation/e2e are covered by the CLI (`run.py`, exit 0 accept / 1 reject / 2 pending) and the test contract.
 
 ### Gate layer (`acceptance.py`)

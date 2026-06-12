@@ -1,0 +1,481 @@
+{
+  "corpus": {
+    "n_cat": 160,
+    "n_link": 640,
+    "n_leak_cat": 92,
+    "subtypes": {
+      "leak_surface": 57,
+      "leak_morph": 19,
+      "semantic": 23,
+      "trap_ubiq": 45,
+      "leak_suffix": 16
+    }
+  },
+  "recommended": {
+    "params": {
+      "L": 3,
+      "S": "snowball_suf3",
+      "w": "idf",
+      "M": "maxweight",
+      "idf_cutoff": 0.0,
+      "drop_ubiq_stop": false
+    },
+    "variant": "term_term",
+    "tau_full_corpus": 0.7353337331308442,
+    "heldout": {
+      "f1": 0.8579234972677595,
+      "auc": 0.8938639817629179,
+      "precision": 0.8820224719101124,
+      "recall": 0.8351063829787234
+    }
+  },
+  "stemming": {
+    "word_f1": 0.7286821705426356,
+    "stem_f1": 0.8148148148148148,
+    "best_word": {
+      "L": 5,
+      "S": "none",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "wjaccard",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.573170731707317,
+      "recall": 1.0,
+      "f1": 0.7286821705426356,
+      "auc": 0.6538943768996961,
+      "tau": 0.0
+    },
+    "best_stem": {
+      "L": 3,
+      "S": "snowball",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.9705882352941176,
+      "recall": 0.7021276595744681,
+      "f1": 0.8148148148148148,
+      "auc": 0.886854103343465,
+      "tau": 0.8486234506399105
+    }
+  },
+  "idf": {
+    "uniform_f1": 0.7678571428571429,
+    "idf_f1": 0.8579234972677595
+  },
+  "fp_analysis": {
+    "uniform": {
+      "tau": 0.0,
+      "trap_links": 180,
+      "trap_fired": 180,
+      "trap_fp_rate": 1.0,
+      "overall_f1": 0.7301587301587301
+    },
+    "idf": {
+      "tau": 0.7353337331308442,
+      "trap_links": 180,
+      "trap_fired": 8,
+      "trap_fp_rate": 0.044444444444444446,
+      "overall_f1": 0.8797653958944281
+    }
+  },
+  "subtype_recall": {
+    "leak_surface": 1.0,
+    "leak_morph": 1.0,
+    "leak_suffix": 0.609375
+  },
+  "scale": {
+    "4": {
+      "raw_f1": 0.7227272727272728,
+      "raw_f1_sd": 0.05175966925011737,
+      "z_f1": 0.7806794654620742,
+      "z_f1_sd": 0.06865651982006982,
+      "tau_raw": 0.7009359428822384,
+      "tau_raw_sd": 0.01920252125300144,
+      "tau_z": 0.6896318714233566,
+      "tau_z_sd": 0.11400977063441625
+    },
+    "8": {
+      "raw_f1": 0.7200080502363058,
+      "raw_f1_sd": 0.0255389985053206,
+      "z_f1": 0.7252456636932958,
+      "z_f1_sd": 0.034046397641836375,
+      "tau_raw": 0.7287075135597233,
+      "tau_raw_sd": 0.055145811933902195,
+      "tau_z": 1.0508638998512272,
+      "tau_z_sd": 0.37956343156418254
+    },
+    "30": {
+      "raw_f1": 0.8119277694217224,
+      "raw_f1_sd": 0.05391712501450632,
+      "z_f1": 0.7525420055420537,
+      "z_f1_sd": 0.03452104241474773,
+      "tau_raw": 0.7970964497970666,
+      "tau_raw_sd": 0.03786115822379444,
+      "tau_z": 1.436987336827523,
+      "tau_z_sd": 0.18682572867087782
+    },
+    "100": {
+      "raw_f1": 0.8569760543296185,
+      "raw_f1_sd": 0.03256664255950161,
+      "z_f1": 0.756032209518475,
+      "z_f1_sd": 0.011510570677502507,
+      "tau_raw": 0.7022510811378537,
+      "tau_raw_sd": 0.016895115021550337,
+      "tau_z": 1.8723509350587673,
+      "tau_z_sd": 0.0905084246150424
+    }
+  },
+  "adversarial": [
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.7353337331308442,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.7353337331308442,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.7622650074649032,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.12565161059947463,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.0,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.12565161059947463,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8646518957835225,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.25130322119894927,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_term",
+      "mean": 0.8377206214494636,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_name",
+      "variant": "term_name",
+      "mean": 0.25130322119894927,
+      "name": "Metaphorical Title"
+    },
+    {
+      "subtype": "adv_syn_memb",
+      "variant": "term_term",
+      "mean": 0.2333101400261468,
+      "name": "Decision X (scrambled)"
+    },
+    {
+      "subtype": "adv_syn_memb",
+      "variant": "term_name",
+      "mean": 0.33281804395895404,
+      "name": "Decision X (scrambled)"
+    },
+    {
+      "subtype": "adv_syn_memb",
+      "variant": "term_term",
+      "mean": 0.2333101400261468,
+      "name": "Reasoning shapes (scrambled)"
+    },
+    {
+      "subtype": "adv_syn_memb",
+      "variant": "term_name",
+      "mean": 0.1243996851489369,
+      "name": "Reasoning shapes (scrambled)"
+    }
+  ],
+  "sensitivity": {
+    "L3_none": 0.6928104575163399,
+    "L3_porter": 0.7924528301886793,
+    "L4_none": 0.6754966887417219,
+    "L4_porter": 0.7770700636942676,
+    "L5_none": 0.6754966887417219,
+    "L5_porter": 0.7770700636942676,
+    "L6_none": 0.7286821705426356,
+    "L6_porter": 0.7712418300653595
+  },
+  "top_configs": [
+    {
+      "L": 3,
+      "S": "snowball_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "maxweight",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8820224719101124,
+      "recall": 0.8351063829787234,
+      "f1": 0.8579234972677595,
+      "auc": 0.8938639817629179,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 3,
+      "S": "snowball_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.2,
+      "M": "maxweight",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8820224719101124,
+      "recall": 0.8351063829787234,
+      "f1": 0.8579234972677595,
+      "auc": 0.8938639817629179,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 3,
+      "S": "porter_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "maxweight",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8820224719101124,
+      "recall": 0.8351063829787234,
+      "f1": 0.8579234972677595,
+      "auc": 0.8926481762917934,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 3,
+      "S": "porter_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.2,
+      "M": "maxweight",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8820224719101124,
+      "recall": 0.8351063829787234,
+      "f1": 0.8579234972677595,
+      "auc": 0.8926481762917934,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 3,
+      "S": "snowball_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8481675392670157,
+      "recall": 0.8617021276595744,
+      "f1": 0.8548812664907651,
+      "auc": 0.8566489361702128,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 3,
+      "S": "snowball_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.2,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8481675392670157,
+      "recall": 0.8617021276595744,
+      "f1": 0.8548812664907651,
+      "auc": 0.8566489361702128,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 3,
+      "S": "porter_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8481675392670157,
+      "recall": 0.8617021276595744,
+      "f1": 0.8548812664907651,
+      "auc": 0.8550531914893618,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 3,
+      "S": "porter_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.2,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.8481675392670157,
+      "recall": 0.8617021276595744,
+      "f1": 0.8548812664907651,
+      "auc": 0.8550531914893618,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 5,
+      "S": "snowball_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.851063829787234,
+      "recall": 0.851063829787234,
+      "f1": 0.851063829787234,
+      "auc": 0.8535714285714285,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 5,
+      "S": "snowball_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.2,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.851063829787234,
+      "recall": 0.851063829787234,
+      "f1": 0.851063829787234,
+      "auc": 0.8535714285714285,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 5,
+      "S": "porter_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.0,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.851063829787234,
+      "recall": 0.851063829787234,
+      "f1": 0.851063829787234,
+      "auc": 0.8519756838905774,
+      "tau": 0.8185028708049734
+    },
+    {
+      "L": 5,
+      "S": "porter_suf3",
+      "w": "idf",
+      "idf_cutoff": 0.2,
+      "M": "fuzzy",
+      "drop_ubiq_stop": false,
+      "variant": "term_term",
+      "precision": 0.851063829787234,
+      "recall": 0.851063829787234,
+      "f1": 0.851063829787234,
+      "auc": 0.8519756838905774,
+      "tau": 0.8185028708049734
+    }
+  ]
+}

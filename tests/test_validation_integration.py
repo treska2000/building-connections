@@ -36,9 +36,11 @@ def test_report_structure_on_repo_config(acc):
         for m in rep["requirements"][rid]["metrics"].values():
             assert {"value", "pass", "deterministic", "requires"} <= set(m)
     assert rep["provenance"]["config_id"] == "ai-safety-v1"
-    # determinism_flags декларируют каждую метрику (R7)
-    flagged = {(d["requirement"], d["metric"]) for d in rep["determinism_flags"]}
-    assert ("R3", "morph_leak_rate") in flagged
+    # validator passport: version in provenance; determinism_flags summary removed
+    # (static metric property, 2026-06-12 decision) — the per-metric flag stays
+    assert rep["provenance"]["validator_version"]
+    assert "determinism_flags" not in rep
+    assert rep["requirements"]["R3"]["metrics"]["morph_leak_rate"]["deterministic"] is True
 
 
 @needs_ortools
@@ -49,10 +51,13 @@ def test_axes_format_supported(acc):
 
 
 @needs_ortools
-def test_reproducibility_gate(acc):
+def test_reproducibility_self_test(acc):
+    """Self-test валидатора: гоняется здесь (тестовый контракт) и по --repro,
+    не в каждом прогоне; в критерии (summary) не входит."""
     rep = validate_full(str(V1 / "ai-safety-v1.json"), acc)
     assert rep["repro"]["reproducibility_check"]["pass"] is True
-    assert rep["summary"]["R7"] is True
+    assert "R7" not in rep["summary"]
+    assert "R7" not in rep["required_gates"]
 
 
 @needs_ortools

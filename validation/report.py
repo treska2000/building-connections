@@ -9,20 +9,20 @@ import json
 
 
 def build_report(cfg, requirements: dict, acceptance: dict, provenance: dict,
-                 determinism, repro=None) -> dict:
+                 repro=None) -> dict:
     """Собирает отчёт и выводит вердикт: reject при проваленном required-гейте,
-    pending при неизвестном, иначе accept. Вход: cfg, requirements (R-id → результат),
-    acceptance, provenance, determinism, repro. Выход: dict отчёта.
+    pending при неизвестном, иначе accept. Паспорт валидатора (provenance, repro) —
+    отдельный блок, в критериях не участвует. Вход: cfg, requirements (R-id → результат),
+    acceptance, provenance, repro (self-test | None). Выход: dict отчёта.
     Assembles the report and derives the verdict: reject on a failed required gate,
-    pending on an unknown one, accept otherwise. In: cfg, requirements (R-id → result),
-    acceptance, provenance, determinism, repro. Out: report dict."""
+    pending on an unknown one, accept otherwise. The validator passport (provenance,
+    repro) is a separate block and takes no part in the criteria. In: cfg, requirements
+    (R-id → result), acceptance, provenance, repro (self-test | None). Out: report dict."""
     required = set(acceptance.get("required_gates",
-                                  ["R1", "R2", "R3", "R5", "R7"]))
+                                  ["R1", "R2", "R3", "R4", "R5"]))
     summary = {}
     for rid, r in requirements.items():
         summary[rid] = r.get("pass")
-    if repro is not None:
-        summary["R7"] = repro["reproducibility_check"]["pass"]
 
     blocked = [rid for rid in required if summary.get(rid) is False]
     pending = [rid for rid in required if summary.get(rid) is None]
@@ -31,14 +31,14 @@ def build_report(cfg, requirements: dict, acceptance: dict, provenance: dict,
     return {
         "config_id": cfg.get("config_id"),
         "config_version": cfg.get("config_version"),
-        "provenance": provenance,
         "verdict": verdict,
         "required_gates": sorted(required),
         "blocked_gates": blocked,
         "pending_gates": pending,
         "summary": summary,
         "requirements": requirements,
-        "determinism_flags": determinism,
+        # validator passport: logging about the validator itself, not a criterion
+        "provenance": provenance,
         "repro": repro,
     }
 
@@ -71,9 +71,12 @@ def to_markdown(report: dict) -> str:
                 tag = f"PENDING({m['requires']})"
             ms.append(f"{mn} {tag}")
         L.append(f"| {r.get('requirement', rid)} | {_badge(r.get('pass'))} | {'; '.join(ms)} |")
-    if report.get("repro"):
-        rc = report["repro"]["reproducibility_check"]
-        L.append(f"| R7 · Воспроизводимость | {_badge(rc['pass'])} | reproducibility_check {_badge(rc['pass'])} |")
+    # validator passport — logging about the validator itself, not a criterion
+    L.append("")
+    L.append("## Паспорт валидатора (не критерий)")
     L.append("")
     L.append(f"Provenance: {json.dumps(report['provenance'], ensure_ascii=False)}")
+    if report.get("repro"):
+        rc = report["repro"]["reproducibility_check"]
+        L.append(f"Self-test (repro): {_badge(rc['pass'])} — два прогона, diff детерминированных метрик == 0")
     return "\n".join(L)

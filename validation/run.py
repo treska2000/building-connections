@@ -7,6 +7,7 @@ run.py — validation pipeline orchestrator (R1–R7) + CLI. Accepts a v1 config
 Usage:
     python validation/run.py <config.json|pool.json> [--acceptance thresholds.yaml]
                              [--out reports/] [--enrich off|live|cache] [--only R2,R3]
+                             [--repro]
 """
 from __future__ import annotations
 import argparse
@@ -31,10 +32,12 @@ else:  # package mode: from validation import validate
                    r6_link_strength, r7_reproducibility)
 
 DEFAULT_ACCEPTANCE = {
-    "version": "2.1.0", "seed": 42,
+    "version": "2.2.0", "seed": 42,
     "embedder": {"model": "gemini-embedding-2", "dim": 768},
     "openalex_snapshot": None,
-    "required_gates": ["R1", "R2", "R3", "R4", "R5", "R7"],
+    # R7 is not a criterion anymore (2026-06-12): the validator passport
+    # (provenance, determinism flags, repro self-test) lives outside the gates
+    "required_gates": ["R1", "R2", "R3", "R4", "R5"],
     "thresholds": {
         "R1": {"min_terms": 16, "min_base_tags": 4, "min_tag_size": 4,
                "min_share_3sources": 0.90},
@@ -102,16 +105,19 @@ def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None,
     selected = set(only) if only else set(runners)
     requirements = {rid: fn() for rid, fn in runners.items() if rid in selected}
     prov = r7_reproducibility.provenance(acceptance, cfg)
-    det = r7_reproducibility.determinism_flags(requirements)
-    return rep.build_report(cfg, requirements, acceptance, prov, det, repro=repro)
+    return rep.build_report(cfg, requirements, acceptance, prov, repro=repro)
 
 
 def validate_full(config_path: str, acceptance: dict, en=enrich.DISABLED,
                   only=None) -> dict:
-    """Полный прогон + R7 reproducibility_check (два внутренних прогона).
-    Вход: config_path, acceptance, en, only (режим отладки). Выход: dict отчёта с repro-блоком.
-    Full run + the R7 reproducibility check (two inner runs).
-    In: config_path, acceptance, en, only (debug mode). Out: report dict with the repro block."""
+    """Прогон + reproducibility_check — self-test валидатора (два внутренних прогона).
+    Не дефолт: вызывается тестовым контрактом и CLI-флагом --repro; обычная валидация
+    конфига — validate(). Вход: config_path, acceptance, en, only (режим отладки).
+    Выход: dict отчёта с repro-блоком.
+    Run + reproducibility_check — the validator's self-test (two inner runs).
+    Not the default: invoked by the test contract and the --repro CLI flag; regular
+    config validation is validate(). In: config_path, acceptance, en, only (debug mode).
+    Out: report dict with the repro block."""
     rc = r7_reproducibility.reproducibility_check(
         lambda p, a: validate(p, a, en, only=only), config_path, acceptance)
     return validate(config_path, acceptance, en, repro=rc, only=only)
@@ -128,6 +134,8 @@ def main() -> int:
                     help="off=детерм. ядро · live=arXiv+OpenAlex (кэш пишется) · cache=только кэш (офлайн)")
     ap.add_argument("--only", default=None,
                     help="debug isolation: run only the listed requirements, e.g. --only R2,R3")
+    ap.add_argument("--repro", action="store_true",
+                    help="validator self-test: two inner runs, diff of deterministic metrics must be 0")
     args = ap.parse_args()
     acc = load_acceptance(str(args.acceptance) if args.acceptance and args.acceptance.exists() else None)
     en = enrich.DISABLED
@@ -135,7 +143,9 @@ def main() -> int:
         en = enrich.Enrichment.live(cache_dir=str(HERE / "enrich_cache"),
                                     offline=(args.enrich == "cache"))
     only = {x.strip().upper() for x in args.only.split(",")} if args.only else None
-    report = validate_full(str(args.config), acc, en=en, only=only)
+    # default = a single run; the repro self-test (3x cost) is opt-in via --repro
+    run_fn = validate_full if args.repro else validate
+    report = run_fn(str(args.config), acc, en=en, only=only)
     print(rep.to_markdown(report))
     if args.out:
         d = args.out / (report.get("config_id") or args.config.stem)
