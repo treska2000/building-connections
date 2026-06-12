@@ -201,14 +201,26 @@ def main():
     p.add_argument("--require", nargs="*", default=None,
                    help=f"gate names to require (default: structural core + assembly). "
                         f"Choices: {list(METRIC_GATES) + [f'assembly_{m}' for m in ASSEMBLY_GATES]}")
+    p.add_argument("--enrich", choices=["off", "live", "cache"], default="off",
+                   help="off=deterministic core · live=arXiv+OpenAlex (writes cache) · cache=cache only")
     p.add_argument("--json", action="store_true",
                    help="emit the full verdict dict as JSON")
     args = p.parse_args()
+
+    en = None
+    if args.enrich in ("live", "cache"):
+        if __package__ in (None, ""):
+            from validation.enrich import Enrichment
+        else:
+            from .enrich import Enrichment
+        en = Enrichment.live(cache_dir=str(HERE / "enrich_cache"),
+                             offline=(args.enrich == "cache"))
 
     v = acceptance(
         args.config,
         n_seeds_for_variety=args.n_seeds,
         required_gates=args.require,
+        enrich=en,
     )
     if args.json:
         print(json.dumps({k: v[k] for k in

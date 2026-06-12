@@ -42,7 +42,7 @@
 Практически: можно подать и файл из `configs/v1/`, и `pool.json` прямо из репозитория
 генерации конфигов — оба пройдут одним и тем же пайплайном.
 
-## Состав папки (2026-06-11, реорганизация: код валидации здесь, в tests/ — только тесты)
+## Состав папки
 
 - **движок R1–R7**: `loader`, `textutil`, `solver` (CP-SAT: mode-1/2/3 + trap_quality),
   `r1_volume` … `r7_reproducibility`, `enrich` (arXiv+OpenAlex, live+кэш+offline),
@@ -52,18 +52,25 @@
 - **адаптеры**: `rich_to_v1.py`, `legacy_to_v1.py`, `from_generator.py` (E2E: генерация конфигов → вердикт);
 - **наследие**: `puzzle_eval.py` + `golden.json` — оценка банка терминов ЖИВОЙ игры
   (старые форматы configs/game/*.json; M1 сборка/эталон, M2–M4 структура, M5 LLM-judge);
-  используется sampling_test.ipynb. Предок движка config_metrics.py удалён 2026-06-11
-  (история в git, маппинг гейтов — в docstring acceptance.py); ресёрч sem_vs_morph
-  переехал в ресёрч-папку проекта.
+  используется sampling_test.ipynb.
 
 ## Запуск
 
+**Единый вход — «конфиг норм или нет?»** (максимум проверок при разумном ресурсе:
+метрики R1–R7 + обогащение источников + реальная JS-сборка; первый прогон с
+обогащением — до минуты, дальше кэш):
+
 ```bash
-python validation/run.py configs/v1/ai-safety-v1.json --out reports/   # R1-R7, вердикт+exit-код
-python validation/run.py ../connections-gen/pool.json --enrich live    # + arXiv/OpenAlex
-python validation/acceptance.py configs/v1/ai-safety-v1.json           # метрики + сборка (Node)
-python validation/from_generator.py ../connections-gen/seeds --batch   # батч rich-пулов
-# exit: 0 accept · 1 reject · 2 pending
+python validation/acceptance.py path/to/config.json --enrich live
+# exit 0 = принят, exit 1 = нет; таблица PASS/FAIL по гейтам в stdout
+```
+
+Остальные входы — частные случаи того же пайплайна:
+
+```bash
+python validation/run.py config.json --out reports/        # только метрики R1-R7 (без Node-сборки), подробный отчёт
+python validation/acceptance.py config.json                # без сети: R4/R5 частично pending
+python validation/from_generator.py ../connections-gen/seeds --batch   # тот же acceptance для rich-файлов старого формата
 ```
 
 ```python
@@ -218,7 +225,7 @@ the format automatically from the file's structure. Three formats are supported
 In practice: you can feed either a file from `configs/v1/` or `pool.json` straight from
 the config-generation repository — both go through the same pipeline.
 
-## Folder contents (2026-06-11 reorganization: validation code lives here, tests/ holds tests only)
+## Folder contents
 
 - **R1–R7 engine**: `loader`, `textutil`, `solver` (CP-SAT: modes 1/2/3 + trap_quality),
   `r1_volume` … `r7_reproducibility`, `enrich` (arXiv+OpenAlex, live+cache+offline),
@@ -228,18 +235,24 @@ the config-generation repository — both go through the same pipeline.
 - **adapters**: `rich_to_v1.py`, `legacy_to_v1.py`, `from_generator.py` (E2E: config generation → verdict);
 - **legacy**: `puzzle_eval.py` + `golden.json` — quality evaluation of the LIVE game's term bank
   (old configs/game/*.json formats; M1 assembly/baseline, M2–M4 structure, M5 LLM judge);
-  used by sampling_test.ipynb. The engine's predecessor config_metrics.py was removed on
-  2026-06-11 (history in git, the gate-name mapping lives in the acceptance.py docstring);
-  the sem_vs_morph research moved to the project's research folder.
 
 ## Usage
 
+**The single entry point — "is the config good or not?"** (maximum coverage at a
+reasonable cost: R1–R7 metrics + source enrichment + the real JS assembly; the first
+enriched run takes up to a minute, cached afterwards):
+
 ```bash
-python validation/run.py configs/v1/ai-safety-v1.json --out reports/   # R1–R7, verdict+exit code
-python validation/run.py ../connections-gen/pool.json --enrich live    # + arXiv/OpenAlex
-python validation/acceptance.py configs/v1/ai-safety-v1.json           # metrics + assembly (Node)
-python validation/from_generator.py ../connections-gen/seeds --batch   # batch over rich pools
-# exit: 0 accept · 1 reject · 2 pending
+python validation/acceptance.py path/to/config.json --enrich live
+# exit 0 = accepted, exit 1 = not; a PASS/FAIL gate table on stdout
+```
+
+The other entry points are special cases of the same pipeline:
+
+```bash
+python validation/run.py config.json --out reports/        # metrics R1-R7 only (no Node assembly), detailed report
+python validation/acceptance.py config.json                # offline: R4/R5 partially pending
+python validation/from_generator.py ../connections-gen/seeds --batch   # same acceptance for legacy rich files
 ```
 
 ```python
