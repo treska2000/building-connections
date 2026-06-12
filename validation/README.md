@@ -156,11 +156,24 @@ CP-SAT-модель точного покрытия (каждое слово р�
   целую ложную четвёрку. Сэмплер: кандидат-доска обязана содержать хотя бы один термин
   с двумя тегами из выбранных четырёх категорий (живую ловушку), слова не
   переиспользуются; валидность = однозначность по солверу.
-- **mode-3 (явные обманки):** пул = термины с `decoy_for_tags` (≥ 4); расширенное отношение
-  R₃ = member_of ∪ decoy_for; `trap_quality(W)` = квадры, монохромные под R₃, но не под
-  member_of (соблазнительная неверная четвёрка существует только из-за decoy-рёбер);
-  valid₃ = `is_unique(member_of)` ∧ trap_quality ≥ 1. Без явных decoy — pending до эмбеддера
-  (margin-вывод обманок).
+- **mode-3 (явные обманки).** Обманка (decoy) — термин, который похож на чужую
+  категорию, но её членом не является. В конфиге это размечено полем `decoy_for_tags`:
+  «этот термин выглядит как член таких-то категорий». Пример: термин из родной категории
+  «Оптимизация» помечен как обманка для категории «Поиск» — на доске он тянется к чужой
+  группе, но правильный ответ кладёт его в родную. «Явные» — потому что разметку даёт
+  сама генерация конфигов; автоматический вывод обманок (по близости эмбеддингов) — в
+  планах, пока pending.
+  Предусловие: в конфиге есть не меньше 4 терминов с такой разметкой — иначе материала
+  для режима недостаточно.
+  Сэмплер: тянем доску как в mode-1, но требуем, чтобы на ней была хотя бы одна живая
+  обманка — термин, чья целевая категория тоже присутствует на доске.
+  Доска валидна, если выполнены два условия. Первое: правильная разбивка по настоящему
+  членству ровно одна (однозначность по солверу). Второе: обманка действительно
+  работает — если на минуту «поверить» разметке обманок и засчитать decoy-термин членом
+  категории, на которую он похож, на доске появляется хотя бы одна ложная четвёрка,
+  которой без обманок не существовало (в коде это `trap_quality` — число таких ложных
+  четвёрок, требуется ≥ 1). Доска, где ни одна обманка не создаёт ложной четвёрки,
+  формально решаема, но режим «с обманками» на ней не играется.
 - Вердикт R2 = mode-1 (pass_base); mode-2/3 — углубления: репортятся, гейт не валят.
 
 ### R3 · Семантичность (`r3_semanticity.py` + `textutil.py`)
@@ -375,11 +388,24 @@ plus an honest solver check:
   Sampler: a candidate board must contain at least one term holding two tags within the
   chosen four categories (a live trap), no word is reused; validity = solver-certified
   uniqueness.
-- **mode-3 (explicit decoys):** pool = terms with `decoy_for_tags` (≥ 4); extended relation
-  R₃ = member_of ∪ decoy_for; `trap_quality(W)` = quads monochromatic under R₃ but not under
-  member_of (the tempting wrong quad exists only because of decoy edges);
-  valid₃ = `is_unique(member_of)` ∧ trap_quality ≥ 1. Without explicit decoys — pending until
-  the embedder (margin-based decoy inference).
+- **mode-3 (explicit decoys).** A decoy is a term that resembles a foreign category
+  without being its member. In the config this is annotated via the `decoy_for_tags`
+  field: "this term looks like a member of these categories". Example: a term whose home
+  category is "Optimization" is marked as a decoy for "Search" — on the board it pulls
+  toward the foreign group, yet the correct answer places it in its home category.
+  "Explicit" because the annotation comes from config generation itself; automatic decoy
+  inference (via embedding similarity) is planned but pending.
+  Precondition: the config carries at least 4 terms with such annotations — otherwise
+  there is not enough material for the mode.
+  Sampler: draw a board as in mode-1, but require at least one live decoy — a term whose
+  target category is also present on the board.
+  A board is valid when two conditions hold. First: the correct partition by true
+  membership is exactly one (solver-certified uniqueness). Second: the decoy actually
+  works — if you momentarily "believe" the decoy annotations and count the decoy term as
+  a member of the category it resembles, at least one false quad appears on the board
+  that did not exist without the decoys (in code this is `trap_quality` — the number of
+  such false quads, required ≥ 1). A board where no decoy creates a false quad is
+  formally solvable, but the decoy mode is simply not playable on it.
 - R2 verdict = mode-1 (pass_base); modes 2/3 are deepenings: reported, never block the gate.
 
 ### R3 · Semanticity (`r3_semanticity.py` + `textutil.py`)
