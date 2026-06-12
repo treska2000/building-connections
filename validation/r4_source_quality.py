@@ -1,14 +1,14 @@
 """R4 · Достоверность источников: source_count — детерминированный анкор;
 S1–S7 + faithfulness — через обогащение (arXiv + OpenAlex, спека
 source_signals_deterministic_2026-06-07). Агрегация-DEFAULT (калибруемо):
-🔴 per-source = не резолвится / retracted; 🔴 per-term = любой 🔴-источник или ВСЕ
-источники из чужого поля; pass per-term = нет 🔴 ∧ sanity ∧ groups ≥ min_groups;
+red per-source = не резолвится / retracted; red per-term = любой red-источник или ВСЕ
+источники из чужого поля; pass per-term = нет red ∧ sanity ∧ groups ≥ min_groups;
 конфиг = share проходящих ≥ min_share_attested. Позитивные сигналы (S3/S5/S7) — контекст.
 
 R4 · Source quality: source_count is the deterministic anchor; S1–S7 + faithfulness
 run via enrichment (arXiv + OpenAlex, spec source_signals_deterministic_2026-06-07).
-DEFAULT aggregation (calibratable): 🔴 per-source = unresolvable / retracted;
-🔴 per-term = any 🔴 source or ALL sources off-field; per-term pass = no 🔴 ∧ sanity ∧
+DEFAULT aggregation (calibratable): red per-source = unresolvable / retracted;
+red per-term = any red source or ALL sources off-field; per-term pass = no red ∧ sanity ∧
 groups ≥ min_groups; config = share of passing terms ≥ min_share_attested.
 Positive signals (S3/S5/S7) are context, not gates.
 """
@@ -36,9 +36,9 @@ FIELD_TO_ARXIV_PREFIX = {
 
 def _allowed_prefixes(cfg) -> set[str] | None:
     """Допустимые архивы arXiv по specialty конфига (field/subfield/area).
-    Вход: cfg. Выход: set префиксов | None (поле неизвестно → unknown, не 🔴).
+    Вход: cfg. Выход: set префиксов | None (поле неизвестно → unknown, не red).
     Allowed arXiv archives per the config's specialty (field/subfield/area).
-    In: cfg. Out: set of prefixes | None (unknown field → unknown, not 🔴)."""
+    In: cfg. Out: set of prefixes | None (unknown field → unknown, not red)."""
     sp = cfg.get("specialty") or {}
     if isinstance(sp, str):
         sp = {"area": sp}
@@ -171,14 +171,14 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
             continue
         ms = [metas.get(i) for i in ids]
         ws = [works.get(i) for i in ids] if works else []
-        # S1 (🔴 fake link)
+        # S1 (red: fake link)
         s1_known = [m for m in ms if m is not None]
         red = any(m.get("exists") is False for m in s1_known)
         why = "фейк-ссылка (не резолвится на arXiv)" if red else None
-        # S2 (🔴 retraction); missing OpenAlex record ≠ retracted
+        # S2 (red: retraction); missing OpenAlex record != retracted
         if not red and any(w and w.get("found") and w.get("is_retracted") for w in ws):
             red, why = True, "источник ретрагирован"
-        # S4 (🔴 only when ALL sources are off-field)
+        # S4 (red only when ALL sources are off-field)
         fm = [_field_match((m or {}).get("primary_category"), allowed) for m in s1_known]
         if not red and fm and all(v is False for v in fm):
             red, why = True, "все источники из чужого поля"
@@ -221,13 +221,13 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
         None if share_sane is None else share_sane >= thr.get("min_share_sane", 0.9),
         det=det, gameable=True, counter="сила связи R6",
         note=f"термин в title+abstract ≥1 источника; known={sanity_known}/{len(term_srcs)}"
-             + (f" · ⚠️ сеть: {net_note}" if net_note else ""))
+             + (f" · WARNING network: {net_note}" if net_note else ""))
     metrics["source_attestation"] = _metric(
         {"share_attested": share_attested, "reds": reds[:8]},
         None if share_attested is None else (
             not reds and share_attested >= thr.get("min_share_attested", 0.9)),
         det=det, gameable=False,
-        note=f"🔴={len(reds)} · min_groups={min_groups} · cites_hi={hi_cite} "
+        note=f"reds={len(reds)} · min_groups={min_groups} · cites_hi={hi_cite} "
              f"· агрегация-DEFAULT (калибруемо)" + (" · live API (недетерм. до пина снапшота)" if not det else ""))
     metrics["per_term"] = _metric(per_term, None, det=det, note="справочно, не гейт")
 

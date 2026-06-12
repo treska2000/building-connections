@@ -57,7 +57,7 @@ def run(cfg, members, term_tags, thr) -> dict:
     note = (f"links={links} leaked={leaked} · term↔term, snowball+suf3, IDF, maxweight, "
             f"τ_link={tau} (ресёрч 2026-06-08, калибруемо)")
     if not TU.HAVE_STEMMER:
-        note += " · ⚠️ nltk не установлен — без стемминга (recall morph-ликов ниже)"
+        note += " · WARNING: nltk не установлен — без стемминга (recall morph-ликов ниже)"
 
     metrics = {
         "morph_leak_rate": {"value": rate, "pass": rate <= thr.get("max_morph_leak", 0.05),

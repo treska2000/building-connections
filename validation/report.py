@@ -44,9 +44,9 @@ def build_report(cfg, requirements: dict, acceptance: dict, provenance: dict,
 
 
 def _badge(p):
-    """Эмодзи-бейдж статуса pass. Вход: True/False/None. Выход: str.
-    Emoji badge for a pass status. In: True/False/None. Out: str."""
-    return {True: "✅", False: "❌", None: "⏳"}.get(p, "·")
+    """Текстовый бейдж статуса pass. Вход: True/False/None. Выход: str.
+    Text badge for a pass status. In: True/False/None. Out: str."""
+    return {True: "PASS", False: "FAIL", None: "PENDING"}.get(p, "-")
 
 
 def to_markdown(report: dict) -> str:
@@ -57,9 +57,9 @@ def to_markdown(report: dict) -> str:
     L = [f"# Валидация `{report.get('config_id')}` (v{report.get('config_version')})", ""]
     L.append(f"**Вердикт: {report['verdict'].upper()}** · required: {report['required_gates']}")
     if report["blocked_gates"]:
-        L.append(f"- ❌ blocked: {report['blocked_gates']}")
+        L.append(f"- blocked: {report['blocked_gates']}")
     if report["pending_gates"]:
-        L.append(f"- ⏳ pending (обогащение/ресёрч): {report['pending_gates']}")
+        L.append(f"- pending (обогащение/ресёрч): {report['pending_gates']}")
     L.append("")
     L.append("| Требование | Итог | Метрики |")
     L.append("|---|:--:|---|")
@@ -68,7 +68,7 @@ def to_markdown(report: dict) -> str:
         for mn, m in r["metrics"].items():
             tag = _badge(m["pass"])
             if m.get("requires"):
-                tag = f"⏳({m['requires']})"
+                tag = f"PENDING({m['requires']})"
             ms.append(f"{mn} {tag}")
         L.append(f"| {r.get('requirement', rid)} | {_badge(r.get('pass'))} | {'; '.join(ms)} |")
     if report.get("repro"):

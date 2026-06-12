@@ -450,7 +450,7 @@ def run_report(config_path, lang="en", run_metric5=False, model="claude-sonnet-4
     print("\n[M1] Сборка + воспроизводимость:")
     asm = assembly_metrics(config_path, update_golden=update_golden)
     for a in asm:
-        gm = {True: "эталон ✓", False: "ЭТАЛОН РАЗОШЁЛСЯ ✗", None: "эталон зафиксирован"}[a.golden_match]
+        gm = {True: "эталон OK", False: "ЭТАЛОН РАЗОШЁЛСЯ", None: "эталон зафиксирован"}[a.golden_match]
         print(f"  {a.mode:9s}: собрался={a.assembles} воспроизводим={a.reproducible} "
               f"доска16={a.board_complete} 1термин-1кат={a.one_concept_one_category} "
               f"| hash={a.golden_hash} {gm}")

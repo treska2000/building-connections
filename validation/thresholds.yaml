@@ -14,7 +14,7 @@ thresholds:
   # ресёрч-конфиг morph_leak 2026-06-08: term↔term · snowball+suf3 · IDF · maxweight
   # τ_link=0.74 (tau_full_corpus=0.735 на синтетике; held-out F1=0.858) — калибруемо на реальных golden
   R3: { morph_leak_link_tau: 0.74, max_morph_leak: 0.05, token_min_len: 3 }
-  # агрегация светофора (DEFAULT, калибруемо): 🔴 = не резолвится / retracted / все источники чужого поля
+  # агрегация светофора (DEFAULT, калибруемо): red = не резолвится / retracted / все источники чужого поля
   R4: { min_share_3sources: 0.90, min_share_sane: 0.90, min_share_attested: 0.90,
         min_independent_groups: 3, citations_hi: 100 }
   R5: { area_consistency_tau: 0.70 }

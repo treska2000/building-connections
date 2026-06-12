@@ -56,7 +56,7 @@
 
 ## Запуск
 
-**Единый вход — «конфиг норм или нет?»** (максимум проверок при разумном ресурсе:
+**Единый вход dалидации конфига»** (максимум проверок при разумном ресурсе:
 метрики R1–R7 + обогащение источников + реальная JS-сборка; первый прогон с
 обогащением — до минуты, дальше кэш):
 
@@ -94,7 +94,7 @@ env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и откры
 ## Метрики R1–R7: логика реализации
 
 Контракт каждой метрики единый: `{value, pass, deterministic, requires, gameable, counter}`.
-Метрика с невыполненным `requires` даёт `pass = None` (⏳) и не валит вердикт, если её
+Метрика с невыполненным `requires` даёт `pass = None` (PENDING) и не валит вердикт, если её
 требование не входит в `required_gates` (дефолт: R1, R2, R3, R5, R7). Пороги — в `thresholds.yaml`.
 
 ### R1 · Объём (`r1_volume.py`, детерминированно)
@@ -142,10 +142,10 @@ CP-SAT-модель точного покрытия (каждое слово р�
 - `source_count` (детерм.): доля терминов с ≥ 3 источниками ≥ 0.9 — анкор требования, играбелен.
 - Через обогащение (arXiv Atom батчами + OpenAlex works по DOI; файловый кэш;
   `deterministic = False` до пина `openalex_snapshot`):
-  S1 `resolves_on_arxiv` (🔴 фейк-ссылка) · S2 `retracted` (🔴; нет записи ≠ retracted) ·
+  S1 `resolves_on_arxiv` (red: фейк-ссылка) · S2 `retracted` (red; нет записи ≠ retracted) ·
   S3 `peer_review_venue` (позитив: journal_ref / не-arXiv DOI / regex по comment) ·
-  S4 `field_match` (архив primary_category ∈ маппинга поля; 🔴 только если чужие ВСЕ источники) ·
-  S5 citations (контекст, не 🔴 по нулю) · S6 `independent_source_groups` — union-find источников
+  S4 `field_match` (архив primary_category ∈ маппинга поля; red только если чужие ВСЕ источники) ·
+  S5 citations (контекст, не red по нулю) · S6 `independent_source_groups` — union-find источников
   по общим авторам/институтам, pass при ≥ 3 независимых группах (3 статьи одной лаборатории =
   1 группа → yellow) · S7 `corpus_frequency` (OpenAlex search count, контекст).
 - `source_sanity_check` (faithfulness): стем-токены имени термина целиком найдены в
@@ -276,7 +276,7 @@ open decision points — `spec_rework_plan_2026-06-11.md` in the research folder
 ## Metrics R1–R7: implementation logic
 
 Every metric follows one contract: `{value, pass, deterministic, requires, gameable, counter}`.
-A metric whose `requires` is unmet yields `pass = None` (⏳) and does not block the verdict
+A metric whose `requires` is unmet yields `pass = None` (PENDING) and does not block the verdict
 unless its requirement is in `required_gates` (default: R1, R2, R3, R5, R7). Thresholds live in `thresholds.yaml`.
 
 ### R1 · Volume (`r1_volume.py`, deterministic)
@@ -325,10 +325,10 @@ plus an honest solver check:
 - `source_count` (deterministic): share of terms with ≥ 3 sources ≥ 0.9 — the requirement's anchor, gameable.
 - Via enrichment (batched arXiv Atom + OpenAlex works by DOI; file cache;
   `deterministic = False` until `openalex_snapshot` is pinned):
-  S1 `resolves_on_arxiv` (🔴 fake link) · S2 `retracted` (🔴; no record ≠ retracted) ·
+  S1 `resolves_on_arxiv` (red: fake link) · S2 `retracted` (red; no record ≠ retracted) ·
   S3 `peer_review_venue` (positive: journal_ref / non-arXiv DOI / comment regex) ·
-  S4 `field_match` (primary_category archive ∈ field mapping; 🔴 only when ALL sources are
-  off-field) · S5 citations (context, never 🔴 for zero) · S6 `independent_source_groups` —
+  S4 `field_match` (primary_category archive ∈ field mapping; red only when ALL sources are
+  off-field) · S5 citations (context, never red for zero) · S6 `independent_source_groups` —
   union-find over sources sharing authors/institutions, pass at ≥ 3 independent groups
   (3 papers from one lab = 1 group → yellow) · S7 `corpus_frequency` (OpenAlex search count, context).
 - `source_sanity_check` (faithfulness): the term name's stem tokens are all found in the
