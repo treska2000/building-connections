@@ -1,4 +1,8 @@
-"""Convert between the legacy multilang config and the v1 schema.
+"""legacy_to_v1.py — конвертер между legacy-мультиязычным конфигом игры и схемой v1
+(в обе стороны: adapt и v1_to_legacy для JS-генератора).
+
+legacy_to_v1.py — converter between the game's legacy multilang config and the v1
+schema (both ways: adapt, and v1_to_legacy for the JS generator).
 
 Legacy shape (configs/*.json):
     [{"name": {"en", "ru"},
@@ -13,7 +17,7 @@ stay empty after conversion. That's fine, the metrics tool will then report
 R3 and mode-3 as failing, which is the truth: those gates aren't met yet.
 
 CLI:
-    python tests/legacy_to_v1.py SRC.json DST.json \\
+    python validation/legacy_to_v1.py SRC.json DST.json \\
         --config-id ai-safety-v1 --title "AI Safety" \\
         --field "computer science" --subfield ai --area "ai safety"
 """
@@ -38,8 +42,8 @@ DEFAULT_WHITELIST = [
 
 
 def _pick(value, lang):
-    """Multilang field -> string for the requested language. Falls back to
-    whatever value is there if the requested lang is missing."""
+    """Мультиязычное поле → строка нужного языка (с фолбэком). Вход: value, lang. Выход: str.
+    Multilang field → string for the requested language (with fallback). In: value, lang. Out: str."""
     if isinstance(value, dict):
         return value.get(lang) or next(iter(value.values()), "")
     return value or ""
@@ -47,11 +51,10 @@ def _pick(value, lang):
 
 def adapt(legacy, *, config_id, title, field, subfield, area,
           whitelist_sources=None, lang="en"):
-    """Legacy list of terms -> v1 config dict.
-
-    We treat `tags.en` (or whichever `lang` you pass) as the source of truth
-    for axis names. Russian metadata stays in description_ru if present.
-    """
+    """Legacy-список терминов → v1-конфиг; tags выбранного языка = имена осей.
+    Вход: legacy (list) + именованные метаданные. Выход: dict v1-конфига.
+    Legacy term list → v1 config; the chosen language's tags become axis names.
+    In: legacy (list) + keyword metadata. Out: v1 config dict."""
     other = "ru" if lang == "en" else "en"
 
     axes_seen = {}
@@ -93,13 +96,10 @@ def adapt(legacy, *, config_id, title, field, subfield, area,
 
 
 def v1_to_legacy(v1, lang="en"):
-    """v1 -> flat list the JS puzzle generator expects:
-
-        [{"name": str, "description": str, "tags": [str, ...]}, ...]
-
-    Used by puzzle_assembly.py to feed real v1 configs into the existing
-    Node harness without forking the JS side.
-    """
+    """v1 → плоский список для JS-генератора: [{name, description, tags}].
+    Используется puzzle_assembly.py. Вход: v1 (dict), lang. Выход: list[dict].
+    v1 → the flat list the JS puzzle generator expects: [{name, description, tags}].
+    Used by puzzle_assembly.py. In: v1 (dict), lang. Out: list[dict]."""
     out = []
     for t in v1.get("terms", []):
         name = t.get("name")
@@ -115,6 +115,8 @@ def v1_to_legacy(v1, lang="en"):
 
 
 def main():
+    """CLI: legacy-JSON → v1-JSON. Вход: argv. Выход: exit-код.
+    CLI: legacy JSON → v1 JSON. In: argv. Out: exit code."""
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("src", help="path to legacy JSON")
     p.add_argument("dst", help="path to write v1 JSON")

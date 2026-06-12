@@ -1,19 +1,24 @@
-"""R3 · Семантичность. morph_leak_rate — ресёрч-конфиг 2026-06-08 (детерм.); is_semantic — requires embedder.
+"""R3 · Семантичность: morph_leak_rate — детектор «категория угадывается по форме слова»
+(ресёрч-конфиг 2026-06-08: term↔term, snowball+suf3, IDF, maxweight, τ≈0.74; заменил
+Jaccard τ=0.34 решением 2026-06-11); is_semantic — pending (эмбеддер).
 
-Метрика формы (morph_leak): per-link скор «угадывается ли категория по форме слова».
-Рекомендация ресёрча (morph_leak_report_2026-06-08, held-out F1=0.858):
-  variant=term↔term · L=3 · S=snowball+3-char suffix · w=IDF/idf_max · M=maxweight · τ_link≈0.74.
-Старый Jaccard-вариант (τ=0.34) заменён 2026-06-11 по решению Алёны.
+R3 · Semanticity: morph_leak_rate — detector of "category guessable from word form"
+(research config 2026-06-08: term↔term, Snowball+suf3, IDF, maxweight, τ≈0.74; replaced
+Jaccard τ=0.34 per the 2026-06-11 decision); is_semantic — pending (embedder).
 """
 from __future__ import annotations
-from .loader import get_term_tags
+from .loader import get_term_tags  # noqa: F401  (kept as part of the module's public surface)
 from . import textutil as TU
 
 
 def leak_score_link(idx: int, member_names: list[str], idf: dict, idf_max: float,
                     L: int = 3) -> float:
-    """term↔term · maxweight: максимальный IDF-вес токена термина, разделённого
-    хотя бы с одним ДРУГИМ членом той же категории. Неиграбельно переименованием категории."""
+    """Скор form-лика связи термин↔категория (term↔term · maxweight): максимальный
+    IDF-вес токена термина, разделённого хотя бы с одним ДРУГИМ членом категории.
+    Вход: idx (позиция термина), member_names, idf, idf_max, L. Выход: float [0, ~1].
+    Form-leak score of a term↔category link (term↔term · maxweight): the maximum
+    IDF weight of a term token shared with at least one OTHER member of the category.
+    In: idx (term position), member_names, idf, idf_max, L. Out: float [0, ~1]."""
     A = TU.tokenize(member_names[idx], L)
     if not A:
         return 0.0
@@ -26,6 +31,10 @@ def leak_score_link(idx: int, member_names: list[str], idf: dict, idf_max: float
 
 
 def run(cfg, members, term_tags, thr) -> dict:
+    """Считает morph_leak_rate по всем связям конфига; is_semantic остаётся pending.
+    Вход: cfg, members, term_tags, thr (пороги R3). Выход: dict {requirement, metrics, pass}.
+    Computes morph_leak_rate over all config links; is_semantic stays pending.
+    In: cfg, members, term_tags, thr (R3 thresholds). Out: dict {requirement, metrics, pass}."""
     tau = thr.get("morph_leak_link_tau", 0.74)
     L = thr.get("token_min_len", 3)
     term_names = [t.get("name", "") for t in cfg.get("terms", []) if t.get("name")]
@@ -35,7 +44,7 @@ def run(cfg, members, term_tags, thr) -> dict:
     leaked = 0
     examples = []
     for cat, mset in members.items():
-        member_names = sorted(mset)  # детерминированный порядок
+        member_names = sorted(mset)  # deterministic order
         for i, name in enumerate(member_names):
             links += 1
             s = leak_score_link(i, member_names, idf, idf_max, L)
@@ -59,5 +68,5 @@ def run(cfg, members, term_tags, thr) -> dict:
                         "requires": "embedder (sem vs morph research)", "gameable": False,
                         "note": "доля связей категория↔термин, семантически близких; на уровне пазла (good_puzzle_yield)"},
     }
-    passed = metrics["morph_leak_rate"]["pass"]  # is_semantic — после ресёрча эмбеддера
+    passed = metrics["morph_leak_rate"]["pass"]  # is_semantic gates only after the embedder research
     return {"requirement": "R3 · Семантичность", "metrics": metrics, "pass": passed}

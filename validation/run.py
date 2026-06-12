@@ -1,10 +1,12 @@
-"""run.py — оркестратор пайплайна валидации (R1–R7) + CLI.
+"""run.py — оркестратор пайплайна валидации (R1–R7) + CLI. Принимает v1-конфиг
+(tags/axes) и нативный v2-пул. exit: 0 accept · 1 reject · 2 pending.
+
+run.py — validation pipeline orchestrator (R1–R7) + CLI. Accepts a v1 config
+(tags/axes) and the native v2 pool. exit: 0 accept · 1 reject · 2 pending.
 
 Usage:
-    python validation/run.py <config.json|pool.json> [--acceptance acceptance.yaml]
+    python validation/run.py <config.json|pool.json> [--acceptance thresholds.yaml]
                              [--out reports/] [--enrich off|live|cache]
-exit: 0 accept · 1 reject · 2 pending
-Принимает v1-конфиг (tags/axes) и нативный v2-пул (schema_version=connections_v2_config_pool).
 """
 from __future__ import annotations
 import argparse
@@ -14,14 +16,14 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 
-if __package__ in (None, ""):  # запуск как скрипт: python validation/run.py
+if __package__ in (None, ""):  # script mode: python validation/run.py
     sys.path.insert(0, str(HERE.parent))
     from validation import loader, enrich  # type: ignore
     from validation import report as rep  # type: ignore
     from validation import (r1_volume, r2_solvability, r3_semanticity,  # type: ignore
                             r4_source_quality, r5_specialization,
                             r6_link_strength, r7_reproducibility)
-else:  # импорт как пакет: from validation import validate
+else:  # package mode: from validation import validate
     from . import loader, enrich
     from . import report as rep
     from . import (r1_volume, r2_solvability, r3_semanticity,
@@ -48,6 +50,10 @@ DEFAULT_ACCEPTANCE = {
 
 
 def load_acceptance(path: str | None) -> dict:
+    """Загружает пороги/required_gates: дефолты + оверрайды из YAML (если задан).
+    Вход: path (yaml | None). Выход: dict acceptance-критериев.
+    Loads thresholds/required_gates: defaults + YAML overrides (when given).
+    In: path (yaml | None). Out: acceptance-criteria dict."""
     acc = json.loads(json.dumps(DEFAULT_ACCEPTANCE))
     if path:
         try:
@@ -62,12 +68,18 @@ def load_acceptance(path: str | None) -> dict:
 
 
 def _thr(acc, rid):
+    """Пороги одного требования + унаследованный seed. Вход: acc, rid. Выход: dict.
+    One requirement's thresholds + the inherited seed. In: acc, rid. Out: dict."""
     t = dict(acc["thresholds"].get(rid, {}))
     t.setdefault("seed", acc.get("seed", 42))
     return t
 
 
 def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None) -> dict:
+    """Один прогон R1–R7 по конфигу. Вход: config_path, acceptance (пороги),
+    en (Enrichment), repro (результат repro-чека | None). Выход: dict отчёта.
+    A single R1–R7 run over a config. In: config_path, acceptance (thresholds),
+    en (Enrichment), repro (repro-check result | None). Out: report dict."""
     cfg = loader.load_config(config_path)
     members, term_tags = loader.build_membership(cfg)
 
@@ -85,16 +97,21 @@ def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None)
 
 
 def validate_full(config_path: str, acceptance: dict, en=enrich.DISABLED) -> dict:
-    """Полный прогон + R7 reproducibility_check (два внутренних прогона)."""
+    """Полный прогон + R7 reproducibility_check (два внутренних прогона).
+    Вход: config_path, acceptance, en. Выход: dict отчёта с repro-блоком.
+    Full run + the R7 reproducibility check (two inner runs).
+    In: config_path, acceptance, en. Out: report dict with the repro block."""
     rc = r7_reproducibility.reproducibility_check(
         lambda p, a: validate(p, a, en), config_path, acceptance)
     return validate(config_path, acceptance, en, repro=rc)
 
 
 def main() -> int:
+    """CLI: вердикт + markdown-отчёт (+ артефакты при --out). Вход: argv. Выход: exit-код.
+    CLI: verdict + markdown report (+ artifacts with --out). In: argv. Out: exit code."""
     ap = argparse.ArgumentParser()
     ap.add_argument("config", type=Path)
-    ap.add_argument("--acceptance", type=Path, default=HERE / "acceptance.yaml")
+    ap.add_argument("--acceptance", type=Path, default=HERE / "thresholds.yaml")
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--enrich", choices=["off", "live", "cache"], default="off",
                     help="off=детерм. ядро · live=arXiv+OpenAlex (кэш пишется) · cache=только кэш (офлайн)")

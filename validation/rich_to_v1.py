@@ -1,5 +1,10 @@
-"""Adapt the rich KG-pool format produced by the connections-gen pipeline
-(`serialize_pool` and `seeds/*.json`) into our v1 schema.
+"""rich_to_v1.py — адаптер старого rich-формата генерилки (seeds/*.json,
+serialize_pool) в схему v1. Для нативного v2-пула адаптер не нужен —
+его нормализует loader.pool_v2_to_config.
+
+rich_to_v1.py — adapter of the generator's legacy rich format (seeds/*.json,
+serialize_pool) into the v1 schema. The native v2 pool needs no adapter —
+loader.pool_v2_to_config normalizes it.
 
 Rich pool shape:
     {
@@ -37,10 +42,10 @@ ARXIV_ID_RE = re.compile(r"\b(\d{4}\.\d{4,5})\b")
 
 
 def _arxiv_url(source):
-    """Convert a generator source string into an arxiv URL when possible.
-    Handles plain IDs ("2406.10162") and prefixed forms ("arXiv:2406.10162 Title").
-    Returns None for placeholders ("TODO:grounding") and anything that doesn't
-    contain a recognizable arxiv ID."""
+    """Строка источника генерилки → arXiv-URL; None для плейсхолдеров/без id.
+    Вход: source (str). Выход: str | None.
+    Generator source string → arXiv URL; None for placeholders / unrecognized ids.
+    In: source (str). Out: str | None."""
     if not source or not isinstance(source, str):
         return None
     s = source.strip()
@@ -53,7 +58,10 @@ def _arxiv_url(source):
 
 
 def adapt(rich, *, whitelist_sources=None):
-    """Rich pool dict -> v1 config dict."""
+    """Rich-пул → v1-конфиг (категории→axes, home первым, источники→evidence-URL).
+    Вход: rich (dict), whitelist_sources. Выход: dict v1-конфига.
+    Rich pool → v1 config (categories→axes, home first, sources→evidence URLs).
+    In: rich (dict), whitelist_sources. Out: v1 config dict."""
     categories = rich.get("categories") or []
     cat_tag_by_id = {c["id"]: c.get("tag") or c["id"] for c in categories if c.get("id")}
 
@@ -128,7 +136,10 @@ def adapt(rich, *, whitelist_sources=None):
 
 
 def adapt_file(rich_path, dst_path=None, **kwargs):
-    """Load a rich JSON, adapt, optionally write to dst_path. Returns the v1 dict."""
+    """Читает rich-JSON, адаптирует, опционально пишет в dst_path. Вход: пути.
+    Выход: dict v1-конфига.
+    Loads a rich JSON, adapts it, optionally writes to dst_path. In: paths.
+    Out: v1 config dict."""
     rich = json.loads(Path(rich_path).read_text(encoding="utf-8"))
     v1 = adapt(rich, **kwargs)
     if dst_path is not None:

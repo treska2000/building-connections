@@ -1,9 +1,0 @@
-# Dependencies for config_metrics.py + test_config_metrics.py + acceptance_v1.ipynb
-# Install into the project .venv:
-#     source .venv/bin/activate
-#     pip install -r tests/requirements-metrics.txt
-matplotlib>=3.7
-pytest>=7.0
-jupyter>=1.0
-ipykernel>=6.0
-nbformat>=5.7

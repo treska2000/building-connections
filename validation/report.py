@@ -1,10 +1,21 @@
-"""report.py — сборка отчёта, гейт, вердикт, markdown."""
+"""report.py — сборка итогового отчёта: гейт по required_gates, вердикт
+accept / reject / pending, markdown-рендер.
+
+report.py — final report assembly: gating by required_gates, the
+accept / reject / pending verdict, markdown rendering.
+"""
 from __future__ import annotations
 import json
 
 
 def build_report(cfg, requirements: dict, acceptance: dict, provenance: dict,
                  determinism, repro=None) -> dict:
+    """Собирает отчёт и выводит вердикт: reject при проваленном required-гейте,
+    pending при неизвестном, иначе accept. Вход: cfg, requirements (R-id → результат),
+    acceptance, provenance, determinism, repro. Выход: dict отчёта.
+    Assembles the report and derives the verdict: reject on a failed required gate,
+    pending on an unknown one, accept otherwise. In: cfg, requirements (R-id → result),
+    acceptance, provenance, determinism, repro. Out: report dict."""
     required = set(acceptance.get("required_gates",
                                   ["R1", "R2", "R3", "R5", "R7"]))
     summary = {}
@@ -33,10 +44,16 @@ def build_report(cfg, requirements: dict, acceptance: dict, provenance: dict,
 
 
 def _badge(p):
+    """Эмодзи-бейдж статуса pass. Вход: True/False/None. Выход: str.
+    Emoji badge for a pass status. In: True/False/None. Out: str."""
     return {True: "✅", False: "❌", None: "⏳"}.get(p, "·")
 
 
 def to_markdown(report: dict) -> str:
+    """Рендерит отчёт в markdown-таблицу (вердикт, метрики, provenance).
+    Вход: report (из build_report). Выход: str (markdown).
+    Renders the report as a markdown table (verdict, metrics, provenance).
+    In: report (from build_report). Out: str (markdown)."""
     L = [f"# Валидация `{report.get('config_id')}` (v{report.get('config_version')})", ""]
     L.append(f"**Вердикт: {report['verdict'].upper()}** · required: {report['required_gates']}")
     if report["blocked_gates"]:

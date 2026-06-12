@@ -1,21 +1,19 @@
-"""
-Качество собранных пазлов для AI Safety Connections.
+"""puzzle_eval.py — НАСЛЕДИЕ: качество банка терминов ЖИВОЙ игры (старые форматы
+configs/*.json), 5 метрик: M1 сборка+воспроизводимость (реальный Node-генератор,
+сверка с эталоном golden.json), M2–M4 структура банка (широкие категории, глубина),
+M5 распространённость термина (LLM-as-judge + web search, двойная проверка,
+калибровка). Не часть приёмки v1/v2-конфигов (это acceptance.py) — инструмент
+для sampling_test.ipynb. M5 требует ANTHROPIC_API_KEY + пакет anthropic.
 
-Один модуль = одна точка правды. Считает 5 метрик по конфигу банка терминов
-(configs/*.json) и по реальному генератору (js/puzzle-generator.js):
+puzzle_eval.py — LEGACY: quality of the LIVE game's term bank (old configs/*.json
+formats), 5 metrics: M1 assembly+reproducibility (the real Node generator, checked
+against the golden.json baseline), M2–M4 bank structure (broad categories, depth),
+M5 term recognizability (LLM-as-judge + web search, double-checked, calibrated).
+Not part of v1/v2 config acceptance (that is acceptance.py) — a tool for
+sampling_test.ipynb. M5 needs ANTHROPIC_API_KEY + the anthropic package.
 
-  1. Пазл собрался + воспроизводимость (через настоящий генератор в Node).
-  2. Доля и кол-во категорий с 20+ терминами (слишком широкие — плохо).
-  3. Средняя "глубина" (= число терминов) категории.
-  4. Доля терминов, попавших хоть в одну широкую категорию (20+).
-  5. Термин хоть сколько-то распространён (LLM-as-judge + web search по списку
-     источников, с двойной проверкой и калибровкой).
-
-Метрики 1–4 детерминированы и считаются всегда. Метрика 5 требует ANTHROPIC_API_KEY
-и пакета anthropic; без них она пропускается с понятным сообщением.
-
-Запуск из CLI:   python validation/puzzle_eval.py configs/category-templates-new.json
-Из ноутбука:     from puzzle_eval import run_report; run_report(path)
+CLI:      python validation/puzzle_eval.py configs/category-templates-new.json
+Notebook: from puzzle_eval import run_report; run_report(path)
 """
 from __future__ import annotations
 
@@ -30,13 +28,13 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
-# Категория считается "широкой" начиная с этого числа терминов.
+# A category counts as "broad" starting from this many terms.
 BROAD_THRESHOLD = 20
-# Категория попадает в пул генерации пазлов только с >= 4 терминами (см. генератор).
+# A category enters the puzzle-generation pool only with >= 4 terms (see the generator).
 MIN_GENERATABLE = 4
 
-# Список источников для метрики 5: по ним LLM проверяет распространённость термина.
-# Это canon AI-safety + энциклопедии. Правится под задачу.
+# Source list for metric 5: the LLM checks term prevalence against these.
+# AI-safety canon + encyclopedias; adjust per task.
 DEFAULT_SOURCES = [
     "arxiv.org",
     "alignmentforum.org",
@@ -52,29 +50,29 @@ DEFAULT_SOURCES = [
 
 
 # --------------------------------------------------------------------------- #
-# Загрузка и нормализация конфига
+# Config loading and normalization
 # --------------------------------------------------------------------------- #
 def _pick_lang(value, lang: str):
-    """Достаёт значение из multilang-поля {en:..., ru:...} или возвращает как есть."""
+    """Значение multilang-поля {en, ru} для языка (или как есть). Вход: value, lang. Выход: значение.
+    The {en, ru} multilang field value for a language (or as-is). In: value, lang. Out: value."""
     if isinstance(value, dict):
         return value.get(lang, next(iter(value.values())))
     return value
 
 
 def load_terms(path: str | Path, lang: str = "en") -> list[dict]:
-    """
-    Приводит любой из трёх форматов конфига к плоскому списку терминов:
-      {name: str, description: str, tags: [str, ...]}
-
-      A. flat        : {name, description, tags:[...]}            (category-templates-new.json)
-      B. multilang   : {name:{en,ru}, description:{...}, tags:{en:[...],ru:[...]}}  (evals-*.json)
-      C. legacy group: {name, members:[...]}                      (category-templates.json)
-         -> каждый member становится термином с тегом = name группы.
-    """
+    """Любой из трёх форматов банка → плоский список {name, description, tags}.
+    A flat (category-templates-new) · B multilang (evals-*) · C legacy group
+    (category-templates: каждый member → термин с тегом = имя группы).
+    Вход: path, lang. Выход: list[dict].
+    Any of the three bank formats → a flat list of {name, description, tags}.
+    A flat (category-templates-new) · B multilang (evals-*) · C legacy group
+    (category-templates: each member → a term tagged with the group name).
+    In: path, lang. Out: list[dict]."""
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
     terms: list[dict] = []
     for e in raw:
-        if "members" in e and "tags" not in e:  # формат C
+        if "members" in e and "tags" not in e:  # format C
             group = str(_pick_lang(e.get("name"), lang))
             for m in e["members"]:
                 terms.append({"name": str(_pick_lang(m, lang)), "description": "", "tags": [group]})
@@ -91,7 +89,8 @@ def load_terms(path: str | Path, lang: str = "en") -> list[dict]:
 
 
 def build_tag_index(terms: list[dict]) -> dict[str, list[str]]:
-    """tag -> список имён терминов с этим тегом."""
+    """Индекс tag → имена терминов с этим тегом. Вход: terms. Выход: dict.
+    Index tag → names of terms carrying the tag. In: terms. Out: dict."""
     idx: dict[str, list[str]] = defaultdict(list)
     for t in terms:
         for tag in t["tags"]:
@@ -100,23 +99,24 @@ def build_tag_index(terms: list[dict]) -> dict[str, list[str]]:
 
 
 # --------------------------------------------------------------------------- #
-# Метрики 2, 3, 4 — структура банка терминов
+# Metrics 2, 3, 4 — term-bank structure
 # --------------------------------------------------------------------------- #
 @dataclass
 class StructuralResult:
     n_terms: int
     n_tags: int
     category_sizes: dict[str, int]
-    generatable_tags: int                 # тегов с >= MIN_GENERATABLE терминов
-    broad_categories: list[str]           # метрика 2: список широких (>= BROAD_THRESHOLD)
-    broad_count: int                      # метрика 2: количество
-    broad_share: float                    # метрика 2: доля от всех тегов
-    avg_category_depth: float             # метрика 3: средняя глубина (терминов на категорию)
+    generatable_tags: int                 # tags with >= MIN_GENERATABLE terms
+    broad_categories: list[str]           # metric 2: broad tags (>= BROAD_THRESHOLD)
+    broad_count: int                      # metric 2: how many
+    broad_share: float                    # metric 2: share of all tags
+    avg_category_depth: float             # metric 3: mean depth (terms per category)
     median_category_depth: float
-    terms_in_broad: list[str]             # метрика 4: термины в >=1 широкой категории
-    terms_in_broad_share: float           # метрика 4: их доля
+    terms_in_broad: list[str]             # metric 4: terms in >=1 broad category
+    terms_in_broad_share: float           # metric 4: their share
 
     def summary(self) -> str:
+        """Человекочитаемая сводка M2–M4. Выход: str. / Human-readable M2–M4 summary. Out: str."""
         return (
             f"терминов={self.n_terms}, категорий={self.n_tags} "
             f"(генерируемых≥{MIN_GENERATABLE}: {self.generatable_tags})\n"
@@ -130,6 +130,8 @@ class StructuralResult:
 
 
 def structural_metrics(terms: list[dict]) -> StructuralResult:
+    """Считает M2–M4 по банку терминов. Вход: terms. Выход: StructuralResult.
+    Computes M2–M4 over the term bank. In: terms. Out: StructuralResult."""
     idx = build_tag_index(terms)
     sizes = {tag: len(names) for tag, names in idx.items()}
     n_tags = len(sizes)
@@ -153,7 +155,7 @@ def structural_metrics(terms: list[dict]) -> StructuralResult:
 
 
 # --------------------------------------------------------------------------- #
-# Метрика 1 — пазл собрался + воспроизводимость (настоящий генератор в Node)
+# Metric 1 — the puzzle assembles + reproducibility (the real Node generator)
 # --------------------------------------------------------------------------- #
 @dataclass
 class AssemblyResult:
@@ -161,10 +163,10 @@ class AssemblyResult:
     seed: str
     assembles: bool
     reproducible: bool
-    board_complete: bool          # 16 плиток на доске
+    board_complete: bool          # 16 tiles on the board
     one_concept_one_category: bool
     golden_hash: str | None
-    golden_match: bool | None     # совпадает ли с зафиксированным эталоном
+    golden_match: bool | None     # does it match the recorded baseline
     raw: dict = field(default_factory=dict)
 
     @property
@@ -174,6 +176,8 @@ class AssemblyResult:
 
 
 def _run_node(config_path: str | Path, mode: str, seed: str) -> dict:
+    """Запускает repro_check.mjs и парсит JSON. Вход: config_path, mode, seed. Выход: dict.
+    Runs repro_check.mjs and parses its JSON. In: config_path, mode, seed. Out: dict."""
     res = subprocess.run(
         ["node", str(HERE / "repro_check.mjs"), str(config_path), mode, seed],
         capture_output=True, text=True, cwd=ROOT,
@@ -184,6 +188,7 @@ def _run_node(config_path: str | Path, mode: str, seed: str) -> dict:
 
 
 def _golden_path() -> Path:
+    """Путь к файлу эталонных хэшей. Выход: Path. / Path to the baseline-hash file. Out: Path."""
     return HERE / "golden.json"
 
 
@@ -193,12 +198,12 @@ def assembly_metrics(
     seed: str = "golden-seed-1",
     update_golden: bool = False,
 ) -> list[AssemblyResult]:
-    """
-    Гоняет реальный генератор. Воспроизводимость = два прогона с одним сидом дали
-    идентичный пазл. Дополнительно сверяет с эталоном (golden.json): это и есть
-    гарантия "все ученики получат ровно этот тест" — если хэш изменился, конфиг
-    или код поменялись и пазл стал другим.
-    """
+    """M1: гоняет реальный генератор; воспроизводимость = два прогона одного сида
+    идентичны; сверка с эталоном golden.json (хэш изменился → пазл стал другим).
+    Вход: config_path, modes, seed, update_golden. Выход: list[AssemblyResult].
+    M1: drives the real generator; reproducibility = two same-seed runs are identical;
+    checked against the golden.json baseline (hash changed → the puzzle changed).
+    In: config_path, modes, seed, update_golden. Out: list[AssemblyResult]."""
     golden = {}
     gp = _golden_path()
     if gp.exists():
@@ -228,10 +233,10 @@ def assembly_metrics(
 
 
 # --------------------------------------------------------------------------- #
-# Метрика 5 — распространённость термина (LLM-as-judge + web search)
+# Metric 5 — term recognizability (LLM-as-judge + web search)
 # --------------------------------------------------------------------------- #
-# Калибровочный набор: на нём ПЕРЕД доверием судье проверяем, что он различает
-# реальные термины и выдуманные ("дважды проверить, что LLM найдёт и насудит").
+# Calibration set: BEFORE trusting the judge we verify it separates real terms
+# from invented ones ("double-check that the LLM both finds and judges").
 CALIBRATION_REAL = [
     "Reward Hacking", "Instrumental Convergence", "Mesa-optimization",
     "Goodhart's Law", "Interpretability", "Corrigibility",
@@ -259,11 +264,14 @@ _JUDGE_SCHEMA = {
 
 
 def _judge_once(client, model, term, description, sources, stance="researcher"):
-    """Один проход судьи с web search. stance меняет установку для двойной проверки."""
+    """Один проход судьи с web search; stance задаёт роль для двойной проверки.
+    Вход: client, model, term, description, sources, stance. Выход: dict вердикта.
+    One judge pass with web search; stance sets the role for the double check.
+    In: client, model, term, description, sources, stance. Out: verdict dict."""
     if stance == "researcher":
         role = ("Determine whether the term is a genuinely established concept in "
                 "AI safety / alignment / ML. Search the web before deciding.")
-    else:  # skeptic: пытается опровергнуть
+    else:  # skeptic: tries to refute
         role = ("You are a skeptic. Try to show the term is NOT an established concept "
                 "(possibly invented or fringe). Search the web. Only concede "
                 "'recognized: true' if evidence is clearly there.")
@@ -284,7 +292,7 @@ def _judge_once(client, model, term, description, sources, stance="researcher"):
         tool_choice={"type": "auto"},
         messages=[{"role": "user", "content": prompt}],
     )
-    # повторяем, пока модель не вызовет verdict (после web_search ходов)
+    # loop until the model calls verdict (after its web_search turns)
     convo = [{"role": "user", "content": prompt}]
     for _ in range(4):
         verdict = next((b for b in msg.content
@@ -294,7 +302,7 @@ def _judge_once(client, model, term, description, sources, stance="researcher"):
         if msg.stop_reason != "tool_use":
             break
         convo.append({"role": "assistant", "content": msg.content})
-        # web_search — серверный инструмент, его результат уже в msg; просто продолжаем
+        # web_search is a server-side tool, its result is already in msg; just continue
         msg = client.messages.create(
             model=model, max_tokens=1500, tools=tools,
             tool_choice={"type": "auto"}, messages=convo,
@@ -304,10 +312,12 @@ def _judge_once(client, model, term, description, sources, stance="researcher"):
 
 
 def judge_term(client, model, term, description, sources=DEFAULT_SOURCES):
-    """
-    Двойная проверка: independent 'researcher' + 'skeptic'.
-    recognized=True только если ОБА согласны. Расхождение -> на ручную проверку.
-    """
+    """Двойная проверка термина: независимые researcher + skeptic; recognized=True
+    только при согласии ОБОИХ, расхождение → ручная проверка. Вход: client, model,
+    term, description, sources. Выход: dict вердикта.
+    Double-checks a term: independent researcher + skeptic; recognized=True only when
+    BOTH agree, disagreement → human review. In: client, model, term, description,
+    sources. Out: verdict dict."""
     r = _judge_once(client, model, term, description, sources, "researcher")
     s = _judge_once(client, model, term, description, sources, "skeptic")
     agree = r["recognized"] == s["recognized"]
@@ -322,6 +332,8 @@ def judge_term(client, model, term, description, sources=DEFAULT_SOURCES):
 
 
 def _make_client():
+    """Клиент Anthropic для M5 (требует ключ и пакет). Выход: client | RuntimeError.
+    Anthropic client for M5 (needs the key and the package). Out: client | RuntimeError."""
     if not os.environ.get("ANTHROPIC_API_KEY"):
         raise RuntimeError("нет ANTHROPIC_API_KEY — метрика 5 пропущена")
     try:
@@ -332,26 +344,28 @@ def _make_client():
 
 
 def calibrate_judge(model="claude-sonnet-4-6", sources=DEFAULT_SOURCES) -> dict:
-    """
-    Прогоняет судью по заведомо реальным и заведомо выдуманным терминам.
-    Возвращает точность — это и есть "дважды проверить, что LLM не врёт".
-    Доверять метрике 5 только если real-recall и fake-rejection близки к 1.0.
-    """
+    """Калибровка судьи на заведомо реальных/выдуманных терминах; доверять M5 только
+    при real_recall и fake_rejection ≈ 1.0. Вход: model, sources. Выход: dict точностей.
+    Calibrates the judge on known-real/known-fake terms; trust M5 only when
+    real_recall and fake_rejection are ≈ 1.0. In: model, sources. Out: accuracy dict."""
     client = _make_client()
     real = [judge_term(client, model, t, "", sources) for t in CALIBRATION_REAL]
     fake = [judge_term(client, model, t, "", sources) for t in CALIBRATION_FAKE]
     real_recall = sum(x["recognized"] for x in real) / len(real)
     fake_reject = sum(not x["recognized"] for x in fake) / len(fake)
     return {
-        "real_recall": real_recall,          # доля реальных, опознанных как реальные
-        "fake_rejection": fake_reject,       # доля фейков, отбитых как фейки
+        "real_recall": real_recall,          # share of real terms recognized as real
+        "fake_rejection": fake_reject,       # share of fakes rejected as fakes
         "trustworthy": real_recall >= 0.83 and fake_reject >= 0.75,
         "real_detail": real, "fake_detail": fake,
     }
 
 
 def recognizability_metrics(terms, model="claude-sonnet-4-6", sources=DEFAULT_SOURCES) -> dict:
-    """Метрика 5 по всем терминам конфига. Требует ключ + anthropic."""
+    """M5 по всем терминам банка (требует ключ + anthropic). Вход: terms, model, sources.
+    Выход: dict {recognized_share, suspicious_terms, needs_human_review, verdicts}.
+    M5 over every bank term (needs the key + anthropic). In: terms, model, sources.
+    Out: dict {recognized_share, suspicious_terms, needs_human_review, verdicts}."""
     client = _make_client()
     verdicts = [judge_term(client, model, t["name"], t["description"], sources) for t in terms]
     recognized = [v for v in verdicts if v["recognized"]]
@@ -366,29 +380,19 @@ def recognizability_metrics(terms, model="claude-sonnet-4-6", sources=DEFAULT_SO
 
 
 # --------------------------------------------------------------------------- #
-# Полный перебор пазлов из конфига (комбинаторно, без перебора сидов)
+# Full combinatorial enumeration of puzzles from a config (no seed sweeps)
 # --------------------------------------------------------------------------- #
 def enumerate_solutions(terms: list[dict], mode: str = "normal", with_difficulty: bool = False):
-    """
-    Возвращает ПОЛНЫЙ список различных пазлов-решений из конфига — точно и
-    engine-независимо, без спама сидами.
-
-    "Решение" = какие категории и какие их 4 термина (для advanced — только 3
-    категории; ловушки на доске игнорируются, они лишь шум). Это то, что препод
-    реально считает "разными тестами".
-
-    with_difficulty=False -> группировка (множество категорий), порядок неважен.
-    with_difficulty=True  -> ещё и привязка сложности (упорядоченный кортеж).
-
-    Игнорируется: порядок плиток на доске и порядок терминов внутри группы
-    (косметика, раздувает пространство до ~бесконечности, для теста бессмысленна).
-
-    Формула числа группировок:
-        sum по всем k-подмножествам S категорий-кандидатов (size>=4)
-            из произведения C(size_t, 4) по t in S,
-        где k=4 (normal) / 3 (advanced).
-    С учётом сложности: каждое умножается на k! (число раскладок по сложностям).
-    """
+    """ПОЛНЫЙ перебор различных пазлов-решений конфига, engine-независимо (без сидов).
+    «Решение» = выбранные категории + их четвёрки терминов (advanced: 3 категории,
+    ловушки игнорируются); порядок плиток/терминов — косметика, не учитывается.
+    Вход: terms, mode, with_difficulty (упорядочить группы по сложностям, ×k!).
+    Выход: set решений.
+    FULL enumeration of distinct puzzle solutions of a config, engine-independent
+    (no seed sweeps). A "solution" = the chosen categories + their 4-term groups
+    (advanced: 3 categories, board decoys ignored); tile/term order is cosmetic and
+    ignored. In: terms, mode, with_difficulty (order groups by difficulty, ×k!).
+    Out: set of solutions."""
     from itertools import combinations, product, permutations
 
     k = 4 if mode == "normal" else 3
@@ -398,14 +402,14 @@ def enumerate_solutions(terms: list[dict], mode: str = "normal", with_difficulty
 
     solutions = set()
     for tag_combo in combinations(tags, k):
-        # для каждого тега — все способы выбрать 4 термина
+        # for every tag — all the ways to pick 4 of its terms
         per_tag_choices = [
             [frozenset(c) for c in combinations(sorted(candidates[t]), 4)]
             for t in tag_combo
         ]
         for groups in product(*per_tag_choices):
             if with_difficulty:
-                # каждая раскладка групп по сложностям = отдельный пазл
+                # every assignment of groups to difficulty slots = a distinct puzzle
                 for perm in permutations(groups):
                     solutions.add(tuple(perm))
             else:
@@ -414,7 +418,8 @@ def enumerate_solutions(terms: list[dict], mode: str = "normal", with_difficulty
 
 
 def enumeration_report(terms: list[dict]) -> dict:
-    """Считает размеры пространства пазлов во всех представлениях."""
+    """Размеры пространства пазлов во всех представлениях. Вход: terms. Выход: dict.
+    Puzzle-space sizes across representations. In: terms. Out: dict."""
     from math import comb, perm as nperm
     idx = build_tag_index(terms)
     cand_sizes = sorted([len(v) for v in idx.values() if len(v) >= MIN_GENERATABLE], reverse=True)
@@ -422,17 +427,21 @@ def enumeration_report(terms: list[dict]) -> dict:
     for mode in ("normal", "advanced"):
         sols = enumerate_solutions(terms, mode, with_difficulty=False)
         out[mode] = {
-            "groupings": len(sols),                              # уникальные тесты по смыслу
+            "groupings": len(sols),                              # semantically unique tests
             "with_difficulty": len(sols) * (24 if mode == "normal" else 6),
         }
     return out
 
 
 # --------------------------------------------------------------------------- #
-# Сводный отчёт
+# Summary report
 # --------------------------------------------------------------------------- #
 def run_report(config_path, lang="en", run_metric5=False, model="claude-sonnet-4-6",
                sources=DEFAULT_SOURCES, update_golden=False) -> dict:
+    """Сводный отчёт M1–M5 по банку (печатает и возвращает). Вход: config_path + опции.
+    Выход: dict {config, terms, assembly, structural, recognizability}.
+    Summary M1–M5 report over the bank (prints and returns). In: config_path + options.
+    Out: dict {config, terms, assembly, structural, recognizability}."""
     config_path = str(config_path)
     terms = load_terms(config_path, lang=lang)
 

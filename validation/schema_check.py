@@ -1,14 +1,19 @@
-"""schema_check.py — структурная и ссылочная валидация конфига (бывш. config_metrics.validate_schema).
+"""schema_check.py — структурная и ссылочная валидация конфига (категории в `tags`
+ИЛИ `axes`; specialty объектом ИЛИ строкой). Нативный v2-пул сюда не попадает —
+loader.load_config нормализует его раньше.
 
-Обобщено под оба поколения формата: категории в `tags` ИЛИ `axes`,
-specialty объектом {field, subfield, area} ИЛИ строкой (input-schema из export_input).
-Возвращает список строк-ошибок (пусто = валидно). Нативный v2-пул сюда не попадает —
-loader.load_config нормализует его до этой проверки.
+schema_check.py — structural and referential config validation (categories in `tags`
+OR `axes`; specialty as an object OR a string). The native v2 pool never reaches this
+check — loader.load_config normalizes it first.
 """
 from __future__ import annotations
 
 
 def validate_schema(cfg) -> list[str]:
+    """Проверяет структуру и ссылочную целостность конфига. Вход: cfg (dict).
+    Выход: list[str] ошибок (пустой список = валидно).
+    Validates the config's structure and referential integrity. In: cfg (dict).
+    Out: list[str] of errors (empty list = valid)."""
     if not isinstance(cfg, dict):
         return ["config root is not an object"]
 

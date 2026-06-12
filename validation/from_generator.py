@@ -1,4 +1,8 @@
-"""End-to-end acceptance for the connections-gen pipeline output.
+"""from_generator.py — E2E-приёмка выхода генерилки: rich-JSON → rich_to_v1 →
+v1-конфиг на диск → acceptance() → вердикт (единично или батчем по папке).
+
+from_generator.py — E2E acceptance of the generator output: rich JSON → rich_to_v1 →
+v1 config on disk → acceptance() → verdict (single file or a folder batch).
 
 Takes a rich generator JSON (pool / seed format), converts it to v1 via
 rich_to_v1.adapt(), writes the v1 config to a known location, and runs the
@@ -19,7 +23,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
-if __package__ in (None, ""):  # запуск как скрипт: python validation/from_generator.py
+if __package__ in (None, ""):  # script mode: python validation/from_generator.py
     sys.path.insert(0, str(ROOT))
     from validation import acceptance as ac  # noqa: E402
     from validation import rich_to_v1 as r2v  # noqa: E402
@@ -32,7 +36,8 @@ V1_DIR = ROOT / "configs" / "v1" / "from-generator"
 
 
 def _looks_like_rich_pool(path):
-    """Skip flat-format files (lists) and anything not matching pool shape."""
+    """Похож ли файл на rich-пул (dict с categories+terms). Вход: path. Выход: bool.
+    Does the file look like a rich pool (a dict with categories+terms). In: path. Out: bool."""
     try:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
@@ -42,8 +47,10 @@ def _looks_like_rich_pool(path):
 
 def verdict_for_rich(rich_path, *, required_gates=None, n_seeds=100,
                      v1_dir=V1_DIR, make_plot=False):
-    """Adapt -> persist -> accept. Returns the full verdict dict from
-    acceptance.acceptance(), plus a `v1_path` pointer to the adapted file."""
+    """Адаптировать → сохранить → принять. Вход: rich_path + опции. Выход: dict вердикта
+    acceptance() + указатель v1_path.
+    Adapt → persist → accept. In: rich_path + options. Out: acceptance() verdict dict
+    plus the v1_path pointer."""
     v1 = r2v.adapt_file(rich_path)
     v1_dir = Path(v1_dir)
     v1_dir.mkdir(parents=True, exist_ok=True)
@@ -65,8 +72,10 @@ def verdict_for_rich(rich_path, *, required_gates=None, n_seeds=100,
 
 def batch(folder, *, required_gates=None, n_seeds=100, v1_dir=V1_DIR,
           make_plot=False, skip_pattern=None):
-    """Run acceptance on every rich-pool JSON in `folder` (non-recursive).
-    Files that aren't pool-shaped (flat lists, broken JSON) are skipped silently."""
+    """Приёмка всех rich-пулов папки (без рекурсии); не-пулы пропускаются молча.
+    Вход: folder + опции. Выход: list[dict] вердиктов (с error-записями при сбоях).
+    Acceptance over every rich pool in a folder (non-recursive); non-pools are skipped
+    silently. In: folder + options. Out: list[dict] of verdicts (error entries on failures)."""
     folder = Path(folder)
     out = []
     for p in sorted(folder.glob("*.json")):
@@ -88,6 +97,8 @@ def batch(folder, *, required_gates=None, n_seeds=100, v1_dir=V1_DIR,
 
 
 def main():
+    """CLI: вердикт по rich-файлу или батч по папке. Вход: argv. Выход: exit-код.
+    CLI: verdict for one rich file or a folder batch. In: argv. Out: exit code."""
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("path", help="rich JSON path OR folder (with --batch)")
     p.add_argument("--batch", action="store_true",

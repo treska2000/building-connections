@@ -1,9 +1,13 @@
-"""R5 · Покрытие специализации. specialty_filled — детерм.;
+"""R5 · Покрытие специализации: specialty_filled — детерминированно;
 consistency/concentration — поле термина из OpenAlex topics его источников
-(fallback: arXiv primary_category → field по детерминированному маппингу).
+(fallback: архив arXiv → поле). area_term_consistency = доля терминов с ожидаемым
+полем ≥ τ; area_concentration = модальное поле == ожидаемому ∧ modal_share ≥ τ.
 
-area_term_consistency: share терминов, чьё поле == ожидаемому ≥ tau.
-area_concentration:    модальное поле == ожидаемому ∧ modal_share ≥ tau.
+R5 · Specialization coverage: specialty_filled is deterministic;
+consistency/concentration derive a term's field from the OpenAlex topics of its
+sources (fallback: arXiv archive → field). area_term_consistency = share of terms
+with the expected field ≥ τ; area_concentration = modal field == expected ∧
+modal_share ≥ τ.
 """
 from __future__ import annotations
 from collections import Counter
@@ -21,16 +25,21 @@ ARXIV_ARCHIVE_TO_FIELD = {
 
 
 def _expected_field(cfg) -> str | None:
+    """Ожидаемое поле из specialty.field конфига. Вход: cfg. Выход: str | None.
+    Expected field from the config's specialty.field. In: cfg. Out: str | None."""
     sp = cfg.get("specialty") or {}
     if isinstance(sp, str):
-        return None  # строковая specialty не несёт поля — consistency по OpenAlex-распределению
+        # a string specialty carries no field — consistency falls back to the OpenAlex distribution
+        return None
     v = (sp.get("field") or "").lower().strip()
     return v or None
 
 
 def _term_field(ids, metas, works) -> str | None:
-    """Модальное поле по источникам термина: OpenAlex primary_topic.field,
-    fallback — архив arXiv."""
+    """Поле термина = модальное поле его источников: OpenAlex primary_topic.field,
+    fallback — архив arXiv. Вход: ids (arXiv id), metas, works. Выход: str | None.
+    A term's field = the modal field of its sources: OpenAlex primary_topic.field,
+    falling back to the arXiv archive. In: ids (arXiv ids), metas, works. Out: str | None."""
     fields = []
     for i in ids:
         w = works.get(i) if works else None
@@ -49,6 +58,12 @@ def _term_field(ids, metas, works) -> str | None:
 
 
 def run(cfg, members, term_tags, thr, enrich=None) -> dict:
+    """Считает метрики покрытия специализации; без обогащения — только specialty_filled.
+    Вход: cfg, members, term_tags, thr (пороги R5), enrich (Enrichment | None).
+    Выход: dict {requirement, metrics, pass}.
+    Computes specialization-coverage metrics; without enrichment only specialty_filled.
+    In: cfg, members, term_tags, thr (R5 thresholds), enrich (Enrichment | None).
+    Out: dict {requirement, metrics, pass}."""
     area = get_area(cfg)
     filled = bool(area and str(area).strip())
     metrics = {

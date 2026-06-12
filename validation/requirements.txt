@@ -1,0 +1,6 @@
+# validation/ package dependencies
+ortools>=9.8        # R2 solver (CP-SAT)
+nltk>=3.8           # R3 Snowball stemming (optional: degrades to no stemming)
+PyYAML>=6.0         # thresholds.yaml loading (optional: defaults apply)
+pytest>=7.0         # test suite in tests/
+# Metric 5 of puzzle_eval.py (legacy, optional): anthropic

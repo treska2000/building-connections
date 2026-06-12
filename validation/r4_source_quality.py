@@ -1,25 +1,26 @@
-"""R4 · Достоверность источников. source_count — детерм.; S1–S7 + faithfulness — через enrich.
+"""R4 · Достоверность источников: source_count — детерминированный анкор;
+S1–S7 + faithfulness — через обогащение (arXiv + OpenAlex, спека
+source_signals_deterministic_2026-06-07). Агрегация-DEFAULT (калибруемо):
+🔴 per-source = не резолвится / retracted; 🔴 per-term = любой 🔴-источник или ВСЕ
+источники из чужого поля; pass per-term = нет 🔴 ∧ sanity ∧ groups ≥ min_groups;
+конфиг = share проходящих ≥ min_share_attested. Позитивные сигналы (S3/S5/S7) — контекст.
 
-Сигналы (source_signals_deterministic_2026-06-07): S1 resolves_on_arxiv, S2 retracted,
-S3 peer_review_venue, S4 field_match, S5 corroboration_citations,
-S6 independent_source_groups, S7 corpus_frequency. Faithfulness (sanity): стем-токены
-термина встречаются в title+abstract ≥1 его источника («источник про термин»).
-
-Агрегация (DEFAULT, калибруемо — пороги в acceptance.yaml R4):
-  🔴 per-source: не резолвится / retracted. 🔴 per-term: любой 🔴-источник,
-  или ВСЕ источники из чужого поля. ПОЗИТИВНЫЕ сигналы (S3/S5/S7) — буст/контекст, не гейт.
-  attestation pass per-term: нет 🔴 ∧ sanity ∧ (groups ≥ min_groups, если OpenAlex доступен).
-  Конфиг: share проходящих терминов ≥ min_share_attested.
+R4 · Source quality: source_count is the deterministic anchor; S1–S7 + faithfulness
+run via enrichment (arXiv + OpenAlex, spec source_signals_deterministic_2026-06-07).
+DEFAULT aggregation (calibratable): 🔴 per-source = unresolvable / retracted;
+🔴 per-term = any 🔴 source or ALL sources off-field; per-term pass = no 🔴 ∧ sanity ∧
+groups ≥ min_groups; config = share of passing terms ≥ min_share_attested.
+Positive signals (S3/S5/S7) are context, not gates.
 """
 from __future__ import annotations
 import re
-from .loader import get_sources, get_area
+from .loader import get_sources
 from . import textutil as TU
 from .enrich import arxiv_id_from_url, PEER_REVIEW_HINT
 
 ARXIV = re.compile(r"arxiv\.org/(abs|pdf)/\d{4}\.\d{4,5}", re.I)
 
-# детерминированный маппинг area/field → допустимые архивы arXiv (расширяемо)
+# deterministic mapping: area/field → allowed arXiv archives (extensible)
 FIELD_TO_ARXIV_PREFIX = {
     "computer science": {"cs", "stat.ml", "eess"},
     "artificial intelligence": {"cs", "stat.ml"},
@@ -34,6 +35,10 @@ FIELD_TO_ARXIV_PREFIX = {
 
 
 def _allowed_prefixes(cfg) -> set[str] | None:
+    """Допустимые архивы arXiv по specialty конфига (field/subfield/area).
+    Вход: cfg. Выход: set префиксов | None (поле неизвестно → unknown, не 🔴).
+    Allowed arXiv archives per the config's specialty (field/subfield/area).
+    In: cfg. Out: set of prefixes | None (unknown field → unknown, not 🔴)."""
     sp = cfg.get("specialty") or {}
     if isinstance(sp, str):
         sp = {"area": sp}
@@ -41,10 +46,14 @@ def _allowed_prefixes(cfg) -> set[str] | None:
         v = (sp.get(key) or "").lower().strip()
         if v in FIELD_TO_ARXIV_PREFIX:
             return FIELD_TO_ARXIV_PREFIX[v]
-    return None  # неизвестное поле → field_match = unknown, не 🔴
+    return None
 
 
 def _field_match(primary_category: str | None, allowed: set[str] | None) -> bool | None:
+    """S4: своя ли область у источника. Вход: primary_category arXiv, allowed.
+    Выход: bool | None (нет данных).
+    S4: is the source in the expected field. In: arXiv primary_category, allowed.
+    Out: bool | None (no data)."""
     if not primary_category or allowed is None:
         return None
     arch = primary_category.split(".")[0].lower()
@@ -52,7 +61,10 @@ def _field_match(primary_category: str | None, allowed: set[str] | None) -> bool
 
 
 def _independent_groups(works: list[dict]) -> int | None:
-    """Union-find: источники, делящие автора ИЛИ институт, — одна группа."""
+    """S6: число независимых авторских групп (union-find: общий автор ИЛИ институт =
+    одна группа). Вход: works (записи OpenAlex). Выход: int | None (нет данных).
+    S6: number of independent author groups (union-find: shared author OR institution =
+    one group). In: works (OpenAlex records). Out: int | None (no data)."""
     known = [w for w in works if w and w.get("found")]
     if not known:
         return None
@@ -79,6 +91,8 @@ def _independent_groups(works: list[dict]) -> int | None:
 
 
 def _metric(value, ok, det, requires=None, gameable=False, note=None, counter=None, examples=None):
+    """Конструктор словаря метрики единого контракта. Вход: поля контракта. Выход: dict.
+    Constructor of the unified metric-contract dict. In: contract fields. Out: dict."""
     m = {"value": value, "pass": ok, "deterministic": det, "requires": requires,
          "gameable": gameable}
     if note:
@@ -91,6 +105,12 @@ def _metric(value, ok, det, requires=None, gameable=False, note=None, counter=No
 
 
 def run(cfg, members, term_tags, thr, enrich=None) -> dict:
+    """Считает метрики достоверности источников; без обогащения — только source_count.
+    Вход: cfg, members, term_tags, thr (пороги R4), enrich (Enrichment | None).
+    Выход: dict {requirement, metrics, pass}.
+    Computes source-quality metrics; without enrichment only source_count is evaluated.
+    In: cfg, members, term_tags, thr (R4 thresholds), enrich (Enrichment | None).
+    Out: dict {requirement, metrics, pass}."""
     terms = cfg.get("terms", [])
     n = len(terms)
     counts = []
@@ -125,8 +145,8 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
         return {"requirement": "R4 · Достоверность источников", "metrics": metrics,
                 "pass": metrics["source_count"]["pass"]}
 
-    # ── обогащение доступно ──────────────────────────────────────────────
-    det = enrich.deterministic()  # live → False (до пина снапшота)
+    # ── enrichment available ─────────────────────────────────────────────
+    det = enrich.deterministic()  # live API → False until the snapshot is pinned
     term_srcs = {t["name"]: [arxiv_id_from_url(s["url"]) for s in get_sources(t)]
                  for t in terms if t.get("name")}
     all_ids = sorted({i for ids in term_srcs.values() for i in ids if i})
@@ -151,18 +171,18 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
             continue
         ms = [metas.get(i) for i in ids]
         ws = [works.get(i) for i in ids] if works else []
-        # S1 (🔴 фейк-ссылка)
+        # S1 (🔴 fake link)
         s1_known = [m for m in ms if m is not None]
         red = any(m.get("exists") is False for m in s1_known)
         why = "фейк-ссылка (не резолвится на arXiv)" if red else None
-        # S2 (🔴 ретракция); нет записи в OpenAlex ≠ retracted
+        # S2 (🔴 retraction); missing OpenAlex record ≠ retracted
         if not red and any(w and w.get("found") and w.get("is_retracted") for w in ws):
             red, why = True, "источник ретрагирован"
-        # S4 (🔴 только если ВСЕ источники из чужого поля)
+        # S4 (🔴 only when ALL sources are off-field)
         fm = [_field_match((m or {}).get("primary_category"), allowed) for m in s1_known]
         if not red and fm and all(v is False for v in fm):
             red, why = True, "все источники из чужого поля"
-        # faithfulness / sanity: термин в title+abstract ≥1 источника
+        # faithfulness / sanity: the term occurs in title+abstract of >=1 source
         texts = [(m.get("title", "") + " " + m.get("abstract", ""))
                  for m in s1_known if m.get("exists")]
         sane = any(TU.term_in_text(name, tx) for tx in texts) if texts else None
@@ -170,9 +190,9 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
             sanity_known += 1
             if sane:
                 sanity_pass += 1
-        # S6 независимость
+        # S6 independence
         groups = _independent_groups(ws) if ws else None
-        # позитивные (контекст): S3 / S5 / S7
+        # positive context signals: S3 / S5 / S7
         peer = any((m.get("journal_ref") or
                     (m.get("doi") and "48550" not in m.get("doi", "")) or
                     PEER_REVIEW_HINT.search(m.get("comment", "")))

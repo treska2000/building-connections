@@ -1,10 +1,8 @@
-"""solver.py — CP-SAT движок решаемости (Требование R2). OR-Tools.
+"""solver.py — CP-SAT движок решаемости (требование R2): однозначность разбивки,
+VPY-сэмплеры для mode-1/2/3, trap_quality. Спека: req2_solvability_spec_2026-06-07.md.
 
-count_partitions(W) — число валидных разбивок 16 слов на монохромные четвёрки.
-is_unique_puzzle(W) — ровно одна разбивка. sample_valid_puzzles — VPY mode-1.
-mode-2: sample_valid_puzzles_mode2 (W содержит ≥1 термин-ловушку с ≥2 тегами из S).
-mode-3: sample_valid_puzzles_mode3 (decoy_for: trap_quality = квадры, монохромные
-только через decoy-рёбра). Спека: req2_solvability_spec_2026-06-07.md.
+solver.py — CP-SAT solvability engine (requirement R2): partition uniqueness,
+VPY samplers for modes 1/2/3, trap_quality. Spec: req2_solvability_spec_2026-06-07.md.
 """
 from __future__ import annotations
 import random
@@ -19,6 +17,10 @@ except Exception:  # pragma: no cover
 
 
 def _quads(words, members):
+    """Все монохромные четвёрки: 4-подмножества слов внутри одной категории.
+    Вход: words (list[str]), members (dict tag→set). Выход: list[frozenset].
+    All monochromatic quads: 4-subsets of words within one category.
+    In: words (list[str]), members (dict tag→set). Out: list[frozenset]."""
     wset = set(words)
     quads = set()
     for tag_members in members.values():
@@ -30,6 +32,10 @@ def _quads(words, members):
 
 
 def count_partitions(words, members, cap=2) -> int:
+    """Число разбивок W на монохромные четвёрки (CP-SAT точное покрытие, отсечка cap).
+    Вход: words (|W| кратно 4), members, cap. Выход: int 0..cap.
+    Number of partitions of W into monochromatic quads (CP-SAT exact cover, capped).
+    In: words (|W| divisible by 4), members, cap. Out: int 0..cap."""
     assert len(words) % 4 == 0 and len(words) > 0
     quads = _quads(words, members)
     if not quads:
@@ -42,10 +48,10 @@ def count_partitions(words, members, cap=2) -> int:
         for w in q:
             by_word.setdefault(w, []).append(i)
     for w in words:
-        m.Add(sum(pick[i] for i in by_word[w]) == 1)
+        m.Add(sum(pick[i] for i in by_word[w]) == 1)  # each word in exactly one picked quad
     solver = cp_model.CpSolver()
     solver.parameters.enumerate_all_solutions = True
-    solver.parameters.num_search_workers = 1
+    solver.parameters.num_search_workers = 1  # single worker keeps enumeration deterministic
 
     class _C(cp_model.CpSolverSolutionCallback):
         def __init__(self):
@@ -53,16 +59,22 @@ def count_partitions(words, members, cap=2) -> int:
         def on_solution_callback(self):
             self.count += 1
             if self.count >= cap:
-                self.StopSearch()
+                self.StopSearch()  # distinguishing 0 / 1 / >=2 is all we need
     cb = _C(); solver.Solve(m, cb)
     return cb.count
 
 
 def is_unique_puzzle(words, members) -> bool:
+    """Однозначен ли пазл: ровно одна разбивка. Вход: words, members. Выход: bool.
+    Is the puzzle unique: exactly one partition. In: words, members. Out: bool."""
     return count_partitions(words, members, cap=2) == 1
 
 
 def _ceiling_mode1(members) -> int:
+    """Комбинаторный потолок числа досок mode-1: Σ по четвёркам категорий ∏ C(size, 4).
+    Вход: members. Выход: int.
+    Combinatorial ceiling of mode-1 boards: Σ over category quadruples of ∏ C(size, 4).
+    In: members. Out: int."""
     sizes = [len(v) for v in members.values() if len(v) >= 4]
     total = 0
     for combo in combinations(sizes, 4):
@@ -74,7 +86,10 @@ def _ceiling_mode1(members) -> int:
 
 
 def sample_valid_puzzles(members, term_tags, n_samples=400, seed=42) -> dict:
-    """mode-1: 4 категории (≥4 членов) × 4 термина = 16 разных слов; certify однозначность."""
+    """mode-1: сэмплирует доски 4 категории × 4 термина и сертифицирует однозначность.
+    Вход: members, term_tags, n_samples, seed. Выход: dict {vpy, exists, ceiling, effective, …}.
+    mode-1: samples 4-category × 4-term boards and certifies uniqueness.
+    In: members, term_tags, n_samples, seed. Out: dict {vpy, exists, ceiling, effective, …}."""
     out = {"eligible_tags": 0, "samples_valid": 0, "samples_drawn": 0,
            "vpy": None, "ceiling": _ceiling_mode1(members), "effective": None,
            "exists": False, "examples_valid": []}
@@ -91,7 +106,7 @@ def sample_valid_puzzles(members, term_tags, n_samples=400, seed=42) -> dict:
         for a in tags:
             words += rng.sample(sorted(members[a]), 4)
         if len(set(words)) != 16:
-            continue
+            continue  # overlapping draw — not a board of 16 distinct words
         drawn += 1
         if is_unique_puzzle(words, members):
             out["samples_valid"] += 1
@@ -106,12 +121,19 @@ def sample_valid_puzzles(members, term_tags, n_samples=400, seed=42) -> dict:
 
 
 def mode2_cooccurrence_pairs(members) -> int:
+    """Предусловие mode-2: число пар категорий с пересечением ≥ 4 терминов.
+    Вход: members. Выход: int.
+    Mode-2 precondition: number of category pairs sharing ≥ 4 terms.
+    In: members. Out: int."""
     names = list(members)
     return sum(1 for a, b in combinations(names, 2) if len(members[a] & members[b]) >= 4)
 
 
 def _draw_partition(tags, members, rng):
-    """4 категории (tags) → 16 РАЗЛИЧНЫХ слов (по 4 на категорию). None при невозможности."""
+    """4 категории → 16 различных слов (по 4 на категорию, без переиспользования).
+    Вход: tags (list), members, rng. Выход: list[str] | None (если не извлекается).
+    4 categories → 16 distinct words (4 per category, no reuse).
+    In: tags (list), members, rng. Out: list[str] | None (when infeasible)."""
     used: set = set()
     words = []
     for a in tags:
@@ -125,8 +147,12 @@ def _draw_partition(tags, members, rng):
 
 
 def sample_valid_puzzles_mode2(members, term_tags, n_samples=400, seed=42) -> dict:
-    """mode-2: кандидат W содержит ≥1 термин v с |tags(v) ∩ S| ≥ 2 (ловушка-пересечение).
-    valid_2 = is_unique(W, member_of). VPY_2 — доля валидных среди кандидатов."""
+    """mode-2: кандидат W обязан содержать термин с ≥ 2 тегами из выбранной четвёрки
+    (ловушка-пересечение); valid = is_unique. Вход: members, term_tags, n_samples, seed.
+    Выход: dict {vpy, exists, samples_drawn, …}.
+    mode-2: a candidate W must contain a term holding ≥ 2 tags within the chosen four
+    categories (overlap trap); valid = is_unique. In: members, term_tags, n_samples, seed.
+    Out: dict {vpy, exists, samples_drawn, …}."""
     out = {"samples_drawn": 0, "samples_valid": 0, "vpy": None,
            "exists": False, "examples_valid": []}
     eligible = [a for a, v in members.items() if len(v) >= 4]
@@ -143,7 +169,7 @@ def sample_valid_puzzles_mode2(members, term_tags, n_samples=400, seed=42) -> di
             continue
         sset = set(tags)
         if not any(len(term_tags.get(w, set()) & sset) >= 2 for w in words):
-            continue  # кандидат mode-2 обязан содержать ловушку-пересечение
+            continue  # a mode-2 candidate must contain an overlap trap
         drawn += 1
         if is_unique_puzzle(words, members):
             out["samples_valid"] += 1
@@ -157,8 +183,12 @@ def sample_valid_puzzles_mode2(members, term_tags, n_samples=400, seed=42) -> di
 
 
 def trap_quality(words, members, members_r3) -> int:
-    """Квадры, монохромные под R3 = member_of ∪ decoy_for, но НЕ под member_of:
-    соблазнительная неверная четвёрка существует только благодаря decoy-рёбрам."""
+    """Квадры, монохромные под R₃ = member_of ∪ decoy_for, но НЕ под member_of:
+    неверная четвёрка существует только из-за decoy-рёбер. Вход: words, members,
+    members_r3. Выход: int (число таких квадр).
+    Quads monochromatic under R₃ = member_of ∪ decoy_for but NOT under member_of:
+    the wrong quad exists only because of decoy edges. In: words, members,
+    members_r3. Out: int (count of such quads)."""
     q_member = set(map(frozenset, _quads(words, members)))
     q_r3 = set(map(frozenset, _quads(words, members_r3)))
     return len(q_r3 - q_member)
@@ -166,14 +196,18 @@ def trap_quality(words, members, members_r3) -> int:
 
 def sample_valid_puzzles_mode3(members, term_tags, decoy_map,
                                n_samples=400, seed=42) -> dict:
-    """mode-3: W из member_of-партиции, содержит ≥1 decoy-термин, чья цель в S.
-    valid_3 = is_unique(W, member_of) ∧ trap_quality(W) ≥ 1."""
+    """mode-3: W из member_of-партиции с ≥ 1 живой обманкой (decoy-цель внутри S);
+    valid = is_unique(member_of) ∧ trap_quality ≥ 1. Вход: members, term_tags,
+    decoy_map (term→set(tags)), n_samples, seed. Выход: dict {vpy, exists, decoy_pool, …}.
+    mode-3: W is a member_of partition with ≥ 1 live decoy (decoy target inside S);
+    valid = is_unique(member_of) ∧ trap_quality ≥ 1. In: members, term_tags,
+    decoy_map (term→set(tags)), n_samples, seed. Out: dict {vpy, exists, decoy_pool, …}."""
     out = {"samples_drawn": 0, "samples_valid": 0, "vpy": None,
            "exists": False, "examples_valid": [], "decoy_pool": len(decoy_map)}
     eligible = [a for a, v in members.items() if len(v) >= 4]
     if len(eligible) < 4 or not decoy_map:
         return out
-    # R3-отношение: членство + decoy-рёбра
+    # R3 relation: membership plus decoy edges
     members_r3 = {a: set(v) for a, v in members.items()}
     for term, targets in decoy_map.items():
         for t in targets:
@@ -189,7 +223,7 @@ def sample_valid_puzzles_mode3(members, term_tags, decoy_map,
             continue
         sset = set(tags)
         if not any(decoy_map.get(w, set()) & sset for w in words):
-            continue  # кандидат mode-3 обязан содержать живую обманку
+            continue  # a mode-3 candidate must contain a live decoy
         drawn += 1
         tq = trap_quality(words, members, members_r3)
         if tq >= 1 and is_unique_puzzle(words, members):

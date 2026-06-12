@@ -6,12 +6,19 @@
     приёмка           acceptance (метрики + сборка), puzzle_assembly (+ repro_check.mjs,
                       enumerate.mjs — Node-обвязка реального генератора)
     адаптеры          rich_to_v1, legacy_to_v1, from_generator (E2E генерилка → вердикт)
-    наследие          config_metrics (deprecation-shim), puzzle_eval, ноутбуки, research/
+    наследие          puzzle_eval (+golden.json) — оценка банка терминов живой игры
 
 Позиционирование: connections-gen/connections_v2 валидирует сам себя
 (publishability-гейты) — это self-check генератора. Этот пакет — НЕЗАВИСИМЫЙ
 приёмочный слой на стороне сборки: принимает v1-конфиг (tags/axes), input-schema
 или нативный v2-пул и выдаёт вердикт accept / reject / pending.
+
+EN: validation — the unified config-validation package: the R1–R7 engine
+(loader/solver/r1…r7/enrich/report/run/schema_check + thresholds.yaml), the
+acceptance layer (acceptance.py + puzzle_assembly with the Node harness), format
+adapters (rich_to_v1, legacy_to_v1, from_generator), and legacy tooling
+(puzzle_eval, research/). It is the independent acceptance line on the assembly
+side — the generator's own publishability gates live in connections_v2.
 
 API:
     from validation import validate, validate_full, load_acceptance
