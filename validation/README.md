@@ -130,7 +130,11 @@ CP-SAT-модель точного покрытия (каждое слово р�
   физически не из чего собрать, solver не запускается. Это счёт по множествам, играбелен
   (категорию можно набить мусором) — поэтому только пред-фильтр.
   Шаг 2, сэмплер: все доски проверить нельзя (комбинаторно много), поэтому случайно
-  тянем N = 400 досок (4 категории × 4 solo-термина; seed = 42 — воспроизводимость, R7)
+  тянем N = 400 досок (4 категории × 4 термина из всех членов категории; seed = 42 —
+  воспроизводимость, R7). Замечание: спека req2 определяет кандидатов через solo-термины,
+  код тянет из всех членов — доски, испорченные мультитеговым термином, отсеивает солвер,
+  поэтому VPY дополнительно учитывает шум пересечений (расхождение со спекой, решение за
+  владельцем)
   и каждую сертифицируем CP-SAT'ом → `exists_valid_puzzle_mode1` (нашлась ли хоть одна
   однозначная) и `good_puzzle_yield_mode1` = VPY — доля однозначных среди проверенных,
   оценка чистоты всего пула (0.9 = почти любая случайная доска валидна; порог 0.70,
@@ -338,8 +342,11 @@ plus an honest solver check:
   to build a board from, and the solver is not invoked. This is plain set counting and
   it is gameable (a category can be stuffed with junk) — hence a pre-filter only.
   Step 2, the sampler: checking every board is infeasible (combinatorially many), so we
-  randomly draw N = 400 boards (4 categories × 4 solo terms; seed = 42 for
-  reproducibility, R7) and certify each with CP-SAT → `exists_valid_puzzle_mode1` (was
+  randomly draw N = 400 boards (4 categories × 4 terms drawn from all category members;
+  seed = 42 for reproducibility, R7). Note: the req2 spec defines candidates via solo
+  terms, while the code draws from all members — boards spoiled by a multi-tag term are
+  rejected by the solver, so VPY additionally absorbs overlap noise (a spec deviation,
+  owner's call) and certify each with CP-SAT → `exists_valid_puzzle_mode1` (was
   at least one unambiguous board found) and `good_puzzle_yield_mode1` = VPY — the share
   of unambiguous boards among those checked, an estimate of the whole pool's cleanliness
   (0.9 = almost any random board is valid; threshold 0.70, calibratable).
