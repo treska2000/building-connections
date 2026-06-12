@@ -8,14 +8,15 @@ openalex_snapshot: null            # пин версии локального с
 required_gates: [R1, R2, R3, R5, R7]
 
 thresholds:
-  R1: { min_terms: 16, min_base_tags: 4, min_tag_size: 4 }
+  # min_share_3sources перенесён из R4 (2026-06-12): формальный счётчик источников = объём
+  R1: { min_terms: 16, min_base_tags: 4, min_tag_size: 4, min_share_3sources: 0.90 }
   # min_vpy_mode2/3: null → гейт по exists; τ₂/τ₃ — калибровка на golden + синтетических негативах (TBD)
   R2: { min_vpy: 0.70, min_vpy_mode2: null, min_vpy_mode3: null, n_samples: 400, seed: 42 }
   # ресёрч-конфиг morph_leak 2026-06-08: term↔term · snowball+suf3 · IDF · maxweight
   # τ_link=0.74 (tau_full_corpus=0.735 на синтетике; held-out F1=0.858) — калибруемо на реальных golden
   R3: { morph_leak_link_tau: 0.74, max_morph_leak: 0.05, token_min_len: 3 }
   # агрегация светофора (DEFAULT, калибруемо): red = не резолвится / retracted / все источники чужого поля
-  R4: { min_share_3sources: 0.90, min_share_sane: 0.90, min_share_attested: 0.90,
+  R4: { min_share_sane: 0.90, min_share_attested: 0.90,
         min_independent_groups: 3, citations_hi: 100 }
   R5: { area_consistency_tau: 0.70 }
   R6: { margin_tau: 0.10 }

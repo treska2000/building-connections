@@ -120,10 +120,10 @@ def test_from_generator_end_to_end(tmp_path):
     # R1, R5 always pass for this fixture.
     assert v["metric_gates"]["R1_volume"]
     assert v["metric_gates"]["R5_specialty"]
-    # R4-анкор: 3 arXiv-источника на термин → source_count проходит
-    # (старая доменная дедупликация переехала в independent_source_groups
-    # под обогащением — один домен больше не блокирует гейт детерминированно).
-    assert v["metric_gates"]["R4_sources"] is True
+    # счётчик источников теперь в R1 (3 arXiv-источника на термин → проходит);
+    # R4 без обогащения — честно PENDING
+    assert v["metric_gates"]["R1_volume"] is True
+    assert v["metric_gates"]["R4_sources"] is None
     # Single-tag synthetic with 4 axes of 4 -> assembly passes.
     assert v["assembly_gates"]["normal"]
     assert v["assembly_gates"]["advanced"]

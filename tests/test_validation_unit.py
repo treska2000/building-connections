@@ -234,7 +234,7 @@ class FakeOpenAlex:
         return 250
 
 
-THR_R4 = {"min_share_3sources": 0.9, "min_share_sane": 0.9,
+THR_R4 = {"min_share_sane": 0.9,
           "min_share_attested": 0.9, "min_independent_groups": 3, "citations_hi": 100}
 
 

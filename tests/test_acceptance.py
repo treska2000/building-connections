@@ -6,7 +6,7 @@
 - T1: минимальный валидный конфиг → структурные гейты проходят
 - T2: 10 терминов → R1 False
 - T3: термин ссылается на несуществующую категорию → schema_errors
-- T5: <3 источников → R4_sources False
+- T5: <3 источников → R1_volume False (счётчик источников в R1 с 2026-06-12)
 - T6: одна категория на 50 терминов → R1 False
 
 Run from repo root:
@@ -142,8 +142,8 @@ def test_acceptance_minimal_passes_structural_core(tmp_path, minimal_valid_cfg):
     assert v["metric_gates"]["R2_mode1"] is True
     assert v["metric_gates"]["R3_morph_leak"] is True
     assert v["metric_gates"]["R5_specialty"] is True
-    # 16 терминов × 3 источника → анкор R4 проходит
-    assert v["metric_gates"]["R4_sources"] is True
+    # R4 — чисто качественный: без обогащения честно PENDING (None)
+    assert v["metric_gates"]["R4_sources"] is None
 
 
 @needs_ortools
@@ -164,14 +164,14 @@ def test_acceptance_single_fat_category_blocks_r1(tmp_path):
 
 
 @needs_ortools
-def test_acceptance_missing_sources_blocks_r4_when_required(tmp_path, minimal_valid_cfg):
+def test_acceptance_missing_sources_blocks_r1(tmp_path, minimal_valid_cfg):
+    """T5: счётчик источников перенесён в R1 (2026-06-12) — без источников блокирует R1."""
     cfg = json.loads(json.dumps(minimal_valid_cfg))
     for t in cfg["terms"]:
         t.pop("sources", None)                             # T5
-    v = ac.acceptance(_write(tmp_path, cfg), n_seeds_for_variety=10, n_samples=40,
-                      required_gates=("R1_volume", "R4_sources"))
-    assert v["metric_gates"]["R4_sources"] is False
-    assert v["blocked_gates"] == ["R4_sources"]
+    v = ac.acceptance(_write(tmp_path, cfg), n_seeds_for_variety=10, n_samples=40)
+    assert v["metric_gates"]["R1_volume"] is False
+    assert "R1_volume" in v["blocked_gates"]
 
 
 @needs_ortools
@@ -194,7 +194,7 @@ def test_acceptance_relaxed_gates_let_blocked_config_through(tmp_path, minimal_v
     for t in cfg["terms"]:
         t.pop("sources", None)
     v = ac.acceptance(_write(tmp_path, cfg), n_seeds_for_variety=10, n_samples=60,
-                      required_gates=("R1_volume", "R2_mode1", "R5_specialty"))
+                      required_gates=("R2_mode1", "R5_specialty"))
     assert v["accepted"], f"blocked: {v['blocked_gates']}"
 
 

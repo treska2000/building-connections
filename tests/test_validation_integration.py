@@ -77,6 +77,8 @@ def test_required_gates_drive_verdict(acc):
 def test_enrichment_metrics_pending_without_clients(acc):
     rep = validate(str(V1 / "ai-safety-v1.json"), acc)
     r4 = rep["requirements"]["R4"]["metrics"]
+    assert "source_count" not in r4          # счётчик переехал в R1 (2026-06-12)
+    assert rep["requirements"]["R4"]["pass"] is None   # без обогащения R4 целиком PENDING
     assert r4["source_attestation"]["pass"] is None
     assert r4["source_attestation"]["requires"]
     r6 = rep["requirements"]["R6"]["metrics"]

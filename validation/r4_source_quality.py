@@ -1,12 +1,14 @@
-"""R4 · Достоверность источников: source_count — детерминированный анкор;
-S1–S7 + faithfulness — через обогащение (arXiv + OpenAlex, спека
-source_signals_deterministic_2026-06-07). Агрегация-DEFAULT (калибруемо):
+"""R4 · Достоверность источников — чисто КАЧЕСТВЕННАЯ проверка через обогащение
+(arXiv + OpenAlex, спека source_signals_deterministic_2026-06-07); без обогащения
+весь R4 = PENDING. Формальный счётчик количества источников перенесён в R1
+(решение 2026-06-12). Агрегация-DEFAULT (калибруемо):
 red per-source = не резолвится / retracted; red per-term = любой red-источник или ВСЕ
 источники из чужого поля; pass per-term = нет red ∧ sanity ∧ groups ≥ min_groups;
 конфиг = share проходящих ≥ min_share_attested. Позитивные сигналы (S3/S5/S7) — контекст.
 
-R4 · Source quality: source_count is the deterministic anchor; S1–S7 + faithfulness
-run via enrichment (arXiv + OpenAlex, spec source_signals_deterministic_2026-06-07).
+R4 · Source quality — a purely QUALITATIVE check via enrichment (arXiv + OpenAlex,
+spec source_signals_deterministic_2026-06-07); without enrichment the whole R4 is
+PENDING. The formal source counter moved to R1 (2026-06-12 decision).
 DEFAULT aggregation (calibratable): red per-source = unresolvable / retracted;
 red per-term = any red source or ALL sources off-field; per-term pass = no red ∧ sanity ∧
 groups ≥ min_groups; config = share of passing terms ≥ min_share_attested.
@@ -112,27 +114,7 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
     In: cfg, members, term_tags, thr (R4 thresholds), enrich (Enrichment | None).
     Out: dict {requirement, metrics, pass}."""
     terms = cfg.get("terms", [])
-    n = len(terms)
-    counts = []
-    with_sources = 0
-    with_arxiv = 0
-    for t in terms:
-        src = get_sources(t)
-        counts.append(len(src))
-        if src:
-            with_sources += 1
-        if any(ARXIV.search(s["url"]) for s in src):
-            with_arxiv += 1
-    share_3plus = round(sum(1 for c in counts if c >= 3) / n, 3) if n else 0.0
-
-    metrics = {
-        "source_count": _metric(
-            {"share_terms_with_sources": round(with_sources / n, 3) if n else 0,
-             "share_3plus": share_3plus, "with_arxiv": with_arxiv},
-            share_3plus >= thr.get("min_share_3sources", 0.9),
-            det=True, gameable=True,
-            counter="independent_source_groups + attestation"),
-    }
+    metrics = {}
 
     if enrich is None or not enrich.sources_available():
         metrics["source_sanity_check"] = _metric(
@@ -142,8 +124,9 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
             None, None, det=True, requires="arXiv + OpenAlex",
             note="resolves · retracted · peer_review · field_match · citations · "
                  "independent_groups · corpus_frequency")
+        # no quality data without enrichment: the requirement is honestly PENDING
         return {"requirement": "R4 · Достоверность источников", "metrics": metrics,
-                "pass": metrics["source_count"]["pass"]}
+                "pass": None}
 
     # ── enrichment available ─────────────────────────────────────────────
     det = enrich.deterministic()  # live API → False until the snapshot is pinned
@@ -231,7 +214,7 @@ def run(cfg, members, term_tags, thr, enrich=None) -> dict:
              f"· агрегация-DEFAULT (калибруемо)" + (" · live API (недетерм. до пина снапшота)" if not det else ""))
     metrics["per_term"] = _metric(per_term, None, det=det, note="справочно, не гейт")
 
-    gates = [metrics["source_count"]["pass"], metrics["source_sanity_check"]["pass"],
+    gates = [metrics["source_sanity_check"]["pass"],
              metrics["source_attestation"]["pass"]]
     known = [g for g in gates if g is not None]
     passed = all(known) if known else None

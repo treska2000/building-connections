@@ -102,8 +102,11 @@ env `OPENALEX_MAILTO` / `OPENALEX_API_KEY`. Архитектура и откры
 - `is_terms_count_ge_16` — уникальных терминов ≥ 16.
 - `is_dedup` — дублей нормализованных имён терминов и дублей рёбер (термин, категория) ровно 0; контр-метрика к искусственному набиванию счётчиков.
 - `is_base_categories_count_ge_4` — категорий с ≥ 4 терминами (`min_tag_size`) не меньше 4 (`min_base_tags`).
+- `is_sources_count_ge_3` — доля терминов с ≥ 3 источниками не ниже 0.90. Формальный
+  счётчик, перенесён из R4 (решение 2026-06-12): количество источников — вопрос объёма,
+  их качество оценивает R4.
 - `bonus_size3_pool` — справочно: категории ровно по 3 термина как пул естественных обманок; не гейт.
-- Вердикт R1 = первые три метрики.
+- Вердикт R1 = четыре блокирующие метрики выше.
 
 ### R2 · Решаемость (`r2_solvability.py` + `solver.py`, CP-SAT, детерминированно)
 
@@ -191,7 +194,9 @@ CP-SAT-модель точного покрытия (каждое слово р�
 
 ### R4 · Достоверность источников (`r4_source_quality.py` + `enrich.py`)
 
-- `source_count` (детерм.): доля терминов с ≥ 3 источниками ≥ 0.9 — анкор требования, играбелен.
+R4 — чисто качественная проверка: без обогащения весь раздел честно остаётся PENDING
+(формальный счётчик количества источников живёт в R1).
+
 - Через обогащение (arXiv Atom батчами + OpenAlex works по DOI; файловый кэш;
   `deterministic = False` до пина `openalex_snapshot`):
   S1 `resolves_on_arxiv` (red: фейк-ссылка) · S2 `retracted` (red; нет записи ≠ retracted) ·
@@ -336,8 +341,11 @@ unless its requirement is in `required_gates` (default: R1, R2, R3, R5, R7). Thr
 - `is_terms_count_ge_16` — at least 16 unique terms.
 - `is_dedup` — exactly zero duplicates of normalized term names and of (term, category) edges; counter-metric against inflating the counts.
 - `is_base_categories_count_ge_4` — at least 4 categories (`min_base_tags`) with ≥ 4 terms each (`min_tag_size`).
+- `is_sources_count_ge_3` — the share of terms with ≥ 3 sources is at least 0.90. A formal
+  counter moved here from R4 (2026-06-12 decision): the NUMBER of sources is a volume
+  question; their QUALITY is assessed by R4.
 - `bonus_size3_pool` — informational: categories with exactly 3 terms as a pool of natural decoys; not a gate.
-- R1 verdict = the first three metrics.
+- R1 verdict = the four blocking metrics above.
 
 ### R2 · Solvability (`r2_solvability.py` + `solver.py`, CP-SAT, deterministic)
 
@@ -426,7 +434,9 @@ plus an honest solver check:
 
 ### R4 · Source quality (`r4_source_quality.py` + `enrich.py`)
 
-- `source_count` (deterministic): share of terms with ≥ 3 sources ≥ 0.9 — the requirement's anchor, gameable.
+R4 is a purely qualitative check: without enrichment the whole section honestly stays
+PENDING (the formal source counter lives in R1).
+
 - Via enrichment (batched arXiv Atom + OpenAlex works by DOI; file cache;
   `deterministic = False` until `openalex_snapshot` is pinned):
   S1 `resolves_on_arxiv` (red: fake link) · S2 `retracted` (red; no record ≠ retracted) ·
