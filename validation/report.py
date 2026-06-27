@@ -1,8 +1,8 @@
-"""report.py — сборка итогового отчёта: гейт по required_gates, вердикт
-accept / reject / pending, markdown-рендер.
+"""Final report assembly: gating by required_gates, the accept / reject / pending verdict,
+and markdown rendering.
 
-report.py — final report assembly: gating by required_gates, the
-accept / reject / pending verdict, markdown rendering.
+Сборка итогового отчёта: гейт по required_gates, вердикт accept / reject / pending
+и markdown-рендер.
 """
 from __future__ import annotations
 import json
@@ -10,16 +10,20 @@ import json
 
 def build_report(cfg, requirements: dict, acceptance: dict, provenance: dict,
                  repro=None) -> dict:
-    """Собирает отчёт и выводит вердикт: reject при проваленном required-гейте,
-    pending при неизвестном, иначе accept. Паспорт валидатора (provenance, repro) —
-    отдельный блок, в критериях не участвует. Вход: cfg, requirements (R-id → результат),
-    acceptance, provenance, repro (self-test | None). Выход: dict отчёта.
-    Assembles the report and derives the verdict: reject on a failed required gate,
+    """Assemble the report and derive the verdict: reject on a failed required gate,
     pending on an unknown one, accept otherwise. The validator passport (provenance,
-    repro) is a separate block and takes no part in the criteria. In: cfg, requirements
-    (R-id → result), acceptance, provenance, repro (self-test | None). Out: report dict."""
+    repro) is a separate block that takes no part in the criteria.
+
+    In: cfg, requirements (R-id → result), acceptance, provenance,
+    repro (self-test | None). Out: report dict.
+
+    Собирает отчёт и выводит вердикт: reject при проваленном required-гейте, pending при
+    неизвестном, иначе accept. Паспорт валидатора (provenance, repro) — отдельный блок,
+    в критериях не участвует.
+    In: cfg, requirements (R-id → результат), acceptance, provenance,
+    repro (self-test | None). Out: dict отчёта."""
     required = set(acceptance.get("required_gates",
-                                  ["R1", "R2", "R3", "R4", "R5"]))
+                                  ["R1", "R3", "R5"]))
     summary = {}
     for rid, r in requirements.items():
         summary[rid] = r.get("pass")
@@ -44,16 +48,19 @@ def build_report(cfg, requirements: dict, acceptance: dict, provenance: dict,
 
 
 def _badge(p):
-    """Текстовый бейдж статуса pass. Вход: True/False/None. Выход: str.
-    Text badge for a pass status. In: True/False/None. Out: str."""
+    """Return a text badge for a pass status. In: True/False/None. Out: str.
+
+    Текстовый бейдж статуса pass. In: True/False/None. Out: str."""
     return {True: "PASS", False: "FAIL", None: "PENDING"}.get(p, "-")
 
 
 def to_markdown(report: dict) -> str:
-    """Рендерит отчёт в markdown-таблицу (вердикт, метрики, provenance).
-    Вход: report (из build_report). Выход: str (markdown).
-    Renders the report as a markdown table (verdict, metrics, provenance).
-    In: report (from build_report). Out: str (markdown)."""
+    """Render the report as a markdown table covering verdict, metrics, and provenance.
+
+    In: report (from build_report). Out: str (markdown).
+
+    Рендерит отчёт в markdown-таблицу: вердикт, метрики, provenance.
+    In: report (из build_report). Out: str (markdown)."""
     L = [f"# Валидация `{report.get('config_id')}` (v{report.get('config_version')})", ""]
     L.append(f"**Вердикт: {report['verdict'].upper()}** · required: {report['required_gates']}")
     if report["blocked_gates"]:

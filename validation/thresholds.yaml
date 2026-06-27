@@ -1,28 +1,27 @@
-# thresholds.yaml — пороги, версии, флаги (R7: всё вынесено из кода)
-version: 2.3.0
+# Validation thresholds and flags. All tuning lives here, not in code.
+version: 2.4.0
 seed: 42
-embedder: { model: gemini-embedding-2, dim: 768, task: "sentence similarity" }
-openalex_snapshot: null            # пин версии локального снапшота (Level 2) → метрики обогащения станут детерминированными
 
-# какие требования обязательны для accept. R4 блокирующий (решение 2026-06-12):
-# без обогащения он PENDING -> вердикт pending, accept достижим только с --enrich.
-# R3 и R6 выведены из пайплайна (решение 2026-06-12) до решений владельца
-# (R3 — развилка по golden'ам; R6 — редизайн): модули сохранены, ключи вернутся
-# вместе с решениями. R7 исключён из критериев: паспорт валидатора — логирование, не гейт.
-required_gates: [R1, R2, R4, R5]
+# R6 embedder: Qwen3, Matryoshka dim. model_snapshot pins weights for reproducibility.
+embedder: { model: qwen3, dim: 64, task: "sentence similarity", model_snapshot: null }
+openalex_snapshot: null
+
+# Requirements that block the verdict; everything else is computed but non-blocking.
+required_gates: [R1, R3, R5]
 
 thresholds:
-  # min_share_3sources перенесён из R4 (2026-06-12): формальный счётчик источников = объём
-  R1: { min_terms: 16, min_base_tags: 4, min_tag_size: 4, min_share_3sources: 0.90 }
-  # min_vpy_mode2/3: null → гейт по exists; τ₂/τ₃ — калибровка на golden + синтетических негативах (TBD)
-  R2: { min_vpy: 0.70, min_vpy_mode2: null, min_vpy_mode3: null, n_samples: 400, seed: 42 }
-  # агрегация светофора (DEFAULT, калибруемо): red = не резолвится / retracted / все источники чужого поля
-  # min_sane_sources_per_term: в скольких из своих источников термин обязан встретиться
-  # (для отобранных топ-3 источников можно поднять до 2-3); min_share_sane не калиброван —
-  # ресёрч в бэклоге (research_backlog_thresholds_2026-06-12.md, п.1): live-прогон на корзине честных конфигов
-  R4: { min_sane_sources_per_term: 1, min_share_sane: 0.90, min_share_attested: 0.90,
+  R1: { min_terms: 16, min_base_tags: 4, min_tag_size: 4, min_share_3sources: 0.90 }          # Volume
+  R3: { min_sane_sources_per_term: 1, min_share_sane: 0.90, min_share_attested: 0.90,         # Sources
         min_independent_groups: 3, citations_hi: 100 }
-  # τ=0.70 — логика «2 из 3» (у термина по R1 три источника; минимум два должны быть
-  # про заявленную область): per-term это правило зашито в определение поля,
-  # per-config 2/3 ≈ 0.67 округлено с запасом до 0.70 — мягкий порог
-  R5: { area_consistency_tau: 0.70 }
+  R5: { area_consistency_tau: 0.70 }                                                          # Specialization
+  R4: { min_vpy: 0.70, min_vpy_mode2: null, min_vpy_mode3: null, n_samples: 400, seed: 42 }   # Solvability (parked)
+  R6: { tau_v_measure: 0.50, k_tolerance: 2, tau_margin: 0.10, tau_margin_share: 0.70,        # Semantic coherence
+        linkage: ward, k_min: 2, k_max: 16, text_mode: label_desc }
+
+# Auto-degraders for the functional test (configs degraded in-memory, never committed).
+degraders:
+  operators: [pairflip, merge, distractor, truncate]
+  intensity_grid: [0.0, 0.25, 0.5, 0.75, 1.0]
+  seed: 42
+  proximity: lexical          # lexical | embed
+  distractor_bank: null

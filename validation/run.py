@@ -1,20 +1,19 @@
-"""run.py — оркестратор пайплайна валидации + CLI. Активные критерии: R1, R2, R4, R5
-(R3 и R6 выведены из пайплайна 2026-06-12 до решений владельца — модули сохранены,
-но не подключены). Принимает v1-конфиг (tags/axes) и нативный v2-пул.
-exit: 0 accept · 1 reject · 2 pending.
-
-run.py — validation pipeline orchestrator + CLI. Active criteria: R1, R2, R4, R5
-(R3 and R6 were taken out of the pipeline on 2026-06-12 pending owner decisions —
-the modules are kept but not wired in). Accepts a v1 config (tags/axes) and the
-native v2 pool. exit: 0 accept · 1 reject · 2 pending.
+"""Validation pipeline orchestrator and CLI. Active criteria (source of truth: registry.gates()):
+R1 Volume · R3 Sources · R5 Specialization. Accepts a v1 config (tags/axes) and the native
+v2 pool. Exit codes: 0 accept · 1 reject · 2 pending.
 
 Usage:
     python validation/run.py <config.json|pool.json> [--acceptance thresholds.yaml]
                              [--out reports/] [--enrich off|live|cache] [--only R2,R4]
                              [--repro]
+
+Оркестратор пайплайна валидации и CLI. Активные критерии (источник истины: registry.gates()):
+R1 Объём · R3 Источники · R5 Специализация. Принимает v1-конфиг (tags/axes) и нативный v2-пул.
+Коды выхода: 0 accept · 1 reject · 2 pending.
 """
 from __future__ import annotations
 import argparse
+import importlib
 import json
 import sys
 from pathlib import Path
@@ -23,48 +22,47 @@ HERE = Path(__file__).resolve().parent
 
 if __package__ in (None, ""):  # script mode: python validation/run.py
     sys.path.insert(0, str(HERE.parent))
-    from validation import loader, enrich  # type: ignore
+    from validation.core import loader  # type: ignore
+    from validation import enrich, reproducibility, registry  # type: ignore
     from validation import report as rep  # type: ignore
-    from validation import (r1_volume, r2_solvability,  # type: ignore
-                            r4_source_quality, r5_specialization,
-                            r7_reproducibility)
 else:  # package mode: from validation import validate
-    from . import loader, enrich
+    from .core import loader
+    from . import enrich, reproducibility, registry
     from . import report as rep
-    from . import (r1_volume, r2_solvability,
-                   r4_source_quality, r5_specialization,
-                   r7_reproducibility)
-# r3_semanticity and r6_link_strength are intentionally not imported: both criteria
-# were taken out of the pipeline (2026-06-12) pending owner decisions
-# (R3 — the goldens fork; R6 — the source-space redesign)
+# Requirement modules are imported dynamically per registry.pipeline() (see _run_requirement).
+# Модули требований импортируются динамически по registry.pipeline().
 
 DEFAULT_ACCEPTANCE = {
     "version": "2.3.0", "seed": 42,
     "embedder": {"model": "gemini-embedding-2", "dim": 768},
     "openalex_snapshot": None,
-    # R7 is not a criterion anymore (2026-06-12): the validator passport
-    # (provenance, repro self-test) lives outside the gates.
-    # R3 and R6 are out of the pipeline (2026-06-12) pending owner decisions;
-    # their threshold keys return together with the modules.
-    "required_gates": ["R1", "R2", "R4", "R5"],
+    # Спек-нумерация (registry.py): R1 Объём · R3 Источники · R5 Специализация — активны.
+    # R4 Решаемость прикопан (2026-06-26); R2 Неочевидность(morph)/R6 выведены (2026-06-12);
+    # R6 Когерентность — pending до эмбеддера; R7 — паспорт, не гейт.
+    # required_gates — единый источник истины: registry.gates().
+    "required_gates": list(registry.gates()),
     "thresholds": {
         "R1": {"min_terms": 16, "min_base_tags": 4, "min_tag_size": 4,
                "min_share_3sources": 0.90},
-        "R2": {"min_vpy": 0.70, "min_vpy_mode2": None, "min_vpy_mode3": None,
-               "n_samples": 400, "seed": 42},
-        "R4": {"min_sane_sources_per_term": 1,
+        # R3 Источники (бывш. пакетный R4): качество источников через обогащение
+        "R3": {"min_sane_sources_per_term": 1,
                "min_share_sane": 0.90, "min_share_attested": 0.90,
                "min_independent_groups": 3, "citations_hi": 100},
         "R5": {"area_consistency_tau": 0.70},
+        # R4 Решаемость прикопан: пороги — референс, в пайплайне не используются
+        "R4": {"min_vpy": 0.70, "min_vpy_mode2": None, "min_vpy_mode3": None,
+               "n_samples": 400, "seed": 42},
     },
 }
 
 
 def load_acceptance(path: str | None) -> dict:
-    """Загружает пороги/required_gates: дефолты + оверрайды из YAML (если задан).
-    Вход: path (yaml | None). Выход: dict acceptance-критериев.
-    Loads thresholds/required_gates: defaults + YAML overrides (when given).
-    In: path (yaml | None). Out: acceptance-criteria dict."""
+    """Load thresholds and required_gates: defaults plus YAML overrides when a path is given.
+
+    In: path (yaml | None). Out: acceptance-criteria dict.
+
+    Загружает пороги и required_gates: дефолты плюс оверрайды из YAML, если путь задан.
+    In: path (yaml | None). Out: dict acceptance-критериев."""
     acc = json.loads(json.dumps(DEFAULT_ACCEPTANCE))
     if path:
         try:
@@ -79,59 +77,115 @@ def load_acceptance(path: str | None) -> dict:
 
 
 def _thr(acc, rid):
-    """Пороги одного требования + унаследованный seed. Вход: acc, rid. Выход: dict.
-    One requirement's thresholds + the inherited seed. In: acc, rid. Out: dict."""
+    """Return one requirement's thresholds merged with the inherited seed. In: acc, rid. Out: dict.
+
+    Пороги одного требования плюс унаследованный seed. In: acc, rid. Out: dict."""
     t = dict(acc["thresholds"].get(rid, {}))
     t.setdefault("seed", acc.get("seed", 42))
     return t
 
 
+def _has_arxiv_sources(cfg) -> bool:
+    """Return True if any term cites an arXiv source (handles sources/evidence/top_sources). In: cfg. Out: bool.
+
+    True, если хоть у одного термина источник — arXiv (учитывает sources/evidence/top_sources).
+    In: cfg. Out: bool."""
+    for t in cfg.get("terms", []):
+        for s in loader.get_sources(t):
+            if "arxiv.org" in str(s.get("url", "")).lower():
+                return True
+    return False
+
+
+def _run_requirement(req, cfg, members, term_tags, acceptance, en, embedder):
+    """Call a requirement module with the arguments prescribed by its registry passport (needs field).
+
+    In: req (registry entry), cfg, members, term_tags, acceptance, en, embedder. Out: requirement result dict.
+
+    Вызывает модуль требования с нужными аргументами по паспорту реестра (поле needs).
+    In: req, cfg, members, term_tags, acceptance, en, embedder. Out: dict результата требования."""
+    mod = importlib.import_module(f"{__package__ or 'validation'}.requirements.{req.module}")
+    thr = _thr(acceptance, req.code)
+    if req.needs == "enrich":
+        return mod.run(cfg, members, term_tags, thr, en)
+    if req.needs == "embedder":
+        return mod.run(cfg, members, term_tags, thr, embedder)
+    return mod.run(cfg, members, term_tags, thr)
+
+
 def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None,
-             only=None) -> dict:
-    """Один прогон R1–R7 по конфигу. only — режим отладки: запускаются только
-    перечисленные требования (например {"R2"}), остальные блоки кода не выполняются,
-    вердикт в этом режиме информативен только по выбранным. Вход: config_path,
-    acceptance (пороги), en (Enrichment), repro (repro-чек | None), only (set | None).
-    Выход: dict отчёта.
-    A single R1–R7 run over a config. only is a debugging mode: only the listed
-    requirements run (e.g. {"R2"}), the remaining code blocks are not executed, and
-    the verdict is meaningful only for the selected ones. In: config_path, acceptance
-    (thresholds), en (Enrichment), repro (repro check | None), only (set | None).
-    Out: report dict."""
+             only=None, embedder=None) -> dict:
+    """Run a single validation pass over the config. The requirement set comes from
+    registry.pipeline() (run=True), not a hardcode — enable a requirement by flipping
+    run/gate in registry.py. only is a debug filter that restricts execution to the
+    listed requirement codes.
+
+    In: config_path, acceptance (thresholds), en (Enrichment), repro, only (set|None),
+    embedder (for needs='embedder', e.g. R6). Out: report dict.
+
+    Один прогон по конфигу. Состав требований берётся из registry.pipeline() (run=True) —
+    не хардкод; подключить требование = выставить run/gate в registry.py. only — фильтр
+    отладки по кодам требований.
+    In: config_path, acceptance (пороги), en (Enrichment), repro, only (set|None),
+    embedder (для needs='embedder', напр. R6). Out: dict отчёта."""
     cfg = loader.load_config(config_path)
     members, term_tags = loader.build_membership(cfg)
 
-    runners = {
-        "R1": lambda: r1_volume.run(cfg, members, term_tags, _thr(acceptance, "R1")),
-        "R2": lambda: r2_solvability.run(cfg, members, term_tags, _thr(acceptance, "R2")),
-        "R4": lambda: r4_source_quality.run(cfg, members, term_tags, _thr(acceptance, "R4"), en),
-        "R5": lambda: r5_specialization.run(cfg, members, term_tags, _thr(acceptance, "R5"), en),
-        # R3/R6 are parked (2026-06-12): wire them back here once the owner decides
-    }
-    selected = set(only) if only else set(runners)
-    requirements = {rid: fn() for rid, fn in runners.items() if rid in selected}
-    prov = r7_reproducibility.provenance(acceptance, cfg)
-    return rep.build_report(cfg, requirements, acceptance, prov, repro=repro)
+    # Source-grounded gates (needs="enrich": R3 Sources, R5 Specialization) rely on
+    # arXiv/OpenAlex; they apply only when the config cites arXiv papers. For non-arXiv
+    # sources they are optional — skipped and dropped from the required set.
+    # Источник-зависимые гейты (R3/R5) применяются только к arXiv-источникам; иначе
+    # опциональны — пропускаются и не блокируют вердикт.
+    require_arxiv = acceptance.get("source_gates_require_arxiv", True)
+    arxiv = _has_arxiv_sources(cfg)
+    effective_required = [g for g in acceptance.get("required_gates", registry.gates())]
+
+    pipe = registry.pipeline()
+    # Lazily build the default embedder (Qwen3) if any active requirement needs it (R6).
+    # Ленивая сборка дефолтного эмбеддера, если он нужен активному требованию (R6).
+    if embedder is None and any(r.needs == "embedder" for r in pipe):
+        from .core import embedding as _emb
+        embedder = _emb.get_default(acceptance.get("embedder"))
+
+    selected = set(only) if only else None
+    requirements = {}
+    for req in pipe:
+        if selected is not None and req.code not in selected:
+            continue
+        if req.needs == "enrich" and require_arxiv and not arxiv:
+            if req.code in effective_required:
+                effective_required.remove(req.code)
+            continue
+        requirements[req.code] = _run_requirement(
+            req, cfg, members, term_tags, acceptance, en, embedder)
+    prov = reproducibility.provenance(acceptance, cfg)
+    acc = dict(acceptance, required_gates=effective_required)
+    return rep.build_report(cfg, requirements, acc, prov, repro=repro)
 
 
 def validate_full(config_path: str, acceptance: dict, en=enrich.DISABLED,
-                  only=None) -> dict:
-    """Прогон + reproducibility_check — self-test валидатора (два внутренних прогона).
-    Не дефолт: вызывается тестовым контрактом и CLI-флагом --repro; обычная валидация
-    конфига — validate(). Вход: config_path, acceptance, en, only (режим отладки).
-    Выход: dict отчёта с repro-блоком.
-    Run + reproducibility_check — the validator's self-test (two inner runs).
-    Not the default: invoked by the test contract and the --repro CLI flag; regular
-    config validation is validate(). In: config_path, acceptance, en, only (debug mode).
-    Out: report dict with the repro block."""
-    rc = r7_reproducibility.reproducibility_check(
-        lambda p, a: validate(p, a, en, only=only), config_path, acceptance)
-    return validate(config_path, acceptance, en, repro=rc, only=only)
+                  only=None, embedder=None) -> dict:
+    """Run validate() plus the reproducibility self-test (two inner runs). Not the default
+    path: invoked by the test contract and the --repro CLI flag; regular config validation
+    uses validate().
+
+    In: config_path, acceptance, en, only (debug mode). Out: report dict with the repro block.
+
+    Прогон validate() плюс self-test воспроизводимости (два внутренних прогона). Не дефолт:
+    вызывается тестовым контрактом и флагом --repro; обычная валидация — validate().
+    In: config_path, acceptance, en, only (режим отладки). Out: dict отчёта с repro-блоком."""
+    rc = reproducibility.reproducibility_check(
+        lambda p, a: validate(p, a, en, only=only, embedder=embedder), config_path, acceptance)
+    return validate(config_path, acceptance, en, repro=rc, only=only, embedder=embedder)
 
 
 def main() -> int:
-    """CLI: вердикт + markdown-отчёт (+ артефакты при --out). Вход: argv. Выход: exit-код.
-    CLI: verdict + markdown report (+ artifacts with --out). In: argv. Out: exit code."""
+    """Run the CLI: print verdict and markdown report; write artifacts when --out is given.
+
+    In: argv (via argparse). Out: exit code (int).
+
+    CLI: вердикт и markdown-отчёт; при --out записывает артефакты на диск.
+    In: argv. Out: код выхода (int)."""
     ap = argparse.ArgumentParser()
     ap.add_argument("config", type=Path)
     ap.add_argument("--acceptance", type=Path, default=HERE / "thresholds.yaml")

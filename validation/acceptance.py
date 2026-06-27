@@ -1,17 +1,13 @@
-"""acceptance.py — единая точка вердикта по конфигу: metric gates (R1–R7 из движка
-пакета) + assembly gates (реальная JS-сборка через Node). Конфиг принят, когда все
-required-гейты прошли; набор требуемых гейтов задаёт вызывающий. История: предок —
-config_metrics.py (2026-06-03); маппинг старых имён гейтов: R2_lexical_leak→R3_morph_leak,
-R3_evidence→R4_sources, R4_modeN→R2_modeN.
-
-acceptance.py — the single config-verdict entry point: metric gates (R1–R7 from the
-package engine) + assembly gates (the real JS assembly via Node). A config is accepted
-when every required gate passes; the caller chooses the required set. Lineage: the
-predecessor is config_metrics.py (2026-06-03); old gate-name mapping:
-R2_lexical_leak→R3_morph_leak, R3_evidence→R4_sources, R4_modeN→R2_modeN.
+"""Single config-verdict entry point: metric gates (R1–R7 from the package engine) plus
+assembly gates (the real JS assembly via Node). A config is accepted when every required
+gate passes; the caller chooses the required set.
 
 CLI (the single validation entry point, see README):
-    python validation/acceptance.py configs/v1/your-config.json --enrich live
+    python validation/acceptance.py validation/configs/v1/your-config.json --enrich live
+
+Единая точка вердикта по конфигу: metric gates (R1–R7 из движка пакета) плюс assembly
+gates (реальная JS-сборка через Node). Конфиг принят, когда все required-гейты прошли;
+набор требуемых гейтов задаёт вызывающий.
 """
 import argparse
 import json
@@ -23,70 +19,53 @@ HERE = Path(__file__).resolve().parent
 if __package__ in (None, ""):  # script mode: python validation/acceptance.py
     sys.path.insert(0, str(HERE.parent))
     from validation.run import validate as v_validate, load_acceptance  # noqa: E402
-    from validation import loader as v_loader  # noqa: E402
-    from validation.schema_check import validate_schema  # noqa: E402
+    from validation.core import loader as v_loader  # noqa: E402
+    from validation.core.schema_check import validate_schema  # noqa: E402
     from validation import puzzle_assembly as pa  # noqa: E402
+    from validation import registry  # noqa: E402
 else:
     from .run import validate as v_validate, load_acceptance
-    from . import loader as v_loader
-    from .schema_check import validate_schema
+    from .core import loader as v_loader
+    from .core.schema_check import validate_schema
     from . import puzzle_assembly as pa
+    from . import registry
 
 
-METRIC_GATES = (
-    "R1_volume",
-    "R2_mode1",
-    "R2_mode2",
-    "R2_mode3",
-    "R4_sources",
-    "R5_specialty",
-)
+# Имена метрик-гейтов берём из реестра (исполняемые требования) — НЕ хардкод.
+# Подключить требование (напр. вернуть R4 Решаемость) = флип run/gate в registry.py.
+METRIC_GATES = tuple(registry.metric_gate_names())          # сейчас: R1_volume, R3_sources, R5_specialty
 ASSEMBLY_GATES = ("normal", "advanced")
-# R4_sources is blocking (2026-06-12 decision): without enrichment it is None ->
-# the config is not accepted; run the single entry point with --enrich live.
-# R2_mode2/3 remain deepenings (thresholds uncalibrated).
-# R3_morph_leak and R6 are out of the pipeline (2026-06-12) pending owner decisions.
-DEFAULT_REQUIRED = ("R1_volume", "R2_mode1", "R4_sources",
-                    "R5_specialty") + tuple(f"assembly_{m}" for m in ASSEMBLY_GATES)
+# R3_sources блокирующий: без обогащения None -> конфиг не accept (запускать --enrich live).
+# R4 Решаемость прикопана 2026-06-26; R2(morph)/R6/R7 — out; R6 ждёт эмбеддер.
+DEFAULT_REQUIRED = tuple(registry.required_gate_names()) + tuple(f"assembly_{m}" for m in ASSEMBLY_GATES)
 
 
 def _b(x):
-    """None (pending/нет данных) остаётся None; иначе bool. Вход: любое. Выход: bool | None.
-    None (pending/no data) stays None; otherwise bool. In: anything. Out: bool | None."""
+    """Pass None through unchanged; coerce everything else to bool. In: anything. Out: bool | None.
+
+    None (pending/нет данных) остаётся None; иначе bool. In: любое. Out: bool | None."""
     return None if x is None else bool(x)
 
 
 def _metric_gates_from_report(rep):
-    """Плоские гейты из отчёта validation (R-нумерация спеки). Вход: rep (отчёт validate()).
-    Выход: dict имя_гейта → bool | None.
-    Flat gates from the validation report (spec R-numbering). In: rep (validate() report).
-    Out: dict gate_name → bool | None."""
-    m = {rid: r["metrics"] for rid, r in rep["requirements"].items()}
+    """Extract flat gates from a validation report using the spec R-numbering.
 
-    def mode_gate(n):
-        """Гейт моды n: предусловие ∧ exists; None при недостатке данных.
-        Mode-n gate: precondition ∧ exists; None when data is missing."""
-        pre = m["R2"].get(f"is_eligible_mode{n}", {}).get("pass")
-        sol = m["R2"].get(f"exists_valid_puzzle_mode{n}", {}).get("pass")
-        if pre is None or sol is None:
-            return None
-        return bool(pre and sol)
+    In: rep (validate() report). Out: dict gate_name → bool | None.
 
-    return {
-        "R1_volume": _b(rep["summary"].get("R1")),
-        "R2_mode1": mode_gate(1),
-        "R2_mode2": mode_gate(2),
-        "R2_mode3": mode_gate(3),
-        "R4_sources": _b(rep["summary"].get("R4")),
-        "R5_specialty": _b(rep["summary"].get("R5")),
-    }
+    Плоские гейты из отчёта validation (R-нумерация спеки).
+    In: rep (отчёт validate()). Out: dict имя_гейта → bool | None."""
+    # Гейты строятся из реестра: gate_name → summary[code] для исполняемых требований.
+    # Новое требование появится здесь автоматически, как только run=True в registry.py.
+    return {r.gate_name: _b(rep["summary"].get(r.code)) for r in registry.pipeline()}
 
 
 def _assembly_gate(block):
-    """Мода проходит, когда сборка дала воспроизводимую полную доску без пересечений.
-    Вход: block (узел assembly_summary). Выход: bool.
-    A mode passes when assembly yields a reproducible, complete, non-overlapping board.
-    In: block (assembly_summary node). Out: bool."""
+    """Return True when assembly yields a reproducible, complete, non-overlapping board.
+
+    In: block (assembly_summary node). Out: bool.
+
+    True, если сборка дала воспроизводимую полную доску без пересечений.
+    In: block (узел assembly_summary). Out: bool."""
     return bool(
         block.get("assembles")
         and block.get("reproducible")
@@ -97,12 +76,12 @@ def _assembly_gate(block):
 
 def acceptance(config_path, *, n_seeds_for_variety=200, required_gates=None,
                out_dir=None, make_plot=False, seed=42, n_samples=400, enrich=None):
-    """Полный приёмочный прогон одного конфига: схема → метрики R1–R7 → сборка → вердикт.
-    Вход: config_path + именованные параметры (required_gates, n_samples, enrich, …).
-    Выход: dict вердикта (см. форму ниже).
-    Runs the full acceptance pipeline on a single config: schema → R1–R7 metrics →
-    assembly → verdict. In: config_path + keyword options (required_gates, n_samples,
-    enrich, …). Out: verdict dict shaped like:
+    """Run the full acceptance pipeline on a single config: schema → R1–R7 metrics →
+    assembly → verdict. make_plot is kept in the signature for compatibility (plots are
+    built by the notebook).
+
+    In: config_path + keyword options (required_gates, n_samples, enrich, …).
+    Out: verdict dict shaped like:
         {
           "config_id":     str,
           "config_path":   str,
@@ -113,10 +92,14 @@ def acceptance(config_path, *, n_seeds_for_variety=200, required_gates=None,
           "required_gates": (str, ...),
           "accepted":      bool,
           "blocked_gates": [str, ...],  # required gates that failed
-          "metrics":       <полный отчёт validation (R1–R7, provenance)>,
+          "metrics":       <full validation report (R1–R7, provenance)>,
           "assembly":      <full puzzle_assembly output>,
         }
-    `make_plot` оставлен в сигнатуре для совместимости (плоты строит ноутбук).
+
+    Полный приёмочный прогон одного конфига: схема → метрики R1–R7 → сборка → вердикт.
+    make_plot оставлен в сигнатуре для совместимости (плоты строит ноутбук).
+    In: config_path + именованные параметры (required_gates, n_samples, enrich, …).
+    Out: dict вердикта (см. форму выше).
     """
     required_gates = tuple(required_gates) if required_gates else DEFAULT_REQUIRED
 
@@ -125,7 +108,7 @@ def acceptance(config_path, *, n_seeds_for_variety=200, required_gates=None,
 
     acc = load_acceptance(None)
     acc["seed"] = seed
-    acc["thresholds"]["R2"]["n_samples"] = n_samples
+    acc["thresholds"]["R4"]["n_samples"] = n_samples
 
     rep = None
     metric_gates = {g: None for g in METRIC_GATES}
@@ -173,8 +156,9 @@ def _badge(v):
 
 
 def format_verdict(verdict):
-    """Человекочитаемая сводка вердикта. Вход: verdict (из acceptance()). Выход: str.
-    Human-readable verdict summary. In: verdict (from acceptance()). Out: str."""
+    """Format a human-readable verdict summary. In: verdict (from acceptance()). Out: str.
+
+    Человекочитаемая сводка вердикта. In: verdict (из acceptance()). Out: str."""
     lines = [f"# {verdict['config_id']}  ({verdict['config_path']})"]
     if not verdict["schema_valid"]:
         lines.append(f"  SCHEMA INVALID: {verdict['schema_errors']}")
@@ -192,8 +176,9 @@ def format_verdict(verdict):
 
 
 def main():
-    """CLI: вердикт по конфигу; exit 0 = accepted, 1 = нет. Вход: argv. Выход: int.
-    CLI: config verdict; exit 0 = accepted, 1 = not. In: argv. Out: int."""
+    """Run the CLI: print a config verdict; exit 0 = accepted, 1 = not. In: argv. Out: int.
+
+    CLI: вердикт по конфигу; exit 0 = accepted, 1 = нет. In: argv. Out: int."""
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("config", help="path to a config (v1 / input-schema / v2-pool)")
     p.add_argument("--n-seeds", type=int, default=200,

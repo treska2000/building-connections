@@ -1,14 +1,14 @@
-"""enrich.py — обогащение Level 1 (live API + агрессивный файловый кэш) по спеке
-source_signals_deterministic_2026-06-07. По умолчанию ВЫКЛ (DISABLED). Live API
-недетерминирован → метрики на нём помечаются deterministic=False, пока в
-thresholds.yaml не запинён openalex_snapshot (Level 2). offline=True — только кэш.
-Ключи (опц.): env OPENALEX_API_KEY, OPENALEX_MAILTO.
+"""Level-1 enrichment (live APIs + an aggressive file cache) per the
+source_signals_deterministic spec. Disabled by default (DISABLED). Live APIs are
+non-deterministic — metrics based on them are flagged deterministic=False until
+openalex_snapshot is pinned in thresholds.yaml (Level 2). offline=True reads the
+cache only. Optional env keys: OPENALEX_API_KEY, OPENALEX_MAILTO.
 
-enrich.py — Level-1 enrichment (live APIs + an aggressive file cache) per the
-source_signals_deterministic_2026-06-07 spec. Disabled by default (DISABLED).
-Live APIs are non-deterministic → metrics based on them are flagged
-deterministic=False until openalex_snapshot is pinned in thresholds.yaml (Level 2).
-offline=True reads the cache only. Optional keys: env OPENALEX_API_KEY, OPENALEX_MAILTO.
+Обогащение Level 1 (live API + агрессивный файловый кэш) по спеке
+source_signals_deterministic. По умолчанию ВЫКЛ (DISABLED). Live API недетерминирован —
+метрики на нём помечаются deterministic=False, пока в thresholds.yaml не запинён
+openalex_snapshot (Level 2). offline=True — только кэш. Ключи (опц.): env
+OPENALEX_API_KEY, OPENALEX_MAILTO.
 """
 from __future__ import annotations
 import json
@@ -31,29 +31,46 @@ PEER_REVIEW_HINT = re.compile(
 
 
 def arxiv_id_from_url(url: str) -> str | None:
-    """Извлекает arXiv-id из URL (abs/pdf). Вход: url. Выход: id (str) | None.
-    Extracts the arXiv id from a URL (abs/pdf). In: url. Out: id (str) | None."""
+    """Extract an arXiv id from a URL (abs/pdf form).
+
+    In: url (str). Out: arXiv id (str) | None.
+
+    Извлекает arXiv id из URL (abs/pdf).
+    In: url (str). Out: arXiv id (str) | None.
+    """
     m = ARXIV_ID.search(url or "")
     return m.group(1) if m else None
 
 
 class _Cache:
-    """Файловый JSON-кэш по ключу (один ключ = один файл).
-    A file-based JSON cache keyed by string (one key = one file)."""
+    """A file-based JSON cache keyed by string (one key = one file).
+
+    Файловый JSON-кэш по ключу (один ключ = один файл).
+    """
 
     def __init__(self, root: Path):
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
 
     def _p(self, key: str) -> Path:
-        """Безопасный путь файла кэша для ключа. Вход: key. Выход: Path.
-        Safe cache-file path for a key. In: key. Out: Path."""
+        """Return a safe filesystem path for the given cache key.
+
+        In: key (str). Out: Path.
+
+        Безопасный путь файла кэша для ключа.
+        In: key (str). Out: Path.
+        """
         safe = re.sub(r"[^a-zA-Z0-9._-]+", "_", key)[:150]
         return self.root / f"{safe}.json"
 
     def get(self, key: str):
-        """Читает значение по ключу. Вход: key. Выход: dict | None (нет/битый файл).
-        Reads a value by key. In: key. Out: dict | None (missing/corrupt file)."""
+        """Read a cached value by key, returning None if missing or corrupt.
+
+        In: key (str). Out: dict | None.
+
+        Читает значение по ключу; None при отсутствии или битом файле.
+        In: key (str). Out: dict | None.
+        """
         p = self._p(key)
         if p.exists():
             try:
@@ -63,24 +80,37 @@ class _Cache:
         return None
 
     def put(self, key: str, value) -> None:
-        """Записывает значение по ключу. Вход: key, value (JSON-сериализуемое). Выход: None.
-        Writes a value by key. In: key, value (JSON-serializable). Out: None."""
+        """Write a JSON-serializable value to the cache under the given key.
+
+        In: key (str), value (JSON-serializable). Out: None.
+
+        Записывает JSON-сериализуемое значение по ключу.
+        In: key (str), value (JSON-сериализуемое). Out: None.
+        """
         self._p(key).write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
 
 
 def _http_get(url: str, timeout: float = 30.0) -> bytes:
-    """HTTP GET с идентифицирующим User-Agent. Вход: url, timeout. Выход: bytes.
-    HTTP GET with an identifying User-Agent. In: url, timeout. Out: bytes."""
+    """Perform an HTTP GET with an identifying User-Agent.
+
+    In: url (str), timeout (float, seconds). Out: bytes.
+
+    HTTP GET с идентифицирующим User-Agent.
+    In: url (str), timeout (float, секунды). Out: bytes.
+    """
     req = urllib.request.Request(url, headers={"User-Agent": "connections-bench-validator/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read()
 
 
 class ArxivClient:
-    """Клиент arXiv Atom API: сигналы S1 (resolves), S3 (peer_review), S4
+    """arXiv Atom API client covering signals S1 (resolves), S3 (peer_review), S4
+    (primary_category) plus title/abstract for faithfulness checks.
+    Uses batched id_list requests, a file cache, and politeness delays.
+
+    Клиент arXiv Atom API: сигналы S1 (resolves), S3 (peer_review), S4
     (primary_category) + title/abstract для faithfulness. Батчи id_list, кэш, politeness.
-    arXiv Atom API client: signals S1 (resolves), S3 (peer_review), S4
-    (primary_category) + title/abstract for faithfulness. Batched id_list, cache, politeness."""
+    """
 
     def __init__(self, cache_dir="enrich_cache/arxiv", offline=False, politeness_s=3.0):
         self.cache = _Cache(Path(cache_dir))
@@ -89,10 +119,15 @@ class ArxivClient:
         self.errors: list[str] = []
 
     def metas(self, ids: list[str]) -> dict[str, dict | None]:
-        """Метаданные статей батчами. Вход: ids (arXiv id). Выход: dict
-        id → meta | {'exists': False} (фейк) | None (unknown: сеть/offline без кэша).
-        Paper metadata in batches. In: ids (arXiv ids). Out: dict
-        id → meta | {'exists': False} (fake) | None (unknown: network/offline cache miss)."""
+        """Fetch paper metadata for a list of arXiv ids in batches, using the cache.
+
+        In: ids (list of arXiv id strings).
+        Out: dict id -> meta dict | {'exists': False} (not found) | None (unknown: network error or offline cache miss).
+
+        Метаданные статей батчами с использованием кэша.
+        In: ids (список arXiv id).
+        Out: dict id -> meta | {'exists': False} (не найден) | None (unknown: ошибка сети или offline без кэша).
+        """
         out: dict[str, dict | None] = {}
         missing = []
         for i in sorted(set(ids)):
@@ -140,10 +175,13 @@ class ArxivClient:
 
 
 class OpenAlexClient:
-    """Клиент OpenAlex: сигналы S2 (retracted), S5 (citations), S6 (authorships →
+    """OpenAlex API client covering signals S2 (retracted), S5 (citations),
+    S6 (authorships -> group independence), S7 (corpus_frequency) and topics for R5.
+    Uses batched DOI lookups and a file cache.
+
+    Клиент OpenAlex: сигналы S2 (retracted), S5 (citations), S6 (authorships ->
     независимость групп), S7 (corpus_frequency) + topics для R5. Батчи по DOI, кэш.
-    OpenAlex client: signals S2 (retracted), S5 (citations), S6 (authorships →
-    group independence), S7 (corpus_frequency) + topics for R5. DOI batches, cache."""
+    """
 
     BASE = "https://api.openalex.org"
 
@@ -156,8 +194,13 @@ class OpenAlexClient:
         self.errors: list[str] = []
 
     def _params(self, extra: dict) -> str:
-        """Query-string с mailto/api_key. Вход: extra (dict). Выход: str.
-        Query string with mailto/api_key attached. In: extra (dict). Out: str."""
+        """Build a URL query string, appending mailto and api_key when set.
+
+        In: extra (dict of query parameters). Out: str (URL-encoded query string).
+
+        Строит query-string, добавляя mailto/api_key если заданы.
+        In: extra (dict параметров). Out: str (URL-encoded query string).
+        """
         p = dict(extra)
         if self.mailto:
             p["mailto"] = self.mailto
@@ -167,8 +210,15 @@ class OpenAlexClient:
 
     @staticmethod
     def _slim(w: dict) -> dict:
-        """Ужимает запись OpenAlex до полей, нужных сигналам. Вход: w. Выход: dict.
-        Slims an OpenAlex record down to the fields the signals need. In: w. Out: dict."""
+        """Slim an OpenAlex works record down to the fields required by signals.
+
+        In: w (raw OpenAlex works dict). Out: dict with keys found, is_retracted,
+        cited_by_count, authors, institutions, field, subfield.
+
+        Ужимает запись OpenAlex до полей, нужных сигналам.
+        In: w (сырой dict OpenAlex works). Out: dict с ключами found, is_retracted,
+        cited_by_count, authors, institutions, field, subfield.
+        """
         prim = (w.get("primary_topic") or {})
         return {
             "found": True,
@@ -183,10 +233,15 @@ class OpenAlexClient:
         }
 
     def works_by_arxiv(self, ids: list[str]) -> dict[str, dict | None]:
-        """Записи works по DOI 10.48550/arXiv.<id> батчами. Вход: ids. Выход: dict
-        id → work | {'found': False} | None (unknown).
-        Works records via DOI 10.48550/arXiv.<id> in batches. In: ids. Out: dict
-        id → work | {'found': False} | None (unknown)."""
+        """Fetch OpenAlex works records via DOI 10.48550/arXiv.<id> in batches.
+
+        In: ids (list of arXiv id strings).
+        Out: dict id -> slimmed work dict | {'found': False} | None (unknown).
+
+        Записи works по DOI 10.48550/arXiv.<id> батчами.
+        In: ids (список arXiv id).
+        Out: dict id -> slim dict | {'found': False} | None (unknown).
+        """
         out: dict[str, dict | None] = {}
         missing = []
         for i in sorted(set(ids)):
@@ -224,10 +279,13 @@ class OpenAlexClient:
         return out
 
     def term_count(self, term: str) -> int | None:
-        """S7: распространённость термина = meta.count поиска works. Вход: term.
-        Выход: int | None (unknown).
-        S7: term prevalence = meta.count of a works search. In: term.
-        Out: int | None (unknown)."""
+        """Return S7 term prevalence as the meta.count of an OpenAlex works search.
+
+        In: term (str). Out: int (count) | None (unknown: network error or offline).
+
+        S7: распространённость термина = meta.count поиска works.
+        In: term (str). Out: int | None (unknown: ошибка сети или offline).
+        """
         key = "cnt_" + term.lower().strip()
         c = self.cache.get(key)
         if c is not None:
@@ -247,8 +305,10 @@ class OpenAlexClient:
 
 
 class Enrichment:
-    """Контейнер клиентов обогащения; модули спрашивают доступность через *_available().
-    Container of enrichment clients; modules probe availability via *_available()."""
+    """Container of enrichment clients; modules probe availability via *_available().
+
+    Контейнер клиентов обогащения; модули спрашивают доступность через *_available().
+    """
 
     def __init__(self, openalex=None, embedder=None, arxiv=None, snapshot_pinned=False):
         self.openalex = openalex
@@ -258,32 +318,42 @@ class Enrichment:
 
     @classmethod
     def live(cls, cache_dir="enrich_cache", mailto=None, api_key=None, offline=False):
-        """Фабрика live-режима: arXiv + OpenAlex с общим кэшем. Вход: cache_dir,
-        mailto, api_key, offline. Выход: Enrichment.
-        Live-mode factory: arXiv + OpenAlex sharing one cache root. In: cache_dir,
-        mailto, api_key, offline. Out: Enrichment."""
+        """Create a live-mode Enrichment with arXiv and OpenAlex sharing one cache root.
+
+        In: cache_dir (str), mailto (str | None), api_key (str | None), offline (bool).
+        Out: Enrichment.
+
+        Фабрика live-режима: arXiv + OpenAlex с общим корнем кэша.
+        In: cache_dir (str), mailto (str | None), api_key (str | None), offline (bool).
+        Out: Enrichment.
+        """
         root = Path(cache_dir)
         return cls(arxiv=ArxivClient(root / "arxiv", offline=offline),
                    openalex=OpenAlexClient(root / "openalex", offline=offline,
                                            mailto=mailto, api_key=api_key))
 
     def sources_available(self) -> bool:
-        """Доступен ли arXiv-клиент. Выход: bool. / Is the arXiv client available. Out: bool."""
+        """Whether the arXiv client is available. / Доступен ли arXiv-клиент."""
         return self.arxiv is not None
 
     def openalex_available(self) -> bool:
-        """Доступен ли OpenAlex-клиент. Выход: bool. / Is the OpenAlex client available. Out: bool."""
+        """Whether the OpenAlex client is available. / Доступен ли OpenAlex-клиент."""
         return self.openalex is not None
 
     def embedder_available(self) -> bool:
-        """Доступен ли эмбеддер. Выход: bool. / Is the embedder available. Out: bool."""
+        """Whether the embedder is available. / Доступен ли эмбеддер."""
         return self.embedder is not None
 
     def deterministic(self) -> bool:
-        """Детерминировано ли обогащение: live → False, True только при запиненном
-        снапшоте (Level 2). Выход: bool.
-        Whether enrichment is deterministic: live → False, True only with a pinned
-        snapshot (Level 2). Out: bool."""
+        """Return whether enrichment is deterministic: False in live mode, True only
+        when a snapshot is pinned (Level 2).
+
+        In: (none). Out: bool.
+
+        Детерминировано ли обогащение: False в live-режиме, True только при запиненном
+        снапшоте (Level 2).
+        In: (нет). Out: bool.
+        """
         return self.snapshot_pinned
 
 
