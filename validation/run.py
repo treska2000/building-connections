@@ -144,7 +144,10 @@ def validate(config_path: str, acceptance: dict, en=enrich.DISABLED, repro=None,
     # Lazily build the default embedder (Qwen3) if any active requirement needs it (R6).
     # Ленивая сборка дефолтного эмбеддера, если он нужен активному требованию (R6).
     if embedder is None and any(r.needs == "embedder" for r in pipe):
-        from .core import embedding as _emb
+        try:
+            from .core import embedding as _emb
+        except ImportError:  # script mode (python validation/run.py): no parent package
+            from validation.core import embedding as _emb
         embedder = _emb.get_default(acceptance.get("embedder"))
 
     selected = set(only) if only else None
