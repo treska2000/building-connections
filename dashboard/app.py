@@ -35,8 +35,9 @@ MODE_LABEL = {
     "image": "картинка",
 }
 COVER_MIN, REACH_MIN = 0.95, 0.90
-DIFF_ORDER = ["easy", "medium", "hard"]
-DIFF_LABEL = {"easy": "лёгкие", "medium": "средние", "hard": "сложные"}
+# GameMode (board construction difficulty from connections-gen). Canonical
+# code terms — shown verbatim, no translation. Ordered easiest -> hardest.
+DIFF_ORDER = ["easy", "basic", "advanced"]
 
 # Tableau 10 — calm classic qualitative palette.
 OUTCOME_CMAP = {
@@ -77,21 +78,25 @@ def load(path: str) -> pd.DataFrame:
 
 @st.cache_data
 def load_board_meta() -> pd.DataFrame:
-    """Board difficulty tiers from boards_meta.csv (fallback: boards.jsonl).
+    """Board metadata from boards_meta.csv (fallback: boards.jsonl).
 
-    Only gen boards are labelled — nyt boards get NaN and drop out of the
-    difficulty view. Columns: board, difficulty, trap_count, board_solve_rate.
+    game_mode is the GameMode (easy/basic/advanced) — the board's construction
+    difficulty from connections-gen; difficulty is the empirical solve-rate
+    bucket. Only gen boards are labelled — nyt boards get NaN and drop out of
+    the difficulty view. Columns: board, game_mode, difficulty, trap_count,
+    board_solve_rate.
     """
+    cols = ["board", "game_mode", "difficulty", "trap_count", "board_solve_rate"]
     slim = _HERE / "boards_meta.csv"
     if slim.exists():
         return pd.read_csv(slim)
     src = _HERE.parent.parent / "connections-gen" / "data" / "boards.jsonl"
     if not src.exists():
-        return pd.DataFrame(
-            columns=["board", "difficulty", "trap_count", "board_solve_rate"])
+        return pd.DataFrame(columns=cols)
     rows = [json.loads(l) for l in src.read_text().splitlines() if l.strip()]
     return pd.DataFrame([{
         "board": r["board_id"],
+        "game_mode": r.get("mode"),
         "difficulty": r.get("difficulty"),
         "trap_count": r.get("trap_count"),
         "board_solve_rate": r.get("solve_rate"),
@@ -236,59 +241,58 @@ with tab_domain:
 
 # ---------------- difficulty ----------------
 with tab_diff:
-    st.markdown("Тиры сложности берутся из `boards_meta.csv` (маппинг из "
-                "`connections-gen/data/boards.jsonl`). Размечены только "
-                "**gen**-доски, поэтому вкладка всегда про gen.")
+    st.markdown("Сложность = **GameMode** (`easy` / `basic` / `advanced`) — "
+                "режим построения доски из `connections-gen`, берётся из "
+                "`boards_meta.csv`. Размечены только **gen**-доски, поэтому "
+                "вкладка всегда про gen. В текущем срезе advanced-досок нет.")
     meta = load_board_meta()
     d = f[f["dataset"] == "gen"].merge(meta, on="board", how="inner")
-    if d.empty or "difficulty" not in d.columns or d["difficulty"].isna().all():
+    if d.empty or "game_mode" not in d.columns or d["game_mode"].isna().all():
         st.info("Нет размеченных gen-досок под фильтры. Выбери gen и сними "
                 "лишние фильтры.")
     else:
-        d = d[d["difficulty"].notna()]
-        diffs_here = [x for x in DIFF_ORDER if x in set(d["difficulty"])]
+        d = d[d["game_mode"].notna()]
+        diffs_here = [x for x in DIFF_ORDER if x in set(d["game_mode"])]
 
-        # SKILL: model × difficulty
-        by_md = (d.groupby(["model_short", "difficulty"]).apply(cell_metrics)
+        # SKILL: model × game_mode
+        by_md = (d.groupby(["model_short", "game_mode"]).apply(cell_metrics)
                  .reset_index())
-        piv = (by_md.pivot_table(index="model_short", columns="difficulty",
+        piv = (by_md.pivot_table(index="model_short", columns="game_mode",
                                  values="skill")
                .reindex(columns=diffs_here) * 100)
         piv = piv.loc[piv.mean(axis=1).sort_values(ascending=False).index]
-        piv = piv.rename(columns=DIFF_LABEL)
         st.markdown("**SKILL: модель × сложность** (solved / valid)")
         st.dataframe(piv.style.format("{:.0f}%", na_rep="—")
                      .map(heat_bg(BLUE)), width="stretch")
-        st.caption("Разрыв easy→hard = насколько модель проседает на трудных "
-                   "досках. Ровная строка → устойчивая к сложности модель.")
+        st.caption("Разрыв easy→advanced = насколько модель проседает на более "
+                   "сложных режимах. Ровная строка → устойчивая модель.")
 
-        # SKILL: difficulty × mode (pooled models)
-        by_dm = (d.groupby(["difficulty", "mode"]).apply(cell_metrics)
+        # SKILL: game_mode × harness mode (pooled models)
+        by_dm = (d.groupby(["game_mode", "mode"]).apply(cell_metrics)
                  .reset_index())
         modes_d = [m for m in MODE_ORDER if m in set(d["mode"])]
-        pivm = (by_dm.pivot_table(index="difficulty", columns="mode",
+        pivm = (by_dm.pivot_table(index="game_mode", columns="mode",
                                   values="skill")
                 .reindex(index=diffs_here, columns=modes_d) * 100)
-        pivm = (pivm.rename(index=DIFF_LABEL)
-                .rename(columns=MODE_LABEL))
+        pivm = pivm.rename(columns=MODE_LABEL)
         st.markdown("**SKILL: сложность × режим** (pooled по моделям)")
         st.dataframe(pivm.style.format("{:.0f}%", na_rep="—")
                      .map(heat_bg(BLUE)), width="stretch")
 
-        # full breakdown: one table per difficulty, model × mode
-        by_mmd = (d.groupby(["difficulty", "model_short", "mode"])
+        # full breakdown: one table per game_mode, model × harness mode
+        by_mmd = (d.groupby(["game_mode", "model_short", "mode"])
                   .apply(cell_metrics).reset_index())
         st.markdown("**Полная разбивка: модель × режим по каждой сложности** "
                     "(SKILL = solved / valid)")
         for dif in diffs_here:
-            sub = by_mmd[by_mmd["difficulty"] == dif]
+            sub = by_mmd[by_mmd["game_mode"] == dif]
             tab = (sub.pivot_table(index="model_short", columns="mode",
                                    values="skill")
                    .reindex(columns=modes_d) * 100)
             tab = tab.loc[tab.mean(axis=1).sort_values(ascending=False).index]
             tab = tab.rename(columns=MODE_LABEL)
             tab.index.name = "модель"
-            st.markdown(f"**{DIFF_LABEL[dif].capitalize()}**")
+            st.markdown(f"**{dif}**")
             st.dataframe(tab.style.format("{:.0f}%", na_rep="—")
                          .map(heat_bg(BLUE)), width="stretch")
 
