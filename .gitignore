@@ -22,4 +22,8 @@ tests/.pytest_cache/
 
 # Research caches (machine-generated, regeneratable)
 validation/research/.vpy_calib_cache_v2/
+validation/research/.emb_cache/
 validation/enrich_cache/
+
+# Research run logs (machine-generated)
+validation/research/*.log
